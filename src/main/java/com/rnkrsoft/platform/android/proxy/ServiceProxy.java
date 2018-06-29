@@ -17,6 +17,8 @@ import com.rnkrsoft.security.SHA;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -57,7 +59,8 @@ public class ServiceProxy<T> implements InvocationHandler {
         request.setToken(serviceConfigure.getToken());
         request.setLat(1.0D);
         request.setLng(1.0D);
-        request.setTimestamp("");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        request.setTimestamp(dateFormat.format(new Date()));
         request.setData(GSON.toJson(businessRequest));
         String password = "";
         if (serviceClass != PublishService.class) {
