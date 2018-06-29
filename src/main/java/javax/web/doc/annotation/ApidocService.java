@@ -6,7 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Created by devops4j on 2017/12/5.
+ * Created by rnkrsoft.com on 2017/12/5.
  * 用于在接口（Java接口）上定义服务（调用服务）
  */
 @Retention(RetentionPolicy.RUNTIME)

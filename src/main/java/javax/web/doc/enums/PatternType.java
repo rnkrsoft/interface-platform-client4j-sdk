@@ -3,7 +3,7 @@ package javax.web.doc.enums;
 import com.rnkrsoft.interfaces.EnumIntegerCode;
 
 /**
- * Created by devops4j on 2017/12/5.
+ * Created by rnkrsoft.com on 2017/12/5.
  * 表达式类型
  */
 public enum PatternType implements EnumIntegerCode {

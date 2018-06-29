@@ -1,7 +1,7 @@
 package javax.web.skeleton4j.annotation;
 
 /**
- * Created by devops4j on 2017/12/7.
+ * Created by rnkrsoft.com on 2017/12/7.
  * 用于定义级联接口
  */
 public @interface WebCascadeInterface {

@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.List;
 
 /**
- * Created by devops4j on 2017/12/5.
+ * Created by rnkrsoft.com on 2017/12/5.
  * 分页接口时必须实现该接接口，与RequestPageable接口成对出现
  */
 public interface ResponsePageable<T> extends Serializable {
