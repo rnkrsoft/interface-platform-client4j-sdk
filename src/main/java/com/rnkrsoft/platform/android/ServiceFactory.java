@@ -3,8 +3,8 @@ package com.rnkrsoft.platform.android;
 import com.rnkrsoft.platform.android.proxy.ServiceProxyFactory;
 import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.android.scanner.MetadataClassPathScanner;
-import com.rnkrsoft.platform.protocol.domains.PublishRequest;
-import com.rnkrsoft.platform.protocol.domains.PublishResponse;
+import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
+import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 
 import java.util.List;
@@ -53,9 +53,9 @@ public final class ServiceFactory {
     public static final <T> T get(Class<T> serviceClass) {
         if (ServiceRegister.isEmpty()) {
             PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
-            PublishRequest request = new PublishRequest();
+            FetchPublishRequest request = new FetchPublishRequest();
             request.setChannel(SERVICE_CONFIGURE.getChannel());
-            PublishResponse response = publishService.publish(request);
+            FetchPublishResponse response = publishService.fetchPublish(request);
             ServiceRegister.initDefinitions(response.getInterfaces());
         }
         T stub = ServiceRegister.lookup(serviceClass);

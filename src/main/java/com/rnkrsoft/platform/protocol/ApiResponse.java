@@ -2,9 +2,7 @@ package com.rnkrsoft.platform.protocol;
 
 import com.rnkrsoft.interfaces.EnumIntegerCode;
 import com.rnkrsoft.interfaces.EnumStringCode;
-import lombok.*;
 
-import javax.web.doc.annotation.ApidocElement;
 
 /**
  * Created by rnkrsoft.com on 2018/4/20.
