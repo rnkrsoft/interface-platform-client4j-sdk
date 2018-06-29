@@ -12,6 +12,10 @@ import javax.web.doc.annotation.ApidocElement;
 public class ApiResponse {
     @ApidocElement("返回数据")
     String data;
+    /**
+     * 参数签名
+     */
+    String sign;
     @ApidocElement("应答码")
     String code = "000";
     @ApidocElement("应答描述")
@@ -39,6 +43,14 @@ public class ApiResponse {
 
     public void setDesc(String desc) {
         this.desc = desc;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
     }
 
     public final void setCode(EnumStringCode code) {

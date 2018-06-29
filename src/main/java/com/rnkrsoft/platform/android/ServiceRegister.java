@@ -1,5 +1,6 @@
 package com.rnkrsoft.platform.android;
 
+import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.domains.InterfaceDefinition;
 
 import javax.web.doc.annotation.ApidocService;
@@ -12,21 +13,12 @@ import java.util.Map;
  */
 public final class ServiceRegister {
     private final static Map<Class, Object> SERVICE_CACHES = new HashMap();
-    private final static Map<String, InterfaceDefinition> INTERFACE_DEFINITIONS = new HashMap();
+    private final static Map<String, InterfaceMetadata> INTERFACE_METADATA = new HashMap();
+    private final static Map<String, InterfaceDefinition> INTERFACE_DEFINITION = new HashMap();
+
 
     public static boolean isEmpty(){
-        return SERVICE_CACHES.isEmpty();
-    }
-    /**
-     * 注册服务实现类
-     * @param stub 桩实现
-     */
-    public static void register(Class serviceClass){
-        ApidocService apidocService = (ApidocService) serviceClass.getAnnotation(ApidocService.class);
-        if (apidocService == null){
-
-        }
-
+        return INTERFACE_DEFINITION.isEmpty();
     }
     /**
      * 注册服务实现类
@@ -47,9 +39,23 @@ public final class ServiceRegister {
         return stub;
     }
 
-    public static void init(List<InterfaceDefinition> interfaces) {
-        for (InterfaceDefinition definition : interfaces){
-            INTERFACE_DEFINITIONS.put(definition.getTxNo() + ":" + definition.getVersion(), definition);
+    public static InterfaceMetadata lookupMetadata(String className, String methodName){
+        return INTERFACE_METADATA.get(className + ":" + methodName);
+    }
+
+    public static InterfaceDefinition lookupDefinition(String txNo, String version){
+        return INTERFACE_DEFINITION.get(txNo + ":" + version);
+    }
+
+    public static void initMetadatas(List<InterfaceMetadata> metadatas) {
+        for (InterfaceMetadata metadata : metadatas){
+            INTERFACE_METADATA.put(metadata.getInterfaceClass().getName() + ":" + metadata.getInterfaceMethod().getName(), metadata);
+        }
+    }
+
+    public static void initDefinitions(List<InterfaceDefinition> definitions) {
+        for (InterfaceDefinition definition : definitions){
+            INTERFACE_DEFINITION.put(definition.getTxNo() + ":" + definition.getVersion(), definition);
         }
     }
 }
