@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.protocol.domains;
+package com.rnkrsoft.platform.protocol.service;
 
 import javax.web.doc.annotation.ApidocElement;
 import java.io.Serializable;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 /**
  * Created by woate on 2018/6/27.
  */
-public class PublishRequest implements Serializable{
+public class FetchPublishRequest implements Serializable{
     @ApidocElement("通道")
     String channel;
 

@@ -9,15 +9,16 @@ import com.rnkrsoft.platform.android.client.ServiceClient;
 import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
-import com.rnkrsoft.platform.protocol.ClientTypeEnum;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
-import com.rnkrsoft.platform.protocol.domains.InterfaceDefinition;
+import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.security.AES;
 import com.rnkrsoft.security.SHA;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -45,46 +46,70 @@ public class ServiceProxy<T> implements InvocationHandler {
         String txNo = null;
         String version = null;
         InterfaceMetadata metadata = ServiceRegister.lookupMetadata(serviceClass.getName(), method.getName());
+        if (metadata == null) {
+            throw new NullPointerException("not found " + serviceClass.getName() + "." + method.getName());
+        }
         txNo = metadata.getTxNo();
         version = metadata.getVersion();
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
         ApiRequest request = new ApiRequest();
+
+        request.setTxNo(txNo);
+        request.setVersion(version);
         request.setSessionId(UUID.randomUUID().toString());
         request.setUic(serviceConfigure.getUic());
         request.setUid(serviceConfigure.getUid());
         request.setToken(serviceConfigure.getToken());
         request.setLat(1.0D);
         request.setLng(1.0D);
-        request.setClientType(ClientTypeEnum.MANAGER_APP);
-        request.setTimestamp("");
-        request.setTxNo(txNo);
-        request.setVersion(version);
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+        request.setTimestamp(dateFormat.format(new Date()));
         request.setData(GSON.toJson(businessRequest));
         String password = "";
         if (serviceClass != PublishService.class) {
+            request.setChannel(serviceConfigure.getChannel());
             InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isUseTokenAsPassword()) {
                 password = ServiceFactory.getServiceConfigure().getToken();
             }
             if (definition.isFirstSignSecondEncrypt()) {
-                if ("SHA512".equals(definition.getSignAlgorithm())) {
+                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
+
+                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
                     String sign = SHA.SHA512(request.getData() + password);
                     request.setSign(sign);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
-                if ("AES".equals(definition.getEncryptAlgorithm())) {
+                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
+
+                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
                     String data = AES.encrypt(password, request.getData());
                     request.setData(data);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
                 }
             } else {
-                if ("AES".equals(definition.getEncryptAlgorithm())) {
+
+                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
+
+                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
                     String data = AES.encrypt(password, request.getData());
                     request.setData(data);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
                 }
-                if ("SHA512".equals(definition.getSignAlgorithm())) {
+                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
+
+                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
                     String sign = SHA.SHA512(request.getData() + password);
                     request.setSign(sign);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
             }
+        } else {
+            request.setChannel("public");
         }
 
         ApiResponse response = ServiceClient.call(url, request);
@@ -98,27 +123,43 @@ public class ServiceProxy<T> implements InvocationHandler {
         if (serviceClass != PublishService.class) {
             InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isFirstVerifySecondDecrypt()) {
-                if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
+                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
+
+                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
+                    String sign = SHA.SHA512(response.getData() + password);
                     if (!sign.equals(response.getSign())) {
                         throw new IllegalArgumentException("无效签字");
                     }
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
-                if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.encrypt(password, response.getData());
+
+                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
+
+                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
+                    String data0 = AES.decrypt(password, response.getData());
                     response.setData(data0);
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
                 }
             } else {
+                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
 
-                if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.encrypt(password, response.getData());
+                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
+                    String data0 = AES.decrypt(password, response.getData());
                     response.setData(data0);
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
                 }
-                if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
+                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
+
+                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
+                    String sign = SHA.SHA512(response.getData() + password);
                     if (!sign.equals(response.getSign())) {
                         throw new IllegalArgumentException("无效签字");
                     }
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
             }
         }
@@ -126,7 +167,6 @@ public class ServiceProxy<T> implements InvocationHandler {
         try {
             businessResponse = GSON.fromJson(response.getData(), method.getReturnType());
         } catch (Exception e) {
-            //TODO
             throw new IllegalArgumentException("无效的JSON格式");
         }
         return businessResponse;

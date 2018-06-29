@@ -1,8 +1,5 @@
 package com.rnkrsoft.platform.protocol.service;
 
-import com.rnkrsoft.platform.protocol.domains.PublishRequest;
-import com.rnkrsoft.platform.protocol.domains.PublishResponse;
-
 import javax.web.doc.annotation.ApidocInterface;
 import javax.web.doc.annotation.ApidocService;
 
@@ -11,6 +8,6 @@ import javax.web.doc.annotation.ApidocService;
  */
 @ApidocService("发布服务")
 public interface PublishService {
-    @ApidocInterface(value = "推送", name = "000", version = "1")
-    PublishResponse publish(PublishRequest request);
+    @ApidocInterface(value = "拉去发布接口", name = "000", version = "1")
+    FetchPublishResponse fetchPublish(FetchPublishRequest request);
 }

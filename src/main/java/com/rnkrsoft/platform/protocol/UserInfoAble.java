@@ -1,7 +1,7 @@
 package com.rnkrsoft.platform.protocol;
 
 /**
- * Created by liucheng on 2018/6/13.
+ * Created by rnkrsoft.com on 2018/6/13.
  */
 public interface UserInfoAble extends UserInfoReadable, UserInfoWritable {
 }

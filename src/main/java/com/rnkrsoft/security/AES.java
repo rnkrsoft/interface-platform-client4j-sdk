@@ -14,8 +14,8 @@ import java.security.spec.InvalidKeySpecException;
 
 public class AES {
     public static String KEY_GENERATION_ALG = "PBKDF2WithHmacSHA1";
-    public static final String AES_CBC_PKCS7_PADDING = "AES/CBC/PKCS7PADDING";
-    public static String DEFAULT_IV = "1234567890123456";
+    public static final String AES_CBC_PKCS7_PADDING = "AES/CBC/PKCS5PADDING";
+    public static String DEFAULT_IV = "1234567890654321";
     static int HASH_ITERATIONS = 1;
     static byte[] SALT = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF}; // must save this for next time we want the key
     static int KEY_LENGTH = 256;

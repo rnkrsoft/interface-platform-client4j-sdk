@@ -1,9 +1,8 @@
 package com.rnkrsoft.platform.android;
 
 import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
-import com.rnkrsoft.platform.protocol.domains.InterfaceDefinition;
+import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 
-import javax.web.doc.annotation.ApidocService;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
