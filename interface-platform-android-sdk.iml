@@ -42,5 +42,6 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: com.lmax:disruptor:3.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.15" level="project" />
+    <orderEntry type="library" name="Maven: com.zxevpop:pay-gateway-api:2.5.0-SNAPSHOT" level="project" />
   </component>
 </module>

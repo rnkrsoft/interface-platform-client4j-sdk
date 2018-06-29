@@ -46,6 +46,7 @@ public class ServiceClient {
         }
         if (http.ok()) {
             String responseJson = http.body("UTF-8");
+            log.info(responseJson);
             try {
                 response = GSON.fromJson(responseJson, ApiResponse.class);
                 return response;

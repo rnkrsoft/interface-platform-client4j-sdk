@@ -46,6 +46,9 @@ public class ServiceProxy<T> implements InvocationHandler {
         String txNo = null;
         String version = null;
         InterfaceMetadata metadata = ServiceRegister.lookupMetadata(serviceClass.getName(), method.getName());
+        if (metadata == null){
+            throw new NullPointerException("not found " + serviceClass.getName() + "." + method.getName());
+        }
         txNo = metadata.getTxNo();
         version = metadata.getVersion();
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
@@ -128,6 +131,7 @@ public class ServiceProxy<T> implements InvocationHandler {
             }
         }
         Object businessResponse = null;
+        System.out.println(method.getReturnType());
         try {
             businessResponse = GSON.fromJson(response.getData(), method.getReturnType());
         } catch (Exception e) {
