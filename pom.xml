@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
      <groupId>com.rnkrsoft.platform</groupId>
-    <artifactId>interface-platform-android-sdk</artifactId>
+    <artifactId>interface-platform-client-sdk</artifactId>
      <version>1.0.0-SNAPSHOT</version>
-    <name>接口平台安卓模块</name>
+    <name>接口平台客户端模块</name>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jdk.version>1.6</jdk.version>
