@@ -37,7 +37,7 @@ public class ServiceClient {
             if (exception instanceof java.net.ConnectException) {
                 //TODO 访问百度，如果成功联网成功
                 response = new ApiResponse();
-                response.setCode(InterfaceRspCode.REMOTE_SERVICE_UNREACHABLE);
+                response.setCode(InterfaceRspCode.DEVICE_CAN_NOT_ACCESS_INTERNET);
                 return response;
             }
             response = new ApiResponse();
