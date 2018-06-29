@@ -14,6 +14,11 @@
     </properties>
     <dependencies>
         <dependency>
+            <groupId>com.rnkrsoft.groundwork</groupId>
+            <artifactId>groundwork</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+        </dependency>
+        <dependency>
             <groupId>com.rnkrsoft.skeleton4j</groupId>
             <artifactId>skeleton4j-api</artifactId>
             <version>1.0.1-SNAPSHOT</version>
@@ -33,11 +38,6 @@
             <artifactId>evpop-manage-api</artifactId>
             <version>1.0.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.rnkrsoft.groundwork</groupId>
-            <artifactId>groundwork</artifactId>
-            <version>1.0.1-SNAPSHOT</version>
-        </dependency>
     </dependencies>
     <build>
         <plugins>
@@ -53,4 +53,21 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>rnkrsoft</id>
+            <name>RnKrSoft Repository</name>
+            <url>http://nexus.rnkrsoft.com/content/groups/public/</url>
+        </repository>
+    </repositories>
+    <distributionManagement>
+        <snapshotRepository>
+            <id>rnkrsoft</id>
+            <url>http://nexus.rnkrsoft.com/content/repositories/snapshots/</url>
+        </snapshotRepository>
+        <repository>
+            <id>rnkrsoft</id>
+            <url>http://nexus.rnkrsoft.com/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 </project>

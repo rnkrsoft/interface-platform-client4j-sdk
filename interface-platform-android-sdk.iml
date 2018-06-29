@@ -10,7 +10,15 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="Maven: com.rnkrsoft.groundwork:groundwork:1.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.10" level="project" />
+    <orderEntry type="library" name="Maven: commons-io:commons-io:2.5" level="project" />
+    <orderEntry type="library" name="Maven: commons-lang:commons-lang:2.6" level="project" />
     <orderEntry type="library" name="Maven: com.rnkrsoft.skeleton4j:skeleton4j-api:1.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.rnkrsoft.io4j:io4j:1.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: javax.servlet:javax.servlet-api:3.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.rnkrsoft.logtrace4j:logtrace4j:1.0.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: com.rnkrsoft.reflection4j:reflection4j:1.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.2" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.12" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.3" level="project" />
@@ -34,7 +42,5 @@
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.7.21" level="project" />
     <orderEntry type="library" name="Maven: com.lmax:disruptor:3.3.2" level="project" />
     <orderEntry type="library" name="Maven: org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.15" level="project" />
-    <orderEntry type="library" name="Maven: org.projectlombok:lombok:1.16.12" level="project" />
-    <orderEntry type="library" name="Maven: com.rnkrsoft.groundwork:groundwork:1.0.1-SNAPSHOT" level="project" />
   </component>
 </module>

@@ -9,7 +9,6 @@ import com.rnkrsoft.platform.android.client.ServiceClient;
 import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
-import com.rnkrsoft.platform.protocol.ClientTypeEnum;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 import com.rnkrsoft.platform.protocol.service.PublishService;
