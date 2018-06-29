@@ -38,7 +38,7 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setChannel(channel);
     }
 
-    public static final void init(String... basePackages) {
+    public static final void scan(String... basePackages) {
         List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(basePackages);
         ServiceRegister.initMetadatas(metadatas);
     }
