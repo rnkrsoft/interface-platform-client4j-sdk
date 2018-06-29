@@ -3,20 +3,18 @@ package com.rnkrsoft.platform.android.client;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rnkrsoft.platform.android.HttpRequest;
-import com.rnkrsoft.platform.android.ServiceFactory;
-import com.rnkrsoft.platform.android.ServiceRegister;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
-import com.rnkrsoft.platform.protocol.domains.InterfaceDefinition;
-import com.rnkrsoft.security.AES;
-import com.rnkrsoft.security.SHA;
+
+import java.util.logging.Logger;
 
 
 /**
- * Created by woate on 2018/6/27.
+ * Created by rnkrsoft.com on 2018/6/27.
  */
 public class ServiceClient {
+    final static Logger log = Logger.getLogger(ServiceClient.class.toString());
     final static Gson GSON = new GsonBuilder().serializeNulls().create();
 
     public static ApiResponse call(String url, ApiRequest request) {
@@ -30,12 +28,13 @@ public class ServiceClient {
                 .useCaches(false)
                 .contentType("application/json;text/plain", "UTF-8");
         String requestJson = GSON.toJson(request);
-        System.out.println(url);
+        log.info(url);
+        log.info(requestJson);
         try {
             http.send(requestJson);
         } catch (HttpRequest.HttpRequestException e) {
             Exception exception = e.getCause();
-            if (exception instanceof java.net.ConnectException){
+            if (exception instanceof java.net.ConnectException) {
                 //TODO 访问百度，如果成功联网成功
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.REMOTE_SERVICE_UNREACHABLE);

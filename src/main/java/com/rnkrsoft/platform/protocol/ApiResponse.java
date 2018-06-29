@@ -7,18 +7,24 @@ import lombok.*;
 import javax.web.doc.annotation.ApidocElement;
 
 /**
- * Created by Administrator on 2018/4/20.
+ * Created by rnkrsoft.com on 2018/4/20.
  */
 public class ApiResponse {
-    @ApidocElement("返回数据")
+    /**
+     * 数据
+     */
     String data;
     /**
-     * 参数签名
+     * 签字
      */
     String sign;
-    @ApidocElement("应答码")
+    /**
+     * 应答码
+     */
     String code = "000";
-    @ApidocElement("应答描述")
+    /**
+     * 应答描述
+     */
     String desc = "成功";
 
     public String getData() {

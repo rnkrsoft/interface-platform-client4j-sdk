@@ -7,7 +7,7 @@ import javax.web.doc.annotation.ApidocInterface;
 import javax.web.doc.annotation.ApidocService;
 
 /**
- * Created by Administrator on 2018/6/19.
+ * Created by rnkrsoft.com on 2018/6/19.
  */
 @ApidocService("演示服务")
 public interface DemoService {

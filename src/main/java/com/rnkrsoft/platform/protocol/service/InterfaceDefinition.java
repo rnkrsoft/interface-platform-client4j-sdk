@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.protocol.domains;
+package com.rnkrsoft.platform.protocol.service;
 
 /**
  * Created by woate on 2018/6/27.

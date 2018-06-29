@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.protocol.domains;
+package com.rnkrsoft.platform.protocol.service;
 
 import javax.web.doc.AbstractResponse;
 import javax.web.doc.annotation.ApidocElement;
@@ -8,7 +8,7 @@ import java.util.List;
 /**
  * Created by woate on 2018/6/27.
  */
-public class PublishResponse extends AbstractResponse{
+public class FetchPublishResponse extends AbstractResponse{
     @ApidocElement("渠道")
     String channel;
     @ApidocElement("接口列表")

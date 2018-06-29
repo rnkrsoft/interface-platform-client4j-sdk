@@ -11,7 +11,7 @@ import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.ClientTypeEnum;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
-import com.rnkrsoft.platform.protocol.domains.InterfaceDefinition;
+import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.security.AES;
 import com.rnkrsoft.security.SHA;
@@ -49,19 +49,20 @@ public class ServiceProxy<T> implements InvocationHandler {
         version = metadata.getVersion();
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
         ApiRequest request = new ApiRequest();
+
+        request.setTxNo(txNo);
+        request.setVersion(version);
         request.setSessionId(UUID.randomUUID().toString());
         request.setUic(serviceConfigure.getUic());
         request.setUid(serviceConfigure.getUid());
         request.setToken(serviceConfigure.getToken());
         request.setLat(1.0D);
         request.setLng(1.0D);
-        request.setClientType(ClientTypeEnum.MANAGER_APP);
         request.setTimestamp("");
-        request.setTxNo(txNo);
-        request.setVersion(version);
         request.setData(GSON.toJson(businessRequest));
         String password = "";
         if (serviceClass != PublishService.class) {
+            request.setChannel(serviceConfigure.getChannel());
             InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isUseTokenAsPassword()) {
                 password = ServiceFactory.getServiceConfigure().getToken();
@@ -85,6 +86,8 @@ public class ServiceProxy<T> implements InvocationHandler {
                     request.setSign(sign);
                 }
             }
+        }else{
+            request.setChannel("public");
         }
 
         ApiResponse response = ServiceClient.call(url, request);

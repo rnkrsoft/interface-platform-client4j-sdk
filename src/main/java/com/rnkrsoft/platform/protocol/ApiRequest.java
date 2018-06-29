@@ -4,9 +4,21 @@ package com.rnkrsoft.platform.protocol;
 import java.io.Serializable;
 
 /**
- * Created by liucheng on 2018/4/20.
+ * Created by rnkrsoft.com on 2018/4/20.
  */
 public class ApiRequest implements Serializable{
+    /**
+     * 渠道
+     */
+    String channel;
+    /**
+     * 交易码
+     */
+    String txNo;
+    /**
+     * 版本号
+     */
+    String version;
     /**
      * 全局唯一序号,或外部订单号
      */
@@ -19,20 +31,6 @@ public class ApiRequest implements Serializable{
      * 用户识别码
      */
     String uic;
-    /**
-     * 交易码
-     */
-    String txNo;
-    /**
-     * 版本号
-     */
-    String version;
-    /**
-     * 客户端类型
-     * 1:用户端
-     * 2:车管端
-     */
-    int type = 1;
     /**
      * 请求数据
      */
@@ -58,12 +56,12 @@ public class ApiRequest implements Serializable{
      */
     Double lng;
 
-    public void setClientType(ClientTypeEnum clientType){
-        this.type = clientType.code;
+    public String getChannel() {
+        return channel;
     }
 
-    public ClientTypeEnum getClientType(){
-        return ClientTypeEnum.valueOfCode(type);
+    public void setChannel(String channel) {
+        this.channel = channel;
     }
 
     public String getSessionId() {
@@ -106,13 +104,6 @@ public class ApiRequest implements Serializable{
         this.version = version;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public void setType(int type) {
-        this.type = type;
-    }
 
     public String getData() {
         return data;

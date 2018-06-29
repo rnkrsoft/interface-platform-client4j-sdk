@@ -3,7 +3,7 @@ package com.rnkrsoft.platform.protocol;
 import com.rnkrsoft.interfaces.EnumStringCode;
 
 /**
- * Created by liucheng on 2018/5/7.
+ * Created by rnkrsoft.com on 2018/5/7.
  */
 public enum InterfaceRspCode implements EnumStringCode {
     SUCCESS("000", "成功"),
