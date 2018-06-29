@@ -4,6 +4,8 @@ import com.zxevpop.platform.domains.QueryPlatformRequest;
 import com.zxevpop.platform.domains.QueryPlatformResponse;
 import com.zxevpop.platform.service.PlatformService;
 
+import java.util.UUID;
+
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -19,10 +21,10 @@ public class ServiceFactoryTest {
 //        request.setMobilePhone("1234561");
 //        request.setPassword("sss");
 //        manageService.login(request);
+        ServiceFactory.setToken(UUID.randomUUID().toString());
         PlatformService platformService = ServiceFactory.get(PlatformService.class);
         QueryPlatformRequest request = new QueryPlatformRequest();
         request.setPlatformId(1);
         QueryPlatformResponse response = platformService.queryPlatform(request);
-        System.out.println(response);
     }
 }

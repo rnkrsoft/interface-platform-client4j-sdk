@@ -46,7 +46,7 @@ public class ServiceProxy<T> implements InvocationHandler {
         String txNo = null;
         String version = null;
         InterfaceMetadata metadata = ServiceRegister.lookupMetadata(serviceClass.getName(), method.getName());
-        if (metadata == null){
+        if (metadata == null) {
             throw new NullPointerException("not found " + serviceClass.getName() + "." + method.getName());
         }
         txNo = metadata.getTxNo();
@@ -73,25 +73,42 @@ public class ServiceProxy<T> implements InvocationHandler {
                 password = ServiceFactory.getServiceConfigure().getToken();
             }
             if (definition.isFirstSignSecondEncrypt()) {
-                if ("SHA512".equals(definition.getSignAlgorithm())) {
+                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
+
+                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
                     String sign = SHA.SHA512(request.getData() + password);
                     request.setSign(sign);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
-                if ("AES".equals(definition.getEncryptAlgorithm())) {
+                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
+
+                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
                     String data = AES.encrypt(password, request.getData());
                     request.setData(data);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
                 }
             } else {
-                if ("AES".equals(definition.getEncryptAlgorithm())) {
+
+                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
+
+                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
                     String data = AES.encrypt(password, request.getData());
                     request.setData(data);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
                 }
-                if ("SHA512".equals(definition.getSignAlgorithm())) {
+                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
+
+                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
                     String sign = SHA.SHA512(request.getData() + password);
                     request.setSign(sign);
+                }else{
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
             }
-        }else{
+        } else {
             request.setChannel("public");
         }
 
@@ -106,36 +123,50 @@ public class ServiceProxy<T> implements InvocationHandler {
         if (serviceClass != PublishService.class) {
             InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isFirstVerifySecondDecrypt()) {
-                if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
+                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
+
+                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
+                    String sign = SHA.SHA512(response.getData() + password);
                     if (!sign.equals(response.getSign())) {
                         throw new IllegalArgumentException("无效签字");
                     }
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
-                if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.encrypt(password, response.getData());
+
+                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
+
+                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
+                    String data0 = AES.decrypt(password, response.getData());
                     response.setData(data0);
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
                 }
             } else {
+                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
 
-                if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.encrypt(password, response.getData());
+                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
+                    String data0 = AES.decrypt(password, response.getData());
                     response.setData(data0);
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
                 }
-                if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
+                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
+
+                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
+                    String sign = SHA.SHA512(response.getData() + password);
                     if (!sign.equals(response.getSign())) {
                         throw new IllegalArgumentException("无效签字");
                     }
+                } else {
+                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
                 }
             }
         }
         Object businessResponse = null;
-        System.out.println(method.getReturnType());
         try {
             businessResponse = GSON.fromJson(response.getData(), method.getReturnType());
         } catch (Exception e) {
-            //TODO
             throw new IllegalArgumentException("无效的JSON格式");
         }
         return businessResponse;

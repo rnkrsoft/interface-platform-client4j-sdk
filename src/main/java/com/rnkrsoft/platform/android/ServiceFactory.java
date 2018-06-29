@@ -38,6 +38,14 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setChannel(channel);
     }
 
+    /**
+     * 设置TOKEN值
+     * @param token TOKEN值
+     */
+    public static final void setToken(String token){
+        SERVICE_CONFIGURE.setToken(token);
+    }
+
     public static final void init(String... basePackages) {
         List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(basePackages);
         ServiceRegister.initMetadatas(metadatas);
