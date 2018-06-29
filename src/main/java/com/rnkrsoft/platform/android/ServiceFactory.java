@@ -40,7 +40,7 @@ public final class ServiceFactory {
 
     public static final void scan(String... basePackages) {
         List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(basePackages);
-        ServiceRegister.initMetadatas(metadatas);
+        ServiceRegistry.initMetadatas(metadatas);
     }
 
     /**
@@ -51,17 +51,17 @@ public final class ServiceFactory {
      * @return stub实例
      */
     public static final <T> T get(Class<T> serviceClass) {
-        if (ServiceRegister.isEmpty()) {
+        if (ServiceRegistry.isEmpty()) {
             PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
             FetchPublishRequest request = new FetchPublishRequest();
             request.setChannel(SERVICE_CONFIGURE.getChannel());
             FetchPublishResponse response = publishService.fetchPublish(request);
-            ServiceRegister.initDefinitions(response.getInterfaces());
+            ServiceRegistry.initDefinitions(response.getInterfaces());
         }
-        T stub = ServiceRegister.lookup(serviceClass);
+        T stub = ServiceRegistry.lookup(serviceClass);
         if (stub == null) {
             stub = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, serviceClass);
-            ServiceRegister.register(stub);
+            ServiceRegistry.register(stub);
         }
         return stub;
     }

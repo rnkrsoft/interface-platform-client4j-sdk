@@ -4,7 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.rnkrsoft.platform.android.ServiceConfigure;
 import com.rnkrsoft.platform.android.ServiceFactory;
-import com.rnkrsoft.platform.android.ServiceRegister;
+import com.rnkrsoft.platform.android.ServiceRegistry;
 import com.rnkrsoft.platform.android.client.ServiceClient;
 import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
@@ -45,7 +45,7 @@ public class ServiceProxy<T> implements InvocationHandler {
         Object businessRequest = args[0];
         String txNo = null;
         String version = null;
-        InterfaceMetadata metadata = ServiceRegister.lookupMetadata(serviceClass.getName(), method.getName());
+        InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), method.getName());
         if (metadata == null) {
             throw new NullPointerException("not found " + serviceClass.getName() + "." + method.getName());
         }
@@ -68,7 +68,7 @@ public class ServiceProxy<T> implements InvocationHandler {
         String password = "";
         if (serviceClass != PublishService.class) {
             request.setChannel(serviceConfigure.getChannel());
-            InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
+            InterfaceDefinition definition = ServiceRegistry.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isUseTokenAsPassword()) {
                 password = ServiceFactory.getServiceConfigure().getToken();
             }
@@ -121,7 +121,7 @@ public class ServiceProxy<T> implements InvocationHandler {
             throw new NullPointerException("data is null");
         }
         if (serviceClass != PublishService.class) {
-            InterfaceDefinition definition = ServiceRegister.lookupDefinition(request.getTxNo(), request.getVersion());
+            InterfaceDefinition definition = ServiceRegistry.lookupDefinition(request.getTxNo(), request.getVersion());
             if (definition.isFirstVerifySecondDecrypt()) {
                 if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
 
