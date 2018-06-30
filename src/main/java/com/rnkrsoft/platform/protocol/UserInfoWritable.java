@@ -8,7 +8,7 @@ public interface UserInfoWritable {
      * 设置用户号
      * @param userId
      */
-    void setUserId(int userId);
+    void setUserId(String userId);
 
     /**
      * 设置用户名

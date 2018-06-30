@@ -8,7 +8,7 @@ public interface UserInfoReadable {
      * 获取用户号
      * @return
      */
-    int getUserId();
+    String getUserId();
 
     /**
      * 获取用户名
