@@ -16,18 +16,17 @@ public class ServiceFactoryTest {
         ServiceFactory.scan("com.rnkrsoft.platform.demo.service", "com.rnkrsoft.platform.protocol.service");
         DemoService demoService = ServiceFactory.get(DemoService.class);
         DemoRequest request = new DemoRequest();
-        request.setName("xxx");
-//        demoService.demo(request, new Callback<DemoResponse>() {
-//            @Override
-//            public void fail(String code, String desc) {
-//
-//            }
-//
-//            @Override
-//            public void success(DemoResponse response) {
-//
-//            }
-//        });
+        demoService.demo(request, new AsyncHandler<DemoResponse>() {
+            @Override
+            public void fail(String code, String desc) {
+                System.out.println(code + ":" + desc);
+            }
+
+            @Override
+            public void success(DemoResponse response) {
+                System.out.println(response);
+            }
+        });
         DemoResponse response = demoService.demo(request);
     }
 }
