@@ -3,6 +3,7 @@ package com.rnkrsoft.platform.client;
 import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
+import com.rnkrsoft.platform.client.utils.DateUtil;
 import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
 import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
@@ -62,12 +63,23 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setHttpReadTimeoutSecond(httpReadTimeoutSecond);
     }
 
-    public static final void addBasePackage(String...basePackages){
+    public static final void addBasePackage(String... basePackages) {
         SERVICE_CONFIGURE.addBasePackage(basePackages);
     }
+
     public static final void scan() {
         List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
         ServiceRegistry.initMetadatas(metadatas);
+    }
+
+    /**
+     * 刷新地理位置坐标
+     *
+     * @param lat 纬度
+     * @param lng 经度
+     */
+    public static final void refreshLocation(double lat, double lng) {
+        SERVICE_CONFIGURE.refreshLocation(lat, lng);
     }
 
     /**
@@ -89,7 +101,7 @@ public final class ServiceFactory {
                 }
             });
             try {
-                if (!future.get()){
+                if (!future.get()) {
                     throw new IllegalArgumentException("初始化接口平台客户端失败");
                 }
             } catch (InterruptedException e) {
@@ -104,6 +116,10 @@ public final class ServiceFactory {
         if (stub == null) {
             stub = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, serviceClass);
             ServiceRegistry.register(stub);
+        }
+        SERVICE_CONFIGURE.generateSessionId();
+        if (SERVICE_CONFIGURE.isDebug()) {
+            SERVICE_CONFIGURE.log("{} sessionId[{}] get '{}' stub instance ", DateUtil.getDate(), SERVICE_CONFIGURE.getSessionId(), serviceClass);
         }
         return stub;
     }

@@ -59,8 +59,8 @@ public class SyncInvoker {
         apiRequest.setUic(serviceConfigure.getUic());
         apiRequest.setUid(serviceConfigure.getUid());
         apiRequest.setToken(serviceConfigure.getToken());
-        apiRequest.setLat(1.0D);
-        apiRequest.setLng(1.0D);
+        apiRequest.setLat(serviceConfigure.getLat());
+        apiRequest.setLng(serviceConfigure.getLng());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         apiRequest.setTimestamp(dateFormat.format(new Date()));
         apiRequest.setData(GSON.toJson(request));

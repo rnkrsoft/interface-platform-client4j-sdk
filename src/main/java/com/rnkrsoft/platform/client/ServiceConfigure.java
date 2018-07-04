@@ -1,5 +1,7 @@
 package com.rnkrsoft.platform.client;
 
+import com.rnkrsoft.platform.client.utils.MessageFormatter;
+
 import java.util.*;
 
 /**
@@ -28,6 +30,10 @@ public final class ServiceConfigure {
      */
     String token;
     /**
+     * 会话号
+     */
+    String sessionId;
+    /**
      * 通信模式
      */
     String schema = "http";
@@ -55,15 +61,57 @@ public final class ServiceConfigure {
      * HTTP读取超时时间
      */
     int httpReadTimeoutSecond = 30;
+    /**
+     * 纬度
+     */
+    double lat;
+    /**
+     * 经度
+     */
+    double lng;
+    /**
+     * 日志
+     */
+    final List<String> logs = new LinkedList();
+    /**
+     * 调试模式
+     */
+    boolean debug = false;
 
+    /**
+     * 增加基础包路径
+     * @param basePackages 基础包路径
+     */
     public void addBasePackage(String...basePackages){
         if (basePackages.length == 0){
             throw new NullPointerException("basePackage is null!");
         }
         this.basePackages.addAll(Arrays.asList(basePackages));
     }
+
+    /**
+     * 获取基础包路径
+     * @return 基础包路径
+     */
     public Set<String> getBasePackages() {
         return Collections.unmodifiableSet(basePackages);
+    }
+
+    /**
+     * 刷新位置坐标
+     * @param lat 纬度
+     * @param lng 经度
+     */
+    public void refreshLocation(double lat, double lng){
+        this.lat = lat;
+        this.lng = lng;
+    }
+    public double getLng() {
+        return lng;
+    }
+
+    public double getLat() {
+        return lat;
     }
 
     public String getChannel() {
@@ -152,5 +200,61 @@ public final class ServiceConfigure {
 
     public void setHttpConnectTimeoutSecond(int httpConnectTimeoutSecond) {
         this.httpConnectTimeoutSecond = httpConnectTimeoutSecond;
+    }
+
+    /**
+     * 获取日志记录
+     * @return
+     */
+    public List<String> getLogs() {
+        return logs;
+    }
+
+    /**
+     * 记录日志
+     * @param format 日志格式
+     * @param args 参数
+     */
+    public void log(String format, Object ... args){
+        String log = MessageFormatter.format(format, args);
+        logs.add(log);
+    }
+
+    /**
+     * 是否为调试模式
+     * @return 调试模式
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * 开启调试模式
+     */
+    public void enableDebug(){
+        this.debug = true;
+    }
+
+    /**
+     * 关闭调试模式
+     */
+    public void disableDebug(){
+        this.debug = false;
+        this.logs.clear();
+    }
+
+    /**
+     * 生成会话号
+     */
+    public void generateSessionId(){
+        this.sessionId = UUID.randomUUID().toString();
+    }
+
+    /**
+     * 获取当前会话号
+     * @return 会话号
+     */
+    public String getSessionId() {
+        return sessionId;
     }
 }

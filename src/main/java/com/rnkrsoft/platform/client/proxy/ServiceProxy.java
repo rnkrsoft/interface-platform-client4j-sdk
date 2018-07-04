@@ -4,6 +4,7 @@ import com.rnkrsoft.platform.client.AsyncHandler;
 import com.rnkrsoft.platform.client.ServiceConfigure;
 import com.rnkrsoft.platform.client.invoker.AsyncInvoker;
 import com.rnkrsoft.platform.client.invoker.SyncInvoker;
+import com.rnkrsoft.platform.client.utils.DateUtil;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -49,6 +50,9 @@ public class ServiceProxy<T> implements InvocationHandler {
             Object request = args[0];
             Class requestClass = method.getParameterTypes()[0];
             Class responseClass = method.getReturnType();
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] sync call {}.{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), serviceClass.getName(), method.getName());
+            }
             return SyncInvoker.sync(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request);
         } else if (args.length == 2) {
             if (THREAD_POOL_EXECUTOR == null){
@@ -60,7 +64,14 @@ public class ServiceProxy<T> implements InvocationHandler {
                 Class requestClass = method.getParameterTypes()[0];
                 ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];
                 Class responseClass = (Class) asyncHandlerClass.getActualTypeArguments()[0];
+                if (serviceConfigure.isDebug()) {
+                    serviceConfigure.log("{} sessionId[{}] async call {}.{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), serviceClass.getName(), method.getName());
+                    serviceConfigure.log("{} sessionId[{}] thread pool corePoolSize:'{}' activeCount:'{}' taskCount:'{}'", DateUtil.getDate(), serviceConfigure.getSessionId(), THREAD_POOL_EXECUTOR.getCorePoolSize(), THREAD_POOL_EXECUTOR.getActiveCount(), THREAD_POOL_EXECUTOR.getTaskCount());
+                }
                 Future future = THREAD_POOL_EXECUTOR.submit(new AsyncInvoker(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request, asyncHandler));
+                if (serviceConfigure.isDebug()) {
+                    serviceConfigure.log("{} sessionId[{}] async submit success ", DateUtil.getDate(), serviceConfigure.getSessionId());
+                }
                 if (method.getReturnType() == Future.class){
                     return future;
                 }else {

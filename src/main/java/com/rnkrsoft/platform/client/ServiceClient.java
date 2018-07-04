@@ -2,6 +2,7 @@ package com.rnkrsoft.platform.client;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.rnkrsoft.platform.client.utils.DateUtil;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
@@ -27,8 +28,9 @@ public class ServiceClient {
                 .useCaches(false)
                 .contentType("application/json;text/plain", "UTF-8");
         String requestJson = GSON.toJson(request);
-//        log.info(url);
-//        log.info(requestJson);
+        if(serviceConfigure.isDebug()){
+            serviceConfigure.log("{} sessionId[{}] call '{}', request '{}' ", DateUtil.getDate(), request.getSessionId(), url, requestJson);
+        }
         try {
             http.send(requestJson);
         } catch (HttpRequest.HttpRequestException e) {
@@ -45,7 +47,9 @@ public class ServiceClient {
         }
         if (http.ok()) {
             String responseJson = http.body("UTF-8");
-//            log.info(responseJson);
+            if(serviceConfigure.isDebug()){
+                serviceConfigure.log("{} sessionId[{}] call '{}' success, response '{}' ", DateUtil.getDate(), request.getSessionId(), url, responseJson);
+            }
             try {
                 response = GSON.fromJson(responseJson, ApiResponse.class);
                 return response;
@@ -55,10 +59,16 @@ public class ServiceClient {
                 return response;
             }
         } else if (http.notFound()) {
+            if(serviceConfigure.isDebug()){
+                serviceConfigure.log("{} sessionId[{}] call '{}' not found", DateUtil.getDate(), request.getSessionId(), url);
+            }
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.FAIL);
             return response;
         } else {
+            if(serviceConfigure.isDebug()){
+                serviceConfigure.log("{} sessionId[{}] call '{}' happens unknown error!", DateUtil.getDate(), request.getSessionId(), url);
+            }
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.FAIL);
             return response;

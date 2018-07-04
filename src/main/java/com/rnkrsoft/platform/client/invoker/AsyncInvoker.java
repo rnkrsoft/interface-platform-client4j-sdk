@@ -5,6 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.rnkrsoft.platform.client.*;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.utils.DateUtil;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
@@ -27,11 +28,29 @@ import java.util.concurrent.Callable;
 public class AsyncInvoker implements Callable<Boolean> {
     final static Gson GSON = new GsonBuilder().serializeNulls().create();
     ServiceConfigure serviceConfigure;
+    /**
+     * 服务接口类
+     */
     Class serviceClass;
+    /**
+     * 方法名
+     */
     String methodName;
+    /**
+     * 请求类对象
+     */
     Class requestClass;
+    /**
+     * 应答类对象
+     */
     Class responseClass;
+    /**
+     * 请求对象
+     */
     Object request;
+    /**
+     * 异步处理器实例
+     */
     AsyncHandler asyncHandler;
 
     public AsyncInvoker(ServiceConfigure serviceConfigure, Class serviceClass, String methodName, Class requestClass, Class responseClass, Object request, AsyncHandler asyncHandler) {
@@ -57,20 +76,22 @@ public class AsyncInvoker implements Callable<Boolean> {
             txNo = metadata.getTxNo();
             version = metadata.getVersion();
         } else {
-            txNo = "000";
+            txNo = "000";//000作为接口发布接口
             version = "1";
+        }
+        if (serviceConfigure.isDebug()) {
+            serviceConfigure.log("{} sessionId[{}] async call txNo:'{}' version:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), txNo, version);
         }
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
         ApiRequest apiRequest = new ApiRequest();
-
         apiRequest.setTxNo(txNo);
         apiRequest.setVersion(version);
         apiRequest.setSessionId(UUID.randomUUID().toString());
         apiRequest.setUic(serviceConfigure.getUic());
         apiRequest.setUid(serviceConfigure.getUid());
         apiRequest.setToken(serviceConfigure.getToken());
-        apiRequest.setLat(1.0D);
-        apiRequest.setLng(1.0D);
+        apiRequest.setLat(serviceConfigure.getLat());
+        apiRequest.setLng(serviceConfigure.getLng());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         apiRequest.setTimestamp(dateFormat.format(new Date()));
         apiRequest.setData(GSON.toJson(request));
@@ -128,14 +149,25 @@ public class AsyncInvoker implements Callable<Boolean> {
         } else {
             apiRequest.setChannel("public");
         }
-
+        if (serviceConfigure.isDebug()) {
+            serviceConfigure.log("{} sessionId[{}] async call ApiRequest:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiRequest);
+        }
         ApiResponse apiResponse = ServiceClient.call(serviceConfigure, url, apiRequest);
+        if (serviceConfigure.isDebug()) {
+            serviceConfigure.log("{} sessionId[{}] async call ApiResponse:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse);
+        }
         if (InterfaceRspCode.valueOfCode(apiResponse.getCode()) != InterfaceRspCode.SUCCESS) {
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] async call result , code:'{}' desc:'{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getCode(), apiResponse.getDesc());
+            }
             asyncHandler.fail(apiResponse.getCode(), apiResponse.getDesc(), "远程服务调用失败");
             return false;
         }
         String data = apiResponse.getData();
         if (data == null || data.isEmpty()) {
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] async call response data is null ", DateUtil.getDate(), serviceConfigure.getSessionId());
+            }
             asyncHandler.fail(InterfaceRspCode.RESPONSE_DATA_IS_NULL, "返回业务数据为空");
             return false;
         }
@@ -198,9 +230,15 @@ public class AsyncInvoker implements Callable<Boolean> {
                 serviceConfigure.setToken(tokenReadable.getToken());
             }
         } catch (JsonSyntaxException e) {
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] async call response data json syntax is illegal, json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+            }
             asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "无效的通信报文");
             return false;
         } catch (Exception e) {
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] async call response data happens unknown error! json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+            }
             try {
                 asyncHandler.exception(e);
             } catch (Throwable throwable) {
@@ -209,6 +247,9 @@ public class AsyncInvoker implements Callable<Boolean> {
             return false;
         }
         try {
+            if (serviceConfigure.isDebug()) {
+                serviceConfigure.log("{} sessionId[{}] async call success! json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+            }
             asyncHandler.success(response);
             return true;
         } catch (Throwable e) {

@@ -16,7 +16,7 @@ public final class MetadataClassPathScanner {
      * 扫描指定包名下的@ApidocService
      *
      * @param basePackages 包名
-     * @return
+     * @return 元信息列表
      */
     public static List<InterfaceMetadata> scan(Collection<String> basePackages) {
         List<InterfaceMetadata> metadatas = new ArrayList();
