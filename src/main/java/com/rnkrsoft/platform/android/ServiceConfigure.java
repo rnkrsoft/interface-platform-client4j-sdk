@@ -5,14 +5,42 @@ package com.rnkrsoft.platform.android;
  * 服务配置对象
  */
 public final class ServiceConfigure {
+    /**
+     * 渠道号
+     */
     String channel;
+    /**
+     * 用户设备识别码
+     */
     String uic;
+    /**
+     * 用户号
+     */
     String uid;
+    /**
+     * 会话令牌
+     */
     String token;
+    /**
+     * 通信模式
+     */
     String schema = "http";
+    /**
+     * 服务器地址
+     */
     String host = "127.0.0.1";
+    /**
+     * 服务器端口
+     */
     int port = 80;
+    /**
+     * 上下文路径
+     */
     String contextPath = "api";
+    /**
+     * 异步执行线程池大小
+     */
+    int asyncExecuteThreadPoolSize = 5;
 
     public String getChannel() {
         return channel;
@@ -76,5 +104,13 @@ public final class ServiceConfigure {
 
     public void setContextPath(String contextPath) {
         this.contextPath = contextPath;
+    }
+
+    public int getAsyncExecuteThreadPoolSize() {
+        return asyncExecuteThreadPoolSize;
+    }
+
+    public void setAsyncExecuteThreadPoolSize(int asyncExecuteThreadPoolSize) {
+        this.asyncExecuteThreadPoolSize = asyncExecuteThreadPoolSize;
     }
 }

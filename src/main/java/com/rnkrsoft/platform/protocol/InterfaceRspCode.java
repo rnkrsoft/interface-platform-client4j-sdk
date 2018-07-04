@@ -35,6 +35,9 @@ public enum InterfaceRspCode implements EnumStringCode {
     DATA_CONVERT_HAPPENS_ERROR("026","数据转换发生错误"),
     DATA_CONVERT_SERVICE_EXISTS_ERROR("027","数据转换服务存在错误"),
     DEVICE_CAN_NOT_ACCESS_INTERNET("028", "设备不能访问互联网"),
+    NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM("029", "不支持的加密解密算法"),
+    NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM("030", "不支持的签字验签算法"),
+    INVALID_COMMUNICATION_MESSAGE("031", "无效的通信报文"),
     FAIL("999","错误");
     String code;
     String desc;

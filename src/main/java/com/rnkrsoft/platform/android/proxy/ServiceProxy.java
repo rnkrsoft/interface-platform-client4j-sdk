@@ -1,31 +1,23 @@
 package com.rnkrsoft.platform.android.proxy;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.rnkrsoft.platform.android.AsyncHandler;
 import com.rnkrsoft.platform.android.ServiceConfigure;
-import com.rnkrsoft.platform.android.ServiceFactory;
-import com.rnkrsoft.platform.android.ServiceRegistry;
-import com.rnkrsoft.platform.android.client.ServiceClient;
-import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
-import com.rnkrsoft.platform.protocol.ApiRequest;
-import com.rnkrsoft.platform.protocol.ApiResponse;
-import com.rnkrsoft.platform.protocol.InterfaceRspCode;
-import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
-import com.rnkrsoft.platform.protocol.service.PublishService;
-import com.rnkrsoft.security.AES;
-import com.rnkrsoft.security.SHA;
+import com.rnkrsoft.platform.android.invoker.AsyncInvoker;
+import com.rnkrsoft.platform.android.invoker.SyncInvoker;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.UUID;
+import java.lang.reflect.ParameterizedType;
+import java.util.Arrays;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
  */
 public class ServiceProxy<T> implements InvocationHandler {
-    final static Gson GSON = new GsonBuilder().serializeNulls().create();
+    public static ThreadPoolExecutor THREAD_POOL_EXECUTOR = null;
     /**
      * 服务配置对象
      */
@@ -38,137 +30,35 @@ public class ServiceProxy<T> implements InvocationHandler {
     public ServiceProxy(ServiceConfigure serviceConfigure, Class<T> serviceClass) {
         this.serviceConfigure = serviceConfigure;
         this.serviceClass = serviceClass;
+        if (serviceConfigure.getAsyncExecuteThreadPoolSize() > 0){
+            THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(serviceConfigure.getAsyncExecuteThreadPoolSize(), serviceConfigure.getAsyncExecuteThreadPoolSize(), 200, TimeUnit.MILLISECONDS,  new ArrayBlockingQueue<Runnable>(serviceConfigure.getAsyncExecuteThreadPoolSize()));
+        }
     }
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        Object businessRequest = args[0];
-        String txNo = null;
-        String version = null;
-        InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), method.getName());
-        if (metadata == null) {
-            throw new NullPointerException("not found " + serviceClass.getName() + "." + method.getName());
-        }
-        txNo = metadata.getTxNo();
-        version = metadata.getVersion();
-        String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
-        ApiRequest request = new ApiRequest();
-
-        request.setTxNo(txNo);
-        request.setVersion(version);
-        request.setSessionId(UUID.randomUUID().toString());
-        request.setUic(serviceConfigure.getUic());
-        request.setUid(serviceConfigure.getUid());
-        request.setToken(serviceConfigure.getToken());
-        request.setLat(1.0D);
-        request.setLng(1.0D);
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
-        request.setTimestamp(dateFormat.format(new Date()));
-        request.setData(GSON.toJson(businessRequest));
-        String password = "";
-        if (serviceClass != PublishService.class) {
-            request.setChannel(serviceConfigure.getChannel());
-            InterfaceDefinition definition = ServiceRegistry.lookupDefinition(request.getTxNo(), request.getVersion());
-            if (definition.isUseTokenAsPassword()) {
-                password = ServiceFactory.getServiceConfigure().getToken();
+        if (args.length == 1) {
+            Object request = args[0];
+            Class requestClass = method.getParameterTypes()[0];
+            Class responseClass = method.getReturnType();
+            return SyncInvoker.sync(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request);
+        } else if (args.length == 2) {
+            if (THREAD_POOL_EXECUTOR == null){
+                throw new IllegalArgumentException("不支持异步执行方式");
             }
-            if (definition.isFirstSignSecondEncrypt()) {
-                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
-
-                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
-                    request.setSign(sign);
-                }else{
-                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
-                }
-                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
-
-                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
-                    String data = AES.encrypt(password, request.getData());
-                    request.setData(data);
-                }else{
-                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
-                }
+            if (method.getParameterTypes()[1].isAssignableFrom(AsyncHandler.class)) {
+                Object request = args[0];
+                AsyncHandler asyncHandler = (AsyncHandler) args[1];
+                Class requestClass = method.getParameterTypes()[0];
+                ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];
+                Class responseClass = (Class) asyncHandlerClass.getActualTypeArguments()[0];
+                THREAD_POOL_EXECUTOR.submit(new AsyncInvoker(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request, asyncHandler));
+                return null;
             } else {
-
-                if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
-
-                }else if ("AES".equals(definition.getEncryptAlgorithm())) {
-                    String data = AES.encrypt(password, request.getData());
-                    request.setData(data);
-                }else{
-                    throw new IllegalArgumentException("不支持的算法" + definition.getEncryptAlgorithm());
-                }
-                if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
-
-                }else if ("SHA512".equals(definition.getSignAlgorithm())) {
-                    String sign = SHA.SHA512(request.getData() + password);
-                    request.setSign(sign);
-                }else{
-                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
-                }
+                throw new IllegalArgumentException("无效的接口定义" + Arrays.toString(args));
             }
         } else {
-            request.setChannel("public");
+            throw new IllegalArgumentException("无效的接口定义" + Arrays.toString(args));
         }
-
-        ApiResponse response = ServiceClient.call(url, request);
-        if (InterfaceRspCode.valueOfCode(response.getCode()) != InterfaceRspCode.SUCCESS) {
-            throw new RuntimeException(response.getDesc());
-        }
-        String data = response.getData();
-        if (data == null || data.isEmpty()) {
-            throw new NullPointerException("data is null");
-        }
-        if (serviceClass != PublishService.class) {
-            InterfaceDefinition definition = ServiceRegistry.lookupDefinition(request.getTxNo(), request.getVersion());
-            if (definition.isFirstVerifySecondDecrypt()) {
-                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
-
-                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(response.getData() + password);
-                    if (!sign.equals(response.getSign())) {
-                        throw new IllegalArgumentException("无效签字");
-                    }
-                } else {
-                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
-                }
-
-                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
-
-                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.decrypt(password, response.getData());
-                    response.setData(data0);
-                } else {
-                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
-                }
-            } else {
-                if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
-
-                } else if ("AES".equals(definition.getDecryptAlgorithm())) {
-                    String data0 = AES.decrypt(password, response.getData());
-                    response.setData(data0);
-                } else {
-                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
-                }
-                if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
-
-                } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
-                    String sign = SHA.SHA512(response.getData() + password);
-                    if (!sign.equals(response.getSign())) {
-                        throw new IllegalArgumentException("无效签字");
-                    }
-                } else {
-                    throw new IllegalArgumentException("不支持的算法" + definition.getVerifyAlgorithm());
-                }
-            }
-        }
-        Object businessResponse = null;
-        try {
-            businessResponse = GSON.fromJson(response.getData(), method.getReturnType());
-        } catch (Exception e) {
-            throw new IllegalArgumentException("无效的JSON格式");
-        }
-        return businessResponse;
     }
 }

@@ -18,15 +18,10 @@ public class ServiceFactoryTest {
         DemoRequest request = new DemoRequest();
         demoService.demo(request, new AsyncHandler<DemoResponse>() {
             @Override
-            public void fail(String code, String desc) {
-                System.out.println(code + ":" + desc);
-            }
-
-            @Override
             public void success(DemoResponse response) {
                 System.out.println(response);
             }
         });
-        DemoResponse response = demoService.demo(request);
+//        DemoResponse response = demoService.demo(request);
     }
 }
