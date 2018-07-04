@@ -62,8 +62,11 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setHttpReadTimeoutSecond(httpReadTimeoutSecond);
     }
 
-    public static final void scan(String... basePackages) {
-        List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(basePackages);
+    public static final void addBasePackage(String...basePackages){
+        SERVICE_CONFIGURE.addBasePackage(basePackages);
+    }
+    public static final void scan() {
+        List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
         ServiceRegistry.initMetadatas(metadatas);
     }
 

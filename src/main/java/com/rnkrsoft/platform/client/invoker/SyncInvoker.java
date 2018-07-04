@@ -21,6 +21,7 @@ import java.util.UUID;
 
 /**
  * Created by rnkrsoft.com on 2018/7/4.
+ * 同步执行器
  */
 public class SyncInvoker {
     final static Gson GSON = new GsonBuilder().serializeNulls().create();

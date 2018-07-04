@@ -9,6 +9,7 @@ import java.util.List;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
+ * 元信息扫描器
  */
 public final class MetadataClassPathScanner {
     /**
@@ -17,7 +18,7 @@ public final class MetadataClassPathScanner {
      * @param basePackages 包名
      * @return
      */
-    public static List<InterfaceMetadata> scan(String... basePackages) {
+    public static List<InterfaceMetadata> scan(List<String> basePackages) {
         List<InterfaceMetadata> metadatas = new ArrayList();
         ClassScanner classScanner = new ClassScanner(Thread.currentThread().getContextClassLoader(), true);
         for (String basePackage : basePackages) {

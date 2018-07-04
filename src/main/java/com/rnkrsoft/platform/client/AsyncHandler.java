@@ -9,6 +9,14 @@ import com.rnkrsoft.platform.protocol.InterfaceRspCode;
  */
 public abstract class AsyncHandler<T> {
     /**
+     * 处理异常
+     * @param cause 发生的异常
+     * @throws Throwable 抛出异常
+     */
+    public void exception(Throwable cause) throws Throwable{
+        throw cause;
+    }
+    /**
      *  通信层执行失败
      * @param code 错误码
      * @param desc 错误描述

@@ -13,6 +13,7 @@ import java.util.concurrent.*;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
+ * 服务接口代理
  */
 public class ServiceProxy<T> implements InvocationHandler {
     public static ThreadPoolExecutor THREAD_POOL_EXECUTOR = null;

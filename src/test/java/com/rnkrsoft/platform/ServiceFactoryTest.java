@@ -15,7 +15,8 @@ public class ServiceFactoryTest {
     @org.junit.Test
     public void testGet() throws Exception {
         ServiceFactory.setting("127.0.0.1", 8080, "/api", "test");
-        ServiceFactory.scan("com.rnkrsoft.platform.demo.service", "com.rnkrsoft.platform.protocol.service");
+//        ServiceFactory.addBasePackage("com.rnkrsoft.platform.demo.service");
+        ServiceFactory.scan();
         DemoService demoService = ServiceFactory.get(DemoService.class);
         DemoRequest request = new DemoRequest();
         request.setMobilePhone("18223478223");
@@ -23,9 +24,7 @@ public class ServiceFactoryTest {
         AsyncHandler asyncHandler = new AsyncHandler<DemoResponse>() {
             @Override
             public void fail(String code, String desc, String detail) {
-                System.out.println(Thread.currentThread() + ":" +  code);
-                System.out.println(Thread.currentThread() + ":" +  "--------------------->");
-                System.out.println(Thread.currentThread() + ":" +  desc);
+                System.out.println(Thread.currentThread() + ":--------------------->" +  code + ":" + desc);
             }
 
             @Override

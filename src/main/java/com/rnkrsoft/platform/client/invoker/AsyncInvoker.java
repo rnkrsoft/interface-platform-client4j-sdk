@@ -2,11 +2,13 @@ package com.rnkrsoft.platform.client.invoker;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonSyntaxException;
 import com.rnkrsoft.platform.client.*;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
+import com.rnkrsoft.platform.protocol.TokenReadable;
 import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.security.AES;
@@ -20,6 +22,7 @@ import java.util.concurrent.Callable;
 
 /**
  * Created by rnkrsoft.com on 2018/7/4.
+ * 异步执行器
  */
 public class AsyncInvoker implements Callable<Boolean> {
     final static Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -48,7 +51,8 @@ public class AsyncInvoker implements Callable<Boolean> {
         if (serviceClass != PublishService.class){
             InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), methodName);
             if (metadata == null) {
-                throw new NullPointerException("not found " + serviceClass.getName() + "." + methodName);
+                asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "");
+                return false;
             }
             txNo = metadata.getTxNo();
             version = metadata.getVersion();
@@ -157,7 +161,8 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String data0 = AES.decrypt(password, apiResponse.getData());
                     apiResponse.setData(data0);
                 } else {
-                    throw new IllegalArgumentException("不支持的算法" + definition.getDecryptAlgorithm());
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    return false;
                 }
             } else {
                 if (definition.getDecryptAlgorithm() == null || definition.getDecryptAlgorithm().isEmpty()) {
@@ -188,15 +193,30 @@ public class AsyncInvoker implements Callable<Boolean> {
         Object response = null;
         try {
             response = GSON.fromJson(apiResponse.getData(), responseClass);
-        } catch (Exception e) {
+            if (response instanceof TokenReadable){//如果有实现Token获取接口，则设置Token值
+                TokenReadable tokenReadable = (TokenReadable)response;
+                serviceConfigure.setToken(tokenReadable.getToken());
+            }
+        } catch (JsonSyntaxException e) {
             asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "");
+            return false;
+        }catch (Exception e){
+            try {
+                asyncHandler.exception(e);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
             return false;
         }
         try {
             asyncHandler.success(response);
             return true;
         }catch (Throwable e){
-            e.printStackTrace();
+            try {
+                asyncHandler.exception(e);
+            } catch (Throwable throwable) {
+                throwable.printStackTrace();
+            }
             return false;
         }
     }

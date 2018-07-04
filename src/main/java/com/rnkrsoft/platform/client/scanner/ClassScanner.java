@@ -16,6 +16,7 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 /**
+ * Created by rnkrsoft.com on 2018/6/27.
  * 类扫描器
  * 不能扫描Java未配置权限的包，例如java.lang不能访问
  */
