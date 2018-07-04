@@ -1,13 +1,9 @@
-package com.rnkrsoft.platform.android.invoker;
+package com.rnkrsoft.platform.client.invoker;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rnkrsoft.platform.android.AsyncHandler;
-import com.rnkrsoft.platform.android.ServiceConfigure;
-import com.rnkrsoft.platform.android.ServiceFactory;
-import com.rnkrsoft.platform.android.ServiceRegistry;
-import com.rnkrsoft.platform.android.client.ServiceClient;
-import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.*;
+import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
@@ -70,7 +66,11 @@ public class AsyncInvoker implements Runnable {
         apiRequest.setData(GSON.toJson(request));
         String password = "";
         apiRequest.setChannel(serviceConfigure.getChannel());
-        InterfaceDefinition definition = ServiceRegistry.lookupDefinition(apiRequest.getTxNo(), apiRequest.getVersion());
+        InterfaceDefinition definition = ServiceRegistry.lookupDefinition(txNo, version);
+        if (definition == null) {
+            asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "");
+            return;
+        }
         if (definition.isUseTokenAsPassword()) {
             password = ServiceFactory.getServiceConfigure().getToken();
         }
@@ -115,13 +115,15 @@ public class AsyncInvoker implements Runnable {
             }
         }
 
-        ApiResponse apiResponse = ServiceClient.call(url, apiRequest);
+        ApiResponse apiResponse = ServiceClient.call(serviceConfigure, url, apiRequest);
         if (InterfaceRspCode.valueOfCode(apiResponse.getCode()) != InterfaceRspCode.SUCCESS) {
-            throw new RuntimeException(apiResponse.getDesc());
+            asyncHandler.fail(apiResponse.getCode(), apiResponse.getDesc(), "");
+            return;
         }
         String data = apiResponse.getData();
         if (data == null || data.isEmpty()) {
-            throw new NullPointerException("data is null");
+            asyncHandler.fail(InterfaceRspCode.RESPONSE_DATA_IS_NULL, "");
+            return;
         }
         if (definition.isFirstVerifySecondDecrypt()) {
             if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
@@ -129,7 +131,8 @@ public class AsyncInvoker implements Runnable {
             } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
                 String sign = SHA.SHA512(apiResponse.getData() + password);
                 if (!sign.equals(apiResponse.getSign())) {
-                    throw new IllegalArgumentException("无效签字");
+                    asyncHandler.fail(InterfaceRspCode.REQUEST_SIGN_ILLEGAL, "");
+                    return;
                 }
             } else {
                 asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
@@ -159,7 +162,10 @@ public class AsyncInvoker implements Runnable {
             } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
                 String sign = SHA.SHA512(apiResponse.getData() + password);
                 if (!sign.equals(apiResponse.getSign())) {
-                    throw new IllegalArgumentException("无效签字");
+                    if (!sign.equals(apiResponse.getSign())) {
+                        asyncHandler.fail(InterfaceRspCode.REQUEST_SIGN_ILLEGAL, "");
+                        return;
+                    }
                 }
             } else {
                 asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
@@ -169,10 +175,14 @@ public class AsyncInvoker implements Runnable {
         Object response = null;
         try {
             response = GSON.fromJson(apiResponse.getData(), responseClass);
-            asyncHandler.success(response);
         } catch (Exception e) {
             asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "");
             return;
+        }
+        try {
+            asyncHandler.success(response);
+        }catch (Throwable e){
+            e.printStackTrace();
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.android;
+package com.rnkrsoft.platform.client;
 
 
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;

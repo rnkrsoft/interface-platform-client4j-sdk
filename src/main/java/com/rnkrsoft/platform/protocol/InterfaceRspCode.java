@@ -38,6 +38,7 @@ public enum InterfaceRspCode implements EnumStringCode {
     NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM("029", "不支持的加密解密算法"),
     NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM("030", "不支持的签字验签算法"),
     INVALID_COMMUNICATION_MESSAGE("031", "无效的通信报文"),
+    RESPONSE_DATA_IS_NULL("032","应答数据为空"),
     FAIL("999","错误");
     String code;
     String desc;

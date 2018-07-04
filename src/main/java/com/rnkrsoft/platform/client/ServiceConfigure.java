@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.android;
+package com.rnkrsoft.platform.client;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -40,7 +40,15 @@ public final class ServiceConfigure {
     /**
      * 异步执行线程池大小
      */
-    int asyncExecuteThreadPoolSize = 5;
+    int asyncExecuteThreadPoolSize = 20;
+    /**
+     * HTTP链接超时时间
+     */
+    int httpConnectTimeoutSecond = 30;
+    /**
+     * HTTP读取超时时间
+     */
+    int httpReadTimeoutSecond = 30;
 
     public String getChannel() {
         return channel;
@@ -112,5 +120,21 @@ public final class ServiceConfigure {
 
     public void setAsyncExecuteThreadPoolSize(int asyncExecuteThreadPoolSize) {
         this.asyncExecuteThreadPoolSize = asyncExecuteThreadPoolSize;
+    }
+
+    public int getHttpReadTimeoutSecond() {
+        return httpReadTimeoutSecond;
+    }
+
+    public void setHttpReadTimeoutSecond(int httpReadTimeoutSecond) {
+        this.httpReadTimeoutSecond = httpReadTimeoutSecond;
+    }
+
+    public int getHttpConnectTimeoutSecond() {
+        return httpConnectTimeoutSecond;
+    }
+
+    public void setHttpConnectTimeoutSecond(int httpConnectTimeoutSecond) {
+        this.httpConnectTimeoutSecond = httpConnectTimeoutSecond;
     }
 }

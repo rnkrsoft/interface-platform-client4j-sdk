@@ -1,6 +1,6 @@
-package com.rnkrsoft.platform.android.proxy;
+package com.rnkrsoft.platform.client.proxy;
 
-import com.rnkrsoft.platform.android.ServiceConfigure;
+import com.rnkrsoft.platform.client.ServiceConfigure;
 
 import java.lang.reflect.Proxy;
 

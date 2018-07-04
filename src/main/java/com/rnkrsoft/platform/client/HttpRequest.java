@@ -19,7 +19,7 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
  * IN THE SOFTWARE.
  */
-package com.rnkrsoft.platform.android;
+package com.rnkrsoft.platform.client;
 
 import javax.net.ssl.*;
 import java.io.*;

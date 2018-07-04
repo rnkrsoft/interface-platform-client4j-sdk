@@ -1,13 +1,12 @@
-package com.rnkrsoft.platform.android.invoker;
+package com.rnkrsoft.platform.client.invoker;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.rnkrsoft.platform.android.ServiceConfigure;
-import com.rnkrsoft.platform.android.ServiceFactory;
-import com.rnkrsoft.platform.android.ServiceRegistry;
-import com.rnkrsoft.platform.android.client.ServiceClient;
-import com.rnkrsoft.platform.android.scanner.ClassScanner;
-import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.ServiceClient;
+import com.rnkrsoft.platform.client.ServiceConfigure;
+import com.rnkrsoft.platform.client.ServiceFactory;
+import com.rnkrsoft.platform.client.ServiceRegistry;
+import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
@@ -106,7 +105,7 @@ public class SyncInvoker {
             apiRequest.setChannel("public");
         }
 
-        ApiResponse apiResponse = ServiceClient.call(url, apiRequest);
+        ApiResponse apiResponse = ServiceClient.call(serviceConfigure, url, apiRequest);
         if (InterfaceRspCode.valueOfCode(apiResponse.getCode()) != InterfaceRspCode.SUCCESS) {
             throw new RuntimeException(apiResponse.getDesc());
         }

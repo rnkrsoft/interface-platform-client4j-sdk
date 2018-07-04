@@ -1,6 +1,6 @@
-package com.rnkrsoft.platform.android;
+package com.rnkrsoft.platform.client;
 
-import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 
 import java.util.HashMap;

@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.android.scanner;
+package com.rnkrsoft.platform.client.scanner;
 
 import javax.web.doc.annotation.ApidocInterface;
 import javax.web.doc.annotation.ApidocService;

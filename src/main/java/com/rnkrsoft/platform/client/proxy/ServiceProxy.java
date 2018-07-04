@@ -1,15 +1,15 @@
-package com.rnkrsoft.platform.android.proxy;
+package com.rnkrsoft.platform.client.proxy;
 
-import com.rnkrsoft.platform.android.AsyncHandler;
-import com.rnkrsoft.platform.android.ServiceConfigure;
-import com.rnkrsoft.platform.android.invoker.AsyncInvoker;
-import com.rnkrsoft.platform.android.invoker.SyncInvoker;
+import com.rnkrsoft.platform.client.AsyncHandler;
+import com.rnkrsoft.platform.client.ServiceConfigure;
+import com.rnkrsoft.platform.client.invoker.AsyncInvoker;
+import com.rnkrsoft.platform.client.invoker.SyncInvoker;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -31,7 +31,12 @@ public class ServiceProxy<T> implements InvocationHandler {
         this.serviceConfigure = serviceConfigure;
         this.serviceClass = serviceClass;
         if (serviceConfigure.getAsyncExecuteThreadPoolSize() > 0){
-            THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(serviceConfigure.getAsyncExecuteThreadPoolSize(), serviceConfigure.getAsyncExecuteThreadPoolSize(), 200, TimeUnit.MILLISECONDS,  new ArrayBlockingQueue<Runnable>(serviceConfigure.getAsyncExecuteThreadPoolSize()));
+            THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(serviceConfigure.getAsyncExecuteThreadPoolSize(),
+                    serviceConfigure.getAsyncExecuteThreadPoolSize(),
+                    200,
+                    TimeUnit.MILLISECONDS,
+                    new SynchronousQueue<Runnable>(),
+                    new ThreadPoolExecutor.CallerRunsPolicy());
         }
     }
 

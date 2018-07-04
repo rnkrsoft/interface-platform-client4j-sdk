@@ -1,4 +1,4 @@
-package com.rnkrsoft.platform.android.scanner;
+package com.rnkrsoft.platform.client.scanner;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;

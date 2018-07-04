@@ -1,8 +1,8 @@
-package com.rnkrsoft.platform.android;
+package com.rnkrsoft.platform.client;
 
-import com.rnkrsoft.platform.android.proxy.ServiceProxyFactory;
-import com.rnkrsoft.platform.android.scanner.InterfaceMetadata;
-import com.rnkrsoft.platform.android.scanner.MetadataClassPathScanner;
+import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
+import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
 import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
 import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
