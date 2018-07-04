@@ -48,7 +48,7 @@ public class AsyncInvoker implements Callable<Boolean> {
     public Boolean call() throws Exception {
         String txNo = null;
         String version = null;
-        if (serviceClass != PublishService.class){
+        if (serviceClass != PublishService.class) {
             InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), methodName);
             if (metadata == null) {
                 asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "");
@@ -56,7 +56,7 @@ public class AsyncInvoker implements Callable<Boolean> {
             }
             txNo = metadata.getTxNo();
             version = metadata.getVersion();
-        }else{
+        } else {
             txNo = "000";
             version = "1";
         }
@@ -79,7 +79,7 @@ public class AsyncInvoker implements Callable<Boolean> {
             apiRequest.setChannel(serviceConfigure.getChannel());
             InterfaceDefinition definition = ServiceRegistry.lookupDefinition(txNo, version);
             if (definition == null) {
-                asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "");
+                asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "交易码'" + txNo + ":" + version + "'未发现");
                 return false;
             }
             if (definition.isUseTokenAsPassword()) {
@@ -92,7 +92,7 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String sign = SHA.SHA512(apiRequest.getData() + password);
                     apiRequest.setSign(sign);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM, "不支持的签字算法" + definition.getSignAlgorithm());
                     return false;
                 }
                 if (definition.getEncryptAlgorithm() == null || definition.getEncryptAlgorithm().isEmpty()) {
@@ -101,7 +101,7 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String data = AES.encrypt(password, apiRequest.getData());
                     apiRequest.setData(data);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "不支持的加密算法" + definition.getEncryptAlgorithm());
                     return false;
                 }
             } else {
@@ -112,7 +112,7 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String data = AES.encrypt(password, apiRequest.getData());
                     apiRequest.setData(data);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "不支持的加密算法" + definition.getEncryptAlgorithm());
                     return false;
                 }
                 if (definition.getSignAlgorithm() == null || definition.getSignAlgorithm().isEmpty()) {
@@ -121,22 +121,22 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String sign = SHA.SHA512(apiRequest.getData() + password);
                     apiRequest.setSign(sign);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM, "不支持的签字算法" + definition.getSignAlgorithm());
                     return false;
                 }
             }
-        }else{
+        } else {
             apiRequest.setChannel("public");
         }
 
         ApiResponse apiResponse = ServiceClient.call(serviceConfigure, url, apiRequest);
         if (InterfaceRspCode.valueOfCode(apiResponse.getCode()) != InterfaceRspCode.SUCCESS) {
-            asyncHandler.fail(apiResponse.getCode(), apiResponse.getDesc(), "");
+            asyncHandler.fail(apiResponse.getCode(), apiResponse.getDesc(), "远程服务调用失败");
             return false;
         }
         String data = apiResponse.getData();
         if (data == null || data.isEmpty()) {
-            asyncHandler.fail(InterfaceRspCode.RESPONSE_DATA_IS_NULL, "");
+            asyncHandler.fail(InterfaceRspCode.RESPONSE_DATA_IS_NULL, "返回业务数据为空");
             return false;
         }
         if (serviceClass != PublishService.class) {
@@ -147,11 +147,11 @@ public class AsyncInvoker implements Callable<Boolean> {
                 } else if ("SHA512".equals(definition.getVerifyAlgorithm())) {
                     String sign = SHA.SHA512(apiResponse.getData() + password);
                     if (!sign.equals(apiResponse.getSign())) {
-                        asyncHandler.fail(InterfaceRspCode.REQUEST_SIGN_ILLEGAL, "");
+                        asyncHandler.fail(InterfaceRspCode.SIGN_ILLEGAL, "签字信息无效");
                         return false;
                     }
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM, "不支持的校验算法" + definition.getVerifyAlgorithm());
                     return false;
                 }
 
@@ -161,7 +161,7 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String data0 = AES.decrypt(password, apiResponse.getData());
                     apiResponse.setData(data0);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "不支持的解密算法" + definition.getDecryptAlgorithm());
                     return false;
                 }
             } else {
@@ -171,7 +171,7 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String data0 = AES.decrypt(password, apiResponse.getData());
                     apiResponse.setData(data0);
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "不支持的解密算法" + definition.getDecryptAlgorithm());
                     return false;
                 }
                 if (definition.getVerifyAlgorithm() == null || definition.getVerifyAlgorithm().isEmpty()) {
@@ -180,12 +180,12 @@ public class AsyncInvoker implements Callable<Boolean> {
                     String sign = SHA.SHA512(apiResponse.getData() + password);
                     if (!sign.equals(apiResponse.getSign())) {
                         if (!sign.equals(apiResponse.getSign())) {
-                            asyncHandler.fail(InterfaceRspCode.REQUEST_SIGN_ILLEGAL, "");
+                            asyncHandler.fail(InterfaceRspCode.SIGN_ILLEGAL, "签字信息无效");
                             return false;
                         }
                     }
                 } else {
-                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM, "");
+                    asyncHandler.fail(InterfaceRspCode.NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM, "不支持的校验算法" + definition.getVerifyAlgorithm());
                     return false;
                 }
             }
@@ -193,14 +193,14 @@ public class AsyncInvoker implements Callable<Boolean> {
         Object response = null;
         try {
             response = GSON.fromJson(apiResponse.getData(), responseClass);
-            if (response instanceof TokenReadable){//如果有实现Token获取接口，则设置Token值
-                TokenReadable tokenReadable = (TokenReadable)response;
+            if (response instanceof TokenReadable) {//如果有实现Token获取接口，则设置Token值
+                TokenReadable tokenReadable = (TokenReadable) response;
                 serviceConfigure.setToken(tokenReadable.getToken());
             }
         } catch (JsonSyntaxException e) {
-            asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "");
+            asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "无效的通信报文");
             return false;
-        }catch (Exception e){
+        } catch (Exception e) {
             try {
                 asyncHandler.exception(e);
             } catch (Throwable throwable) {
@@ -211,7 +211,7 @@ public class AsyncInvoker implements Callable<Boolean> {
         try {
             asyncHandler.success(response);
             return true;
-        }catch (Throwable e){
+        } catch (Throwable e) {
             try {
                 asyncHandler.exception(e);
             } catch (Throwable throwable) {

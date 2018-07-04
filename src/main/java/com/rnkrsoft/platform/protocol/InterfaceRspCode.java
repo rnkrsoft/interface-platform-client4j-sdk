@@ -9,7 +9,7 @@ public enum InterfaceRspCode implements EnumStringCode {
     SUCCESS("000","成功"),
     PARAM_IS_NULL("001","参数不能为空"),
     TIMESTAMP_ILLEGAL("002","请校准手机系统时间"),
-    REQUEST_SIGN_ILLEGAL("003","请求签字信息无效"),
+    SIGN_ILLEGAL("003","签字信息无效"),
     ACCOUNT_HAS_LOGIN_ON_OTHER_DEVICE("004","您的帐号已在其它设备登录"),
     PARAM_TYPE_NOT_MATCH("005","参数类型不匹配"),
     USER_IS_NOT_LOGIN("006","用户未登录"),
