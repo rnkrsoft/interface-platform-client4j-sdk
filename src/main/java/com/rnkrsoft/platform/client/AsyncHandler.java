@@ -22,9 +22,7 @@ public abstract class AsyncHandler<T> {
      * @param desc 错误描述
      * @param detail 错误详情
      */
-    public void fail(String code, String desc, String detail){
-        throw new RuntimeException(code + ":" + desc + ", cause:" + detail);
-    }
+    public abstract void fail(String code, String desc, String detail);
 
     /**
      * 通信层执行失败

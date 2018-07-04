@@ -23,6 +23,11 @@ public class ServiceProxyTest {
         DemoRequest request = new DemoRequest();
         demoService.login(request, new AsyncHandler<DemoResponse>() {
             @Override
+            public void fail(String code, String desc, String detail) {
+
+            }
+
+            @Override
             public void success(DemoResponse response) {
                 System.out.println(response);
             }

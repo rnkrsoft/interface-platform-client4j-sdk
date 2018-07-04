@@ -4,6 +4,7 @@ import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
 import com.rnkrsoft.platform.client.utils.DateUtil;
+import com.rnkrsoft.platform.client.utils.MessageFormatter;
 import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
 import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
@@ -95,6 +96,11 @@ public final class ServiceFactory {
             FetchPublishRequest request = new FetchPublishRequest();
             request.setChannel(SERVICE_CONFIGURE.getChannel());
             Future<Boolean> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
+                @Override
+                public void fail(String code, String desc, String detail) {
+                    System.out.println(MessageFormatter.format("{}:{}, cause:{}", code, desc, detail));
+                }
+
                 @Override
                 public void success(FetchPublishResponse response) {
                     ServiceRegistry.initDefinitions(response.getInterfaces());
