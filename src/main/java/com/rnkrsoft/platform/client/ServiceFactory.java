@@ -8,19 +8,16 @@ import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
  */
 public final class ServiceFactory {
-   final static ServiceConfigure SERVICE_CONFIGURE = new ServiceConfigure();
-    /**
-     * 初始化
-     */
-    static AtomicBoolean INIT = new AtomicBoolean(false);
+    final static ServiceConfigure SERVICE_CONFIGURE = new ServiceConfigure();
 
-    public static ServiceConfigure getServiceConfigure(){
+    public static ServiceConfigure getServiceConfigure() {
         return SERVICE_CONFIGURE;
     }
 
@@ -38,6 +35,33 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setChannel(channel);
     }
 
+    /**
+     * 设置异步执行线程池大小
+     *
+     * @param size 异步执行线程池大小
+     */
+    public static final void setAsyncExecuteThreadPoolSize(int size) {
+        SERVICE_CONFIGURE.setAsyncExecuteThreadPoolSize(size);
+    }
+
+    /**
+     * 设置HTTP套接字链接超时时间，单位秒
+     *
+     * @param httpConnectTimeoutSecond HTTP套接字链接超时时间
+     */
+    public static final void setHttpConnectTimeoutSecond(int httpConnectTimeoutSecond) {
+        SERVICE_CONFIGURE.setHttpConnectTimeoutSecond(httpConnectTimeoutSecond);
+    }
+
+    /**
+     * 设置HTTP读取超时时间，单位秒
+     *
+     * @param httpReadTimeoutSecond HTTP读取超时时间
+     */
+    public static final void setHttpReadTimeoutSecond(int httpReadTimeoutSecond) {
+        SERVICE_CONFIGURE.setHttpReadTimeoutSecond(httpReadTimeoutSecond);
+    }
+
     public static final void scan(String... basePackages) {
         List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(basePackages);
         ServiceRegistry.initMetadatas(metadatas);
@@ -51,12 +75,27 @@ public final class ServiceFactory {
      * @return stub实例
      */
     public static final <T> T get(Class<T> serviceClass) {
-        if (ServiceRegistry.isEmpty()) {
+        if (!ServiceRegistry.isInit()) {//如果服务未初始化，则调用发布接口获取已发布的接口信息
             PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
             FetchPublishRequest request = new FetchPublishRequest();
             request.setChannel(SERVICE_CONFIGURE.getChannel());
-            FetchPublishResponse response = publishService.fetchPublish(request);
-            ServiceRegistry.initDefinitions(response.getInterfaces());
+            Future<Boolean> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
+                @Override
+                public void success(FetchPublishResponse response) {
+                    ServiceRegistry.initDefinitions(response.getInterfaces());
+                }
+            });
+            try {
+                if (!future.get()){
+                    throw new IllegalArgumentException("初始化接口平台客户端失败");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+                return null;
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+                return null;
+            }
         }
         T stub = ServiceRegistry.lookup(serviceClass);
         if (stub == null) {

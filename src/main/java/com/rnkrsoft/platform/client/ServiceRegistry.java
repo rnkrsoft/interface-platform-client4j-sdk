@@ -6,6 +6,7 @@ import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -14,10 +15,10 @@ public final class ServiceRegistry {
     private final static Map<Class, Object> SERVICE_CACHES = new HashMap();
     private final static Map<String, InterfaceMetadata> INTERFACE_METADATA = new HashMap();
     private final static Map<String, InterfaceDefinition> INTERFACE_DEFINITION = new HashMap();
+    static AtomicBoolean INIT = new AtomicBoolean(false);
 
-
-    public static boolean isEmpty(){
-        return INTERFACE_DEFINITION.isEmpty();
+    public static boolean isInit(){
+        return INIT.get() && INTERFACE_DEFINITION.isEmpty();
     }
     /**
      * 注册服务实现类
@@ -56,5 +57,6 @@ public final class ServiceRegistry {
         for (InterfaceDefinition definition : definitions){
             INTERFACE_DEFINITION.put(definition.getTxNo() + ":" + definition.getVersion(), definition);
         }
+        INIT.set(true);
     }
 }

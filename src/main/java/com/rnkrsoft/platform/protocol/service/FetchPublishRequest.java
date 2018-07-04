@@ -4,7 +4,7 @@ import javax.web.doc.annotation.ApidocElement;
 import java.io.Serializable;
 
 /**
- * Created by woate on 2018/6/27.
+ * Created by rnkrsoft.com on 2018/6/27.
  */
 public class FetchPublishRequest implements Serializable{
     @ApidocElement("通道")

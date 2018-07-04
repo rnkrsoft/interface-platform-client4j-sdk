@@ -10,7 +10,7 @@ import org.junit.Test;
 import java.lang.reflect.Proxy;
 
 /**
- * Created by woate on 2018/7/4.
+ * Created by rnkrsoft.com on 2018/7/4.
  */
 public class ServiceProxyTest {
 

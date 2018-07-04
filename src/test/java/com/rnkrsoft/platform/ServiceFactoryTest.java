@@ -8,7 +8,7 @@ import com.rnkrsoft.platform.demo.service.DemoService;
 
 
 /**
- * Created by woate on 2018/6/27.
+ * Created by rnkrsoft.com on 2018/6/27.
  */
 public class ServiceFactoryTest {
 
@@ -18,6 +18,8 @@ public class ServiceFactoryTest {
         ServiceFactory.scan("com.rnkrsoft.platform.demo.service", "com.rnkrsoft.platform.protocol.service");
         DemoService demoService = ServiceFactory.get(DemoService.class);
         DemoRequest request = new DemoRequest();
+        request.setMobilePhone("18223478223");
+        request.setPassword("pengsong123.");
         AsyncHandler asyncHandler = new AsyncHandler<DemoResponse>() {
             @Override
             public void fail(String code, String desc, String detail) {
@@ -31,10 +33,11 @@ public class ServiceFactoryTest {
                 System.out.println(Thread.currentThread() + ":" + response);
             }
         };
-        for (int i = 0; i < 200; i++) {
+        for (int i = 0; i < 2000; i++) {
             demoService.login(request, asyncHandler);
         }
-//        DemoResponse response = demoService.demo(request);
+//        DemoResponse response = demoService.login(request);
+//        System.out.println(response);
         Thread.sleep(60 *1000L);
     }
 }

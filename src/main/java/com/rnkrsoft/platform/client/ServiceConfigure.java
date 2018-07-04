@@ -40,7 +40,7 @@ public final class ServiceConfigure {
     /**
      * 异步执行线程池大小
      */
-    int asyncExecuteThreadPoolSize = 20;
+    int asyncExecuteThreadPoolSize = 5;
     /**
      * HTTP链接超时时间
      */

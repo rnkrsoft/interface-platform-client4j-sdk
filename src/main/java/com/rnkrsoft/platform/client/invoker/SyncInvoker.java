@@ -20,7 +20,7 @@ import java.util.Date;
 import java.util.UUID;
 
 /**
- * Created by woate on 2018/7/4.
+ * Created by rnkrsoft.com on 2018/7/4.
  */
 public class SyncInvoker {
     final static Gson GSON = new GsonBuilder().serializeNulls().create();
@@ -38,12 +38,17 @@ public class SyncInvoker {
     public static Object sync(ServiceConfigure serviceConfigure, Class serviceClass, String methodName, Class requestClass, Class responseClass, Object request) {
         String txNo = null;
         String version = null;
-        InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), methodName);
-        if (metadata == null) {
-            throw new NullPointerException("not found " + serviceClass.getName() + "." + methodName);
+        if (serviceClass != PublishService.class){
+            InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), methodName);
+            if (metadata == null) {
+                throw new NullPointerException("not found " + serviceClass.getName() + "." + methodName);
+            }
+            txNo = metadata.getTxNo();
+            version = metadata.getVersion();
+        }else{
+            txNo = "000";
+            version = "1";
         }
-        txNo = metadata.getTxNo();
-        version = metadata.getVersion();
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
         ApiRequest apiRequest = new ApiRequest();
 

@@ -9,9 +9,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.util.Arrays;
-import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -30,13 +28,17 @@ public class ServiceProxy<T> implements InvocationHandler {
     public ServiceProxy(ServiceConfigure serviceConfigure, Class<T> serviceClass) {
         this.serviceConfigure = serviceConfigure;
         this.serviceClass = serviceClass;
-        if (serviceConfigure.getAsyncExecuteThreadPoolSize() > 0){
-            THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(serviceConfigure.getAsyncExecuteThreadPoolSize(),
-                    serviceConfigure.getAsyncExecuteThreadPoolSize(),
-                    200,
-                    TimeUnit.MILLISECONDS,
-                    new SynchronousQueue<Runnable>(),
-                    new ThreadPoolExecutor.CallerRunsPolicy());
+        if (serviceConfigure.getAsyncExecuteThreadPoolSize() > 0 && THREAD_POOL_EXECUTOR == null){
+            synchronized (ServiceProxy.class) {
+                if (serviceConfigure.getAsyncExecuteThreadPoolSize() > 0 && THREAD_POOL_EXECUTOR == null) {
+                    THREAD_POOL_EXECUTOR = new ThreadPoolExecutor(serviceConfigure.getAsyncExecuteThreadPoolSize(),
+                            serviceConfigure.getAsyncExecuteThreadPoolSize(),
+                            200,
+                            TimeUnit.MILLISECONDS,
+                            new ArrayBlockingQueue<Runnable>(200),
+                            new ThreadPoolExecutor.DiscardOldestPolicy());
+                }
+            }
         }
     }
 
@@ -49,7 +51,7 @@ public class ServiceProxy<T> implements InvocationHandler {
             return SyncInvoker.sync(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request);
         } else if (args.length == 2) {
             if (THREAD_POOL_EXECUTOR == null){
-                throw new IllegalArgumentException("不支持异步执行方式");
+                throw new IllegalArgumentException("不支持异步执行方式, 请通过ServiceFactory.setAsyncExecuteThreadPoolSize(int size)设置，size为线程池大小");
             }
             if (method.getParameterTypes()[1].isAssignableFrom(AsyncHandler.class)) {
                 Object request = args[0];
@@ -57,8 +59,12 @@ public class ServiceProxy<T> implements InvocationHandler {
                 Class requestClass = method.getParameterTypes()[0];
                 ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];
                 Class responseClass = (Class) asyncHandlerClass.getActualTypeArguments()[0];
-                THREAD_POOL_EXECUTOR.submit(new AsyncInvoker(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request, asyncHandler));
-                return null;
+                Future future = THREAD_POOL_EXECUTOR.submit(new AsyncInvoker(serviceConfigure, serviceClass, method.getName(), requestClass, responseClass, request, asyncHandler));
+                if (method.getReturnType() == Future.class){
+                    return future;
+                }else {
+                    return null;
+                }
             } else {
                 throw new IllegalArgumentException("无效的接口定义" + Arrays.toString(args));
             }
