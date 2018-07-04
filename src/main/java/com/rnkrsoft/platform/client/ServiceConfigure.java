@@ -1,9 +1,6 @@
 package com.rnkrsoft.platform.client;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -13,7 +10,7 @@ public final class ServiceConfigure {
     /**
      * 扫描包
      */
-    final List<String> basePackages = new ArrayList(Arrays.asList("com.rnkrsoft.platform.protocol.service"));
+    final Set<String> basePackages = new HashSet<String>(Arrays.asList("com.rnkrsoft.platform.protocol.service"));
     /**
      * 渠道号
      */
@@ -65,8 +62,8 @@ public final class ServiceConfigure {
         }
         this.basePackages.addAll(Arrays.asList(basePackages));
     }
-    public List<String> getBasePackages() {
-        return Collections.unmodifiableList(basePackages);
+    public Set<String> getBasePackages() {
+        return Collections.unmodifiableSet(basePackages);
     }
 
     public String getChannel() {

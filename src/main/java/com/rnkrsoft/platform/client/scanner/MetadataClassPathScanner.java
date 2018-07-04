@@ -18,7 +18,7 @@ public final class MetadataClassPathScanner {
      * @param basePackages 包名
      * @return
      */
-    public static List<InterfaceMetadata> scan(List<String> basePackages) {
+    public static List<InterfaceMetadata> scan(Collection<String> basePackages) {
         List<InterfaceMetadata> metadatas = new ArrayList();
         ClassScanner classScanner = new ClassScanner(Thread.currentThread().getContextClassLoader(), true);
         for (String basePackage : basePackages) {
