@@ -1,5 +1,6 @@
 package com.rnkrsoft.platform.demo.service;
 
+import com.rnkrsoft.platform.demo.Callback;
 import com.rnkrsoft.platform.demo.domains.DemoRequest;
 import com.rnkrsoft.platform.demo.domains.DemoResponse;
 
@@ -15,4 +16,7 @@ public interface DemoService {
 //    void demo(DemoRequest request, Callback<DemoResponse> callback);
     @ApidocInterface(value = "演示", name = "101", version = "1")
     DemoResponse demo(DemoRequest request);
+
+    @ApidocInterface(value = "演示", name = "101", version = "1")
+    void demo(DemoRequest request, Callback<DemoResponse> callback);
 }
