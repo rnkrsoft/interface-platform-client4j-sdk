@@ -33,11 +33,11 @@ public class ServiceFactoryTest {
                 System.out.println(Thread.currentThread() + ":" + response);
             }
         };
-        for (int i = 0; i < 2000; i++) {
+        for (int i = 0; i < 200; i++) {
             demoService.login(request, asyncHandler);
         }
 //        DemoResponse response = demoService.login(request);
 //        System.out.println(response);
-        Thread.sleep(60 *1000L);
+        Thread.sleep(800 *1000L);
     }
 }
