@@ -66,4 +66,14 @@ public class ApiResponse {
         this.code = Integer.toString(code.getCode());
         this.desc = code.getDesc();
     }
+
+    @Override
+    public String toString() {
+        return "ApiResponse{" +
+                "data='" + data + '\'' +
+                ", sign='" + sign + '\'' +
+                ", code='" + code + '\'' +
+                ", desc='" + desc + '\'' +
+                '}';
+    }
 }

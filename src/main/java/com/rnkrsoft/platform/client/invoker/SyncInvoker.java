@@ -55,7 +55,7 @@ public class SyncInvoker {
 
         apiRequest.setTxNo(txNo);
         apiRequest.setVersion(version);
-        apiRequest.setSessionId(UUID.randomUUID().toString());
+        apiRequest.setSessionId(serviceConfigure.getSessionId());
         apiRequest.setUic(serviceConfigure.getUic());
         apiRequest.setUid(serviceConfigure.getUid());
         apiRequest.setToken(serviceConfigure.getToken());

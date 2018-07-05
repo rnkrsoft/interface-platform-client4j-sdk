@@ -19,7 +19,16 @@ public class ServiceFactoryTest {
         ServiceFactory.addBasePackage("com.rnkrsoft.platform.demo.service");
         ServiceFactory.scan();
         ServiceFactory.getServiceConfigure().enableDebug();
-        DemoService demoService = ServiceFactory.get(DemoService.class);
+        ServiceFactory.getServiceConfigure().setAutoLocate(false);
+        DemoService demoService = null;
+        try {
+            demoService = ServiceFactory.get(DemoService.class);
+        }finally {
+            for (String log : ServiceFactory.getServiceConfigure().getLogs()){
+                System.out.println(log);
+            }
+
+        }
         DemoRequest request = new DemoRequest();
         request.setMobilePhone("18223478223");
         request.setPassword("pengsong123.");

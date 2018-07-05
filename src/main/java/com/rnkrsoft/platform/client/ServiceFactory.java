@@ -17,12 +17,20 @@ import java.util.concurrent.Future;
  * Created by rnkrsoft.com on 2018/6/27.
  */
 public final class ServiceFactory {
-    final static ServiceConfigure SERVICE_CONFIGURE = new ServiceConfigure();
+    private final static ServiceConfigure SERVICE_CONFIGURE = new ServiceConfigure();
+
 
     public static ServiceConfigure getServiceConfigure() {
         return SERVICE_CONFIGURE;
     }
 
+    /**
+     * 注册位置提供者
+     * @param locationProvider 位置提供者
+     */
+    public static void registerLocationProvider(LocationProvider locationProvider){
+        SERVICE_CONFIGURE.setLocationProvider(locationProvider);
+    }
     /**
      * 配置服务地址
      *
@@ -76,11 +84,11 @@ public final class ServiceFactory {
     /**
      * 刷新地理位置坐标
      *
-     * @param lat 纬度
      * @param lng 经度
+     * @param lat 纬度
      */
-    public static final void refreshLocation(double lat, double lng) {
-        SERVICE_CONFIGURE.refreshLocation(lat, lng);
+    public static final void refreshLocation(double lng, double lat) {
+        SERVICE_CONFIGURE.refreshLocation(new LocationProvider.Location(lng, lat));
     }
 
     /**
@@ -92,13 +100,15 @@ public final class ServiceFactory {
      */
     public static final <T> T get(Class<T> serviceClass) {
         if (!ServiceRegistry.isInit()) {//如果服务未初始化，则调用发布接口获取已发布的接口信息
+            SERVICE_CONFIGURE.generateSessionId();
             PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
             FetchPublishRequest request = new FetchPublishRequest();
             request.setChannel(SERVICE_CONFIGURE.getChannel());
             Future<Boolean> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
                 @Override
                 public void fail(String code, String desc, String detail) {
-                    System.out.println(MessageFormatter.format("{}:{}, cause:{}", code, desc, detail));
+                    getServiceConfigure().log("{} sessionId[{}] call publishService.fetchPublish happens error!  {}:{} cause :{} ", DateUtil.getDate(), getServiceConfigure().getSessionId(), code, desc, detail);
+
                 }
 
                 @Override
@@ -108,7 +118,7 @@ public final class ServiceFactory {
             });
             try {
                 if (!future.get()) {
-                    throw new IllegalArgumentException("初始化接口平台客户端失败");
+                    throw new IllegalArgumentException("与接口平台通信失败,请检查网络或者配置是否正确");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

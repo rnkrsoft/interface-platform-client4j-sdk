@@ -50,11 +50,12 @@ public class ApiRequest implements Serializable{
     /**
      * 经度
      */
-    Double lat;
+    Double lng;
     /**
      * 纬度
      */
-    Double lng;
+    Double lat;
+
 
     public String getChannel() {
         return channel;
@@ -151,5 +152,23 @@ public class ApiRequest implements Serializable{
 
     public void setLng(Double lng) {
         this.lng = lng;
+    }
+
+    @Override
+    public String toString() {
+        return "ApiRequest{" +
+                "channel='" + channel + '\'' +
+                ", txNo='" + txNo + '\'' +
+                ", version='" + version + '\'' +
+                ", sessionId='" + sessionId + '\'' +
+                ", uid='" + uid + '\'' +
+                ", uic='" + uic + '\'' +
+                ", data='" + data + '\'' +
+                ", timestamp='" + timestamp + '\'' +
+                ", token='" + token + '\'' +
+                ", sign='" + sign + '\'' +
+                ", lng=" + lng +
+                ", lat=" + lat +
+                '}';
     }
 }

@@ -8,7 +8,8 @@ import java.util.*;
  * Created by rnkrsoft.com on 2018/6/27.
  * 服务配置对象
  */
-public final class ServiceConfigure {
+public final class ServiceConfigure implements LocationStore{
+    LocationProvider locationProvider;
     /**
      * 扫描包
      */
@@ -62,13 +63,9 @@ public final class ServiceConfigure {
      */
     int httpReadTimeoutSecond = 30;
     /**
-     * 纬度
+     * 当前定位位置
      */
-    double lat;
-    /**
-     * 经度
-     */
-    double lng;
+    LocationProvider.Location location = new LocationProvider.Location();
     /**
      * 日志
      */
@@ -77,6 +74,10 @@ public final class ServiceConfigure {
      * 调试模式
      */
     boolean debug = false;
+    /**
+     * 是否自动定位
+     */
+    boolean autoLocate = true;
 
     /**
      * 增加基础包路径
@@ -89,6 +90,12 @@ public final class ServiceConfigure {
         this.basePackages.addAll(Arrays.asList(basePackages));
     }
 
+    public void setLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
+    }
+
+
+
     /**
      * 获取基础包路径
      * @return 基础包路径
@@ -97,22 +104,6 @@ public final class ServiceConfigure {
         return Collections.unmodifiableSet(basePackages);
     }
 
-    /**
-     * 刷新位置坐标
-     * @param lat 纬度
-     * @param lng 经度
-     */
-    public void refreshLocation(double lat, double lng){
-        this.lat = lat;
-        this.lng = lng;
-    }
-    public double getLng() {
-        return lng;
-    }
-
-    public double getLat() {
-        return lat;
-    }
 
     public String getChannel() {
         return channel;
@@ -243,6 +234,14 @@ public final class ServiceConfigure {
         this.logs.clear();
     }
 
+    public boolean isAutoLocate() {
+        return autoLocate;
+    }
+
+    public void setAutoLocate(boolean autoLocate) {
+        this.autoLocate = autoLocate;
+    }
+
     /**
      * 生成会话号
      */
@@ -256,5 +255,32 @@ public final class ServiceConfigure {
      */
     public String getSessionId() {
         return sessionId;
+    }
+
+    /**
+     * 使用位置提供者刷新定位信息
+     */
+    public void refreshLocation(){
+        if (locationProvider != null) {
+            locationProvider.locate(this);
+        }else{
+            throw new NullPointerException("位置提供者未注册");
+        }
+    }
+
+    @Override
+    public void refreshLocation(LocationProvider.Location location) {
+        this.location.setLat(location.getLat());
+        this.location.setLng(location.getLng());
+    }
+    public double getLng(){
+        return location.getLng();
+    }
+
+    public double getLat(){
+        return location.getLat();
+    }
+    public LocationProvider.Location getLocation() {
+        return location;
     }
 }

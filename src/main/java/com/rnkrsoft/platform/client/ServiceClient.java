@@ -27,9 +27,14 @@ public class ServiceClient {
                 .readTimeout(serviceConfigure.getHttpReadTimeoutSecond() * 1000)
                 .useCaches(false)
                 .contentType("application/json;text/plain", "UTF-8");
+        if (serviceConfigure.isAutoLocate()){
+            serviceConfigure.refreshLocation();
+        }
+        request.setLng(serviceConfigure.getLng());
+        request.setLat(serviceConfigure.getLat());
         String requestJson = GSON.toJson(request);
         if(serviceConfigure.isDebug()){
-            serviceConfigure.log("{} sessionId[{}] call '{}', request '{}' ", DateUtil.getDate(), request.getSessionId(), url, requestJson);
+            serviceConfigure.log("{} sessionId[{}] call '{}', request '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), url, requestJson);
         }
         try {
             http.send(requestJson);
