@@ -50,7 +50,6 @@ public final class MetadataClassPathScanner {
      * @return 元信息列表
      */
     public static List<InterfaceMetadata> scan(Collection<String> basePackages) {
-        List<InterfaceMetadata> metadatas = new ArrayList();
         ClassScanner classScanner = new ClassScanner(Thread.currentThread().getContextClassLoader(), true);
         for (String basePackage : basePackages) {
             classScanner.scan(basePackage, new ClassScanner.AnnotatedWithFilter(ApidocService.class));
