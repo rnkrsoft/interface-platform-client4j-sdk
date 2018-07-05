@@ -1,7 +1,8 @@
 package com.rnkrsoft.security;
 
 
-import com.rnkrsoft.base64.Base64;
+
+import com.rnkrsoft.utils.JavaEnvironmentDetector;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
@@ -47,13 +48,14 @@ public class AES {
         byte[] skAsByteArray = sk.getEncoded();
 
         try {
-            byte[] encodeBytes = Base64.encodeBase64(value.getBytes("UTF-8"));
+            byte[] encodeBytes = Base64.encode(value.getBytes("UTF-8"), Base64.DEFAULT);
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec secretKeySpec = new SecretKeySpec(skAsByteArray, "AES");
-            Cipher cipher = Cipher.getInstance(isAndroid() ? AES_CBC_PKCS7PADDING : AES_CBC_PKCS5PADDING);
+            Cipher cipher = Cipher.getInstance(JavaEnvironmentDetector.isAndroid() ? AES_CBC_PKCS7PADDING : AES_CBC_PKCS5PADDING);
             cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv);
             byte[] encrypted = cipher.doFinal(encodeBytes);
-            return Base64.encodeBase64String(encrypted);
+            byte[] bytes= Base64.encode(encrypted, Base64.DEFAULT);
+            return new String(bytes, "UTF-8");
         } catch (Exception ex) {
             ex.printStackTrace();
             return null;
@@ -61,14 +63,7 @@ public class AES {
     }
 
 
-    static boolean isAndroid(){
-        try {
-            Class.forName("android.content.Intent");
-            return true;
-        }catch (ClassNotFoundException e){
-            return false;
-        }
-    }
+
 
     public static String decrypt(String key, String value) {
         return decrypt(key, DEFAULT_IV, value);
@@ -89,13 +84,13 @@ public class AES {
         }
         byte[] skAsByteArray = sk.getEncoded();
         try {
-            byte[] data = Base64.decodeBase64(encrypted);
+            byte[] data = Base64.decode(encrypted, Base64.DEFAULT);
             IvParameterSpec iv = new IvParameterSpec(initVector.getBytes("UTF-8"));
             SecretKeySpec secretKeySpec = new SecretKeySpec(skAsByteArray, "AES");
-            Cipher cipher = Cipher.getInstance(isAndroid() ? AES_CBC_PKCS7PADDING : AES_CBC_PKCS5PADDING);
+            Cipher cipher = Cipher.getInstance(JavaEnvironmentDetector.isAndroid() ? AES_CBC_PKCS7PADDING : AES_CBC_PKCS5PADDING);
             cipher.init(Cipher.DECRYPT_MODE, secretKeySpec, iv);
             byte[] original = cipher.doFinal(data);
-            byte[] output = Base64.decodeBase64(original);
+            byte[] output = Base64.encode(original, Base64.DEFAULT);
             return new String(output, "UTF-8");
         } catch (Exception e) {
             e.printStackTrace();

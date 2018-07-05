@@ -1,6 +1,8 @@
 package com.rnkrsoft.platform.client.scanner;
 
 
+import com.rnkrsoft.utils.JavaEnvironmentDetector;
+
 import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
@@ -148,8 +150,9 @@ public class ClassScanner {
 
     /**
      * 扫描当前类加载器的包路径类
+     *
      * @param _package 包路径
-     * @param filter 过滤器
+     * @param filter   过滤器
      * @return
      */
     public ClassScanner scan(String _package, Filter filter) {
@@ -159,9 +162,9 @@ public class ClassScanner {
     /**
      * 扫描包路径
      *
-     * @param _package 包路径
-     * @param classLoader   类加载器
-     * @param filter   过滤器
+     * @param _package    包路径
+     * @param classLoader 类加载器
+     * @param filter      过滤器
      * @return 集合
      */
     public ClassScanner scan(String _package, ClassLoader classLoader, Filter filter) {
@@ -212,7 +215,7 @@ public class ClassScanner {
                     int _fileName0_idx = name.lastIndexOf('.');
                     String _className0 = _fileName0_idx > -1 ? name.substring(_path0_idx + 1, _fileName0_idx) : _fileName0;
                     String _fileSuffix0 = _fileName0_idx > -1 ? name.substring(_fileName0_idx + 1) : "";
-                    if (_fileSuffix0.equals("class")) {
+                    if (_fileSuffix0.equals("class") || (JavaEnvironmentDetector.isAndroid() ? _fileSuffix0.equals("dex") : false)) {
                         if (scanSubPackage ? _path0.startsWith(_dir) : _path0.equals(_dir)) {
                             String _package0 = _path0.replace('/', '.');
                             try {
@@ -242,7 +245,8 @@ public class ClassScanner {
         }
         File[] files = dir.listFiles(new FileFilter() {
             public boolean accept(File file) {
-                return file.isDirectory() || file.getName().endsWith(".class");
+                //针对安卓平台优化识别dex文件
+                return file.isDirectory() || file.getName().endsWith(".class") || (JavaEnvironmentDetector.isAndroid() ? file.getName().endsWith(".dex") : false);
             }
         });
         for (File file : files) {

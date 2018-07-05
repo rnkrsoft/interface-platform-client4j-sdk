@@ -18,7 +18,7 @@ public class ServiceFactoryTest {
     @org.junit.Test
     public void testGet() throws Exception {
         ServiceFactory.setting("127.0.0.1", 8080, "/api", "test");
-        ServiceFactory.addBasePackage("com.rnkrsoft.platform.demo.service");
+        ServiceFactory.addServiceClass(DemoService.class);
         ServiceFactory.scan();
         ServiceFactory.getServiceConfigure().enableDebug();
         ServiceFactory.getServiceConfigure().setAutoLocate(false);

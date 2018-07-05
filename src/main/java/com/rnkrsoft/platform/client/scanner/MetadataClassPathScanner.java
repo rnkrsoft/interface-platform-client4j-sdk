@@ -15,16 +15,11 @@ public final class MetadataClassPathScanner {
     /**
      * 扫描指定包名下的@ApidocService
      *
-     * @param basePackages 包名
+     * @param classes 服务类集合
      * @return 元信息列表
      */
-    public static List<InterfaceMetadata> scan(Collection<String> basePackages) {
+    public static List<InterfaceMetadata> scanClass(Collection<Class> classes) {
         List<InterfaceMetadata> metadatas = new ArrayList();
-        ClassScanner classScanner = new ClassScanner(Thread.currentThread().getContextClassLoader(), true);
-        for (String basePackage : basePackages) {
-            classScanner.scan(basePackage, new ClassScanner.AnnotatedWithFilter(ApidocService.class));
-        }
-        Collection<Class> classes = classScanner.getClasses();
         for (Class clazz : classes) {
             if (!clazz.isInterface()) {
                 continue;
@@ -46,5 +41,21 @@ public final class MetadataClassPathScanner {
             }
         }
         return metadatas;
+    }
+
+    /**
+     * 扫描指定包名下的@ApidocService
+     *
+     * @param basePackages 包名
+     * @return 元信息列表
+     */
+    public static List<InterfaceMetadata> scan(Collection<String> basePackages) {
+        List<InterfaceMetadata> metadatas = new ArrayList();
+        ClassScanner classScanner = new ClassScanner(Thread.currentThread().getContextClassLoader(), true);
+        for (String basePackage : basePackages) {
+            classScanner.scan(basePackage, new ClassScanner.AnnotatedWithFilter(ApidocService.class));
+        }
+        Collection<Class> classes = classScanner.getClasses();
+        return scanClass(classes);
     }
 }

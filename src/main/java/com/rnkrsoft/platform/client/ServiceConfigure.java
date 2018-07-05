@@ -1,6 +1,9 @@
 package com.rnkrsoft.platform.client;
 
+import com.rnkrsoft.exception.UnsupportedPlatformException;
 import com.rnkrsoft.platform.client.utils.MessageFormatter;
+import com.rnkrsoft.platform.protocol.service.PublishService;
+import com.rnkrsoft.utils.JavaEnvironmentDetector;
 
 import java.util.*;
 
@@ -14,6 +17,10 @@ public final class ServiceConfigure implements LocationStore{
      * 扫描包
      */
     final Set<String> basePackages = new HashSet<String>(Arrays.asList("com.rnkrsoft.platform.protocol.service"));
+    /**
+     * 服务类集合
+     */
+    final Set<Class> serviceClasses = new HashSet<Class>(Arrays.asList(PublishService.class));
     /**
      * 渠道号
      */
@@ -84,10 +91,20 @@ public final class ServiceConfigure implements LocationStore{
      * @param basePackages 基础包路径
      */
     public void addBasePackage(String...basePackages){
+        if (JavaEnvironmentDetector.isAndroid()){
+            throw new UnsupportedPlatformException("not supported android!");
+        }
         if (basePackages.length == 0){
             throw new NullPointerException("basePackage is null!");
         }
         this.basePackages.addAll(Arrays.asList(basePackages));
+    }
+
+    public void addService(Class serviceClass){
+        if (serviceClass == null){
+            throw new NullPointerException("serviceClass is null!");
+        }
+        this.serviceClasses.add(serviceClass);
     }
 
     public void setLocationProvider(LocationProvider locationProvider) {
@@ -101,9 +118,16 @@ public final class ServiceConfigure implements LocationStore{
      * @return 基础包路径
      */
     public Set<String> getBasePackages() {
+        if (JavaEnvironmentDetector.isAndroid()){
+            throw new UnsupportedPlatformException("not supported android!");
+        }
         return Collections.unmodifiableSet(basePackages);
     }
 
+
+    public Set<Class> getServiceClasses() {
+        return Collections.unmodifiableSet(serviceClasses);
+    }
 
     public String getChannel() {
         return channel;

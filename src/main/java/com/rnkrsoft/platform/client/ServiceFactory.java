@@ -1,13 +1,14 @@
 package com.rnkrsoft.platform.client;
 
+import com.rnkrsoft.exception.UnsupportedPlatformException;
 import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
 import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
 import com.rnkrsoft.platform.client.utils.DateUtil;
-import com.rnkrsoft.platform.client.utils.MessageFormatter;
 import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
 import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
+import com.rnkrsoft.utils.JavaEnvironmentDetector;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -73,11 +74,23 @@ public final class ServiceFactory {
     }
 
     public static final void addBasePackage(String... basePackages) {
+        if (JavaEnvironmentDetector.isAndroid()){
+            throw new UnsupportedPlatformException("not supported android!");
+        }
         SERVICE_CONFIGURE.addBasePackage(basePackages);
     }
 
+    public static final void addServiceClass(Class ... serviceClass){
+
+    }
+
     public static final void scan() {
-        List<InterfaceMetadata> metadatas = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
+        List<InterfaceMetadata> metadatas = null;
+        if (JavaEnvironmentDetector.isAndroid()){
+            metadatas = MetadataClassPathScanner.scanClass(SERVICE_CONFIGURE.getServiceClasses());
+        }else {
+            metadatas = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
+        }
         ServiceRegistry.initMetadatas(metadatas);
     }
 
