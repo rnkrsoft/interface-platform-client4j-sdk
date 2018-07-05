@@ -17,7 +17,7 @@ public class ServiceFactoryTest {
 
     @org.junit.Test
     public void testGet() throws Exception {
-        ServiceFactory.setting("127.0.0.1", 8080, "/api", "test");
+        ServiceFactory.setting("192.168.0.200", 8080, "/api", "car_manage");
         ServiceFactory.addServiceClass(DemoService.class);
         ServiceFactory.scan();
         ServiceFactory.getServiceConfigure().enableDebug();
@@ -42,7 +42,7 @@ public class ServiceFactoryTest {
 
             @Override
             public void fail(String code, String desc, String detail) {
-                System.out.println(Thread.currentThread() + ":--------------------->" +  code + ":" + desc);
+                System.out.println(Thread.currentThread() + ":--------------------->" +  code + ":" + desc + detail);
             }
 
             @Override
