@@ -69,7 +69,7 @@ public final class ServiceConfigure implements LocationStore{
     /**
      * 日志
      */
-    final List<String> logs = new LinkedList();
+    final List<String> logs = Collections.synchronizedList(new ArrayList());
     /**
      * 调试模式
      */
@@ -198,7 +198,7 @@ public final class ServiceConfigure implements LocationStore{
      * @return
      */
     public List<String> getLogs() {
-        return logs;
+        return Collections.unmodifiableList(logs);
     }
 
     /**
@@ -229,7 +229,7 @@ public final class ServiceConfigure implements LocationStore{
     /**
      * 关闭调试模式
      */
-    public void disableDebug(){
+    public synchronized void disableDebug(){
         this.debug = false;
         this.logs.clear();
     }

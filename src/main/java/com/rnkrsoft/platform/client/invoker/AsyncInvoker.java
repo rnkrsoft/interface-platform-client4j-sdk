@@ -65,6 +65,7 @@ public class AsyncInvoker implements Callable<Boolean> {
 
     @Override
     public Boolean call() throws Exception {
+        serviceConfigure.generateSessionId();
         String txNo = null;
         String version = null;
         if (serviceClass != PublishService.class) {

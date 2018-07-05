@@ -7,6 +7,8 @@ import com.rnkrsoft.platform.demo.domains.DemoResponse;
 import com.rnkrsoft.platform.demo.service.DemoService;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
 
+import java.util.concurrent.Future;
+
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
@@ -54,9 +56,14 @@ public class ServiceFactoryTest {
             }
         };
         for (int i = 0; i < 200; i++) {
-            demoService.login(request, asyncHandler);
+           Future<Boolean> future = demoService.login(request, asyncHandler);
+            if (i == 180){
+                future.get();
+                for (String log : ServiceFactory.getServiceConfigure().getLogs()){
+                    System.out.println(log);
+                }
+            }
         }
-        System.out.println(ServiceFactory.getServiceConfigure().getLogs());
 //        DemoResponse response = demoService.login(request);
 //        System.out.println(response);
         Thread.sleep(800 *1000L);

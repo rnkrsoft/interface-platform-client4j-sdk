@@ -133,7 +133,6 @@ public final class ServiceFactory {
             stub = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, serviceClass);
             ServiceRegistry.register(stub);
         }
-        SERVICE_CONFIGURE.generateSessionId();
         if (SERVICE_CONFIGURE.isDebug()) {
             SERVICE_CONFIGURE.log("{} sessionId[{}] get '{}' stub instance ", DateUtil.getDate(), SERVICE_CONFIGURE.getSessionId(), serviceClass);
         }

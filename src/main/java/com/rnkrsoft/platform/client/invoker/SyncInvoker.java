@@ -37,6 +37,7 @@ public class SyncInvoker {
      * @return
      */
     public static Object sync(ServiceConfigure serviceConfigure, Class serviceClass, String methodName, Class requestClass, Class responseClass, Object request) {
+        serviceConfigure.generateSessionId();
         String txNo = null;
         String version = null;
         if (serviceClass != PublishService.class){
