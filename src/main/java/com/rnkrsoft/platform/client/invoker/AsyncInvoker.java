@@ -5,7 +5,6 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonSyntaxException;
 import com.rnkrsoft.platform.client.*;
 import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
-import com.rnkrsoft.platform.client.utils.DateUtil;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
@@ -17,7 +16,6 @@ import com.rnkrsoft.security.SHA;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
 import java.util.concurrent.Callable;
 
 
@@ -26,7 +24,14 @@ import java.util.concurrent.Callable;
  * 异步执行器
  */
 public class AsyncInvoker implements Callable<Boolean> {
-    final static Gson GSON = new GsonBuilder().serializeNulls().create();
+    final static Gson GSON = new GsonBuilder().serializeNulls().setDateFormat("yyyyMMddHHmmss").create();
+    /**
+     * 会话号
+     */
+    String sessionId;
+    /**
+     * 服务配置对象
+     */
     ServiceConfigure serviceConfigure;
     /**
      * 服务接口类
@@ -53,7 +58,8 @@ public class AsyncInvoker implements Callable<Boolean> {
      */
     AsyncHandler asyncHandler;
 
-    public AsyncInvoker(ServiceConfigure serviceConfigure, Class serviceClass, String methodName, Class requestClass, Class responseClass, Object request, AsyncHandler asyncHandler) {
+    public AsyncInvoker(String sessionId, ServiceConfigure serviceConfigure, Class serviceClass, String methodName, Class requestClass, Class responseClass, Object request, AsyncHandler asyncHandler) {
+        this.sessionId = sessionId;
         this.serviceConfigure = serviceConfigure;
         this.serviceClass = serviceClass;
         this.methodName = methodName;
@@ -65,7 +71,7 @@ public class AsyncInvoker implements Callable<Boolean> {
 
     @Override
     public Boolean call() throws Exception {
-        serviceConfigure.generateSessionId();
+        serviceConfigure.setSessionId(sessionId);
         String txNo = null;
         String version = null;
         if (serviceClass != PublishService.class) {
@@ -81,7 +87,7 @@ public class AsyncInvoker implements Callable<Boolean> {
             version = "1";
         }
         if (serviceConfigure.isDebug()) {
-            serviceConfigure.log("{} sessionId[{}] async call txNo:'{}' version:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), txNo, version);
+            serviceConfigure.log("async call txNo:'{}' version:{} ", txNo, version);
         }
         String url = serviceConfigure.getSchema() + "://" + serviceConfigure.getHost() + ":" + serviceConfigure.getPort() + (serviceConfigure.getContextPath().startsWith("/") ? serviceConfigure.getContextPath() : ("/" + serviceConfigure.getContextPath()));
         ApiRequest apiRequest = new ApiRequest();
@@ -95,7 +101,8 @@ public class AsyncInvoker implements Callable<Boolean> {
         apiRequest.setLng(serviceConfigure.getLng());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         apiRequest.setTimestamp(dateFormat.format(new Date()));
-        apiRequest.setData(GSON.toJson(request));
+        String plainText = GSON.toJson(request);
+        apiRequest.setData(plainText);
         String password = "";
         if (serviceClass != PublishService.class) {
             apiRequest.setChannel(serviceConfigure.getChannel());
@@ -151,15 +158,15 @@ public class AsyncInvoker implements Callable<Boolean> {
             apiRequest.setChannel("public");
         }
         if (serviceConfigure.isDebug()) {
-            serviceConfigure.log("{} sessionId[{}] async call ApiRequest:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiRequest);
+            serviceConfigure.log("async call ApiRequest:{} ", apiRequest);
         }
         ApiResponse apiResponse = ServiceClient.call(serviceConfigure, url, apiRequest);
         if (serviceConfigure.isDebug()) {
-            serviceConfigure.log("{} sessionId[{}] async call ApiResponse:{} ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse);
+            serviceConfigure.log("async call ApiResponse:{} ",  apiResponse);
         }
         if (InterfaceRspCode.valueOfCode(apiResponse.getCode()) != InterfaceRspCode.SUCCESS) {
             if (serviceConfigure.isDebug()) {
-                serviceConfigure.log("{} sessionId[{}] async call result , code:'{}' desc:'{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getCode(), apiResponse.getDesc());
+                serviceConfigure.log("async call result , code:'{}' desc:'{}' ", apiResponse.getCode(), apiResponse.getDesc());
             }
             asyncHandler.fail(apiResponse.getCode(), apiResponse.getDesc(), "远程服务调用失败");
             return false;
@@ -167,7 +174,7 @@ public class AsyncInvoker implements Callable<Boolean> {
         String data = apiResponse.getData();
         if (data == null || data.isEmpty()) {
             if (serviceConfigure.isDebug()) {
-                serviceConfigure.log("{} sessionId[{}] async call response data is null ", DateUtil.getDate(), serviceConfigure.getSessionId());
+                serviceConfigure.log("async call response data is null ");
             }
             asyncHandler.fail(InterfaceRspCode.RESPONSE_DATA_IS_NULL, "返回业务数据为空");
             return false;
@@ -232,13 +239,13 @@ public class AsyncInvoker implements Callable<Boolean> {
             }
         } catch (JsonSyntaxException e) {
             if (serviceConfigure.isDebug()) {
-                serviceConfigure.log("{} sessionId[{}] async call response data json syntax is illegal, json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+                serviceConfigure.log("async call response data json syntax is illegal, json: '{}' ", apiResponse.getData());
             }
             asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "无效的通信报文");
             return false;
         } catch (Exception e) {
             if (serviceConfigure.isDebug()) {
-                serviceConfigure.log("{} sessionId[{}] async call response data happens unknown error! json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+                serviceConfigure.log("async call response data happens unknown error! json: '{}' ", apiResponse.getData());
             }
             try {
                 asyncHandler.exception(e);
@@ -249,7 +256,7 @@ public class AsyncInvoker implements Callable<Boolean> {
         }
         try {
             if (serviceConfigure.isDebug()) {
-                serviceConfigure.log("{} sessionId[{}] async call success! json: '{}' ", DateUtil.getDate(), serviceConfigure.getSessionId(), apiResponse.getData());
+                serviceConfigure.log("async call success! json: '{}' ", apiResponse.getData());
             }
             asyncHandler.success(response);
             return true;

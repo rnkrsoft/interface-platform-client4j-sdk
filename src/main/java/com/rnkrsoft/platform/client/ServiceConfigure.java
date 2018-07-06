@@ -1,17 +1,23 @@
 package com.rnkrsoft.platform.client;
 
 import com.rnkrsoft.exception.UnsupportedPlatformException;
+import com.rnkrsoft.platform.client.utils.DateUtil;
 import com.rnkrsoft.platform.client.utils.MessageFormatter;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.utils.JavaEnvironmentDetector;
 
 import java.util.*;
+import java.util.logging.Logger;
 
 /**
  * Created by rnkrsoft.com on 2018/6/27.
  * 服务配置对象
  */
 public final class ServiceConfigure implements LocationStore{
+    final static Logger LOG = Logger.getLogger(ServiceClient.class.toString());
+    /**
+     * 位置提供者
+     */
     LocationProvider locationProvider;
     /**
      * 扫描包
@@ -40,7 +46,7 @@ public final class ServiceConfigure implements LocationStore{
     /**
      * 会话号
      */
-    String sessionId;
+    final static ThreadLocal<String> SESSION = new ThreadLocal();
     /**
      * 通信模式
      */
@@ -85,6 +91,10 @@ public final class ServiceConfigure implements LocationStore{
      * 是否自动定位
      */
     boolean autoLocate = true;
+    /**
+     * 啰嗦日志
+     */
+    boolean verboseLog = false;
 
     /**
      * 增加基础包路径
@@ -100,11 +110,14 @@ public final class ServiceConfigure implements LocationStore{
         this.basePackages.addAll(Arrays.asList(basePackages));
     }
 
-    public void addService(Class serviceClass){
+    public void addServiceClasses(Class ... serviceClass){
         if (serviceClass == null){
             throw new NullPointerException("serviceClass is null!");
         }
-        this.serviceClasses.add(serviceClass);
+        if (serviceClass.length == 0){
+            throw new NullPointerException("serviceClass is length 0!");
+        }
+        this.serviceClasses.addAll(Arrays.asList(serviceClass));
     }
 
     public void setLocationProvider(LocationProvider locationProvider) {
@@ -231,7 +244,15 @@ public final class ServiceConfigure implements LocationStore{
      * @param args 参数
      */
     public void log(String format, Object ... args){
-        String log = MessageFormatter.format(format, args);
+        String format0 = "{} sessionId[{}] " + format;
+        Object[] args0 = new Object[args.length + 2];
+        args0[0] = DateUtil.getDate();
+        args0[1] = getSessionId();
+        System.arraycopy(args, 0, args0, 2, args.length);
+        String log = MessageFormatter.format(format0, args0);
+        if (verboseLog){
+            LOG.info(log);
+        }
         logs.add(log);
     }
 
@@ -270,15 +291,19 @@ public final class ServiceConfigure implements LocationStore{
      * 生成会话号
      */
     public void generateSessionId(){
-        this.sessionId = UUID.randomUUID().toString();
+        SESSION.set(UUID.randomUUID().toString());
     }
 
+    public void setSessionId(String sessionId){
+        SESSION.set(sessionId);
+    }
     /**
      * 获取当前会话号
      * @return 会话号
      */
     public String getSessionId() {
-        return sessionId;
+        String session = SESSION.get();
+        return session == null ? "" : session;
     }
 
     /**
@@ -306,5 +331,13 @@ public final class ServiceConfigure implements LocationStore{
     }
     public LocationProvider.Location getLocation() {
         return location;
+    }
+
+    public void enableVerbosLog() {
+        this.verboseLog = true;
+    }
+
+    public void disableVerbosLog() {
+        this.verboseLog = false;
     }
 }

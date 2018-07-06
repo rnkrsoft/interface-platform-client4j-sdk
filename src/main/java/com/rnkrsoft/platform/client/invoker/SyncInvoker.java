@@ -24,7 +24,7 @@ import java.util.UUID;
  * 同步执行器
  */
 public class SyncInvoker {
-    final static Gson GSON = new GsonBuilder().serializeNulls().create();
+    final static Gson GSON = new GsonBuilder().serializeNulls().setDateFormat("yyyyMMddHHmmss").create();
 
     /**
      * 同步调用
@@ -64,7 +64,8 @@ public class SyncInvoker {
         apiRequest.setLng(serviceConfigure.getLng());
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         apiRequest.setTimestamp(dateFormat.format(new Date()));
-        apiRequest.setData(GSON.toJson(request));
+        String plainText = GSON.toJson(request);
+        apiRequest.setData(plainText);
         String password = "";
         if (serviceClass != PublishService.class) {
             apiRequest.setChannel(serviceConfigure.getChannel());

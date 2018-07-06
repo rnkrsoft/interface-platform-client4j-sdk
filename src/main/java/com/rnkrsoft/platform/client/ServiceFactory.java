@@ -80,8 +80,8 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.addBasePackage(basePackages);
     }
 
-    public static final void addServiceClass(Class ... serviceClass){
-
+    public static final void addServiceClasses(Class ... serviceClass){
+        SERVICE_CONFIGURE.addServiceClasses(serviceClass);
     }
 
     public static final void scan() {
@@ -120,7 +120,7 @@ public final class ServiceFactory {
             Future<Boolean> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
                 @Override
                 public void fail(String code, String desc, String detail) {
-                    getServiceConfigure().log("{} sessionId[{}] call publishService.fetchPublish happens error!  {}:{} cause :{} ", DateUtil.getDate(), getServiceConfigure().getSessionId(), code, desc, detail);
+                    getServiceConfigure().log("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
 
                 }
 
@@ -147,7 +147,7 @@ public final class ServiceFactory {
             ServiceRegistry.register(stub);
         }
         if (SERVICE_CONFIGURE.isDebug()) {
-            SERVICE_CONFIGURE.log("{} sessionId[{}] get '{}' stub instance ", DateUtil.getDate(), SERVICE_CONFIGURE.getSessionId(), serviceClass);
+            SERVICE_CONFIGURE.log("get '{}' stub instance ", serviceClass);
         }
         return stub;
     }

@@ -11,6 +11,6 @@ import java.util.concurrent.Future;
  */
 @ApidocService("发布服务")
 public interface PublishService {
-    @ApidocInterface(value = "拉去发布接口", name = "000", version = "1")
+    @ApidocInterface(value = "拉取已发布接口", name = "000", version = "1")
     Future fetchPublish(FetchPublishRequest request, AsyncHandler<FetchPublishResponse> asyncHandler);
 }

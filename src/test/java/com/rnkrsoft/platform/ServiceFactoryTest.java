@@ -18,7 +18,7 @@ public class ServiceFactoryTest {
     @org.junit.Test
     public void testGet() throws Exception {
         ServiceFactory.setting("192.168.0.200", 8080, "/api", "car_manage");
-        ServiceFactory.addServiceClass(DemoService.class);
+        ServiceFactory.addServiceClasses(DemoService.class);
         ServiceFactory.scan();
         ServiceFactory.getServiceConfigure().enableDebug();
         ServiceFactory.getServiceConfigure().setAutoLocate(false);

@@ -39,6 +39,8 @@ public enum InterfaceRspCode implements EnumStringCode {
     NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM("030", "不支持的签字验签算法"),
     INVALID_COMMUNICATION_MESSAGE("031", "无效的通信报文"),
     RESPONSE_DATA_IS_NULL("032","应答数据为空"),
+    SOCKET_PERMISSION_DENIED("033","无网络权限"),
+    INTERFACE_PLATFORM_GATEWAY_NOT_FOUND("034","接口平台网关未发现"),
     FAIL("999","错误");
     String code;
     String desc;
