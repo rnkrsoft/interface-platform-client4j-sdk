@@ -77,7 +77,7 @@ public class AsyncInvoker implements Callable<Boolean> {
         if (serviceClass != PublishService.class) {
             InterfaceMetadata metadata = ServiceRegistry.lookupMetadata(serviceClass.getName(), methodName);
             if (metadata == null) {
-                asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "");
+                asyncHandler.fail(InterfaceRspCode.INTERFACE_NOT_DEFINED, "在本地元信息未发现定义");
                 return false;
             }
             txNo = metadata.getTxNo();

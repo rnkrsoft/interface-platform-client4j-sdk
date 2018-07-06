@@ -10,6 +10,7 @@ import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.utils.JavaEnvironmentDetector;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -85,12 +86,13 @@ public final class ServiceFactory {
     }
 
     public static final void scan() {
-        List<InterfaceMetadata> metadatas = null;
-        if (JavaEnvironmentDetector.isAndroid()){
-            metadatas = MetadataClassPathScanner.scanClass(SERVICE_CONFIGURE.getServiceClasses());
-        }else {
-            metadatas = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
+        List<InterfaceMetadata> metadatas = new ArrayList();
+        if (!JavaEnvironmentDetector.isAndroid()){
+            List<InterfaceMetadata> metadatas0 = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
+            metadatas.addAll(metadatas0);
         }
+        List<InterfaceMetadata> metadatas1 = MetadataClassPathScanner.scanClass(SERVICE_CONFIGURE.getServiceClasses());
+        metadatas.addAll(metadatas1);
         ServiceRegistry.initMetadatas(metadatas);
     }
 
@@ -111,7 +113,7 @@ public final class ServiceFactory {
      * @param <T>
      * @return stub实例
      */
-    public static final <T> T get(Class<T> serviceClass) {
+    public static synchronized final <T> T get(Class<T> serviceClass) {
         if (!ServiceRegistry.isInit()) {//如果服务未初始化，则调用发布接口获取已发布的接口信息
             SERVICE_CONFIGURE.generateSessionId();
             PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
