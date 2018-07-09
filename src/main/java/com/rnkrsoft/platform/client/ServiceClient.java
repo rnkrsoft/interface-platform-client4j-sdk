@@ -88,6 +88,7 @@ public class ServiceClient {
             response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
             return response;
         } else {
+            System.out.println(http.code());
             if(serviceConfigure.isDebug()){
                 serviceConfigure.log("call '{}' happens unknown error!", url);
             }

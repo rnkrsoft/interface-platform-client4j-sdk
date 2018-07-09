@@ -47,6 +47,12 @@ public final class ServiceFactory {
         SERVICE_CONFIGURE.setChannel(channel);
     }
 
+    public static final void ssl(){
+        SERVICE_CONFIGURE.setSchema("https");
+    }
+    public static final void http(){
+        SERVICE_CONFIGURE.setSchema("http");
+    }
     /**
      * 设置异步执行线程池大小
      *
