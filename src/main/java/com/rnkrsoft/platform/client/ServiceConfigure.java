@@ -243,7 +243,7 @@ public final class ServiceConfigure implements LocationStore{
      * @param format 日志格式
      * @param args 参数
      */
-    public void log(String format, Object ... args){
+    public synchronized void log(String format, Object ... args){
         String format0 = "{} sessionId[{}] " + format;
         Object[] args0 = new Object[args.length + 2];
         args0[0] = DateUtil.getDate();
