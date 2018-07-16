@@ -6,9 +6,6 @@ import com.rnkrsoft.platform.demo.domains.DemoRequest;
 import com.rnkrsoft.platform.demo.domains.DemoResponse;
 import com.rnkrsoft.platform.demo.service.DemoService;
 import com.rnkrsoft.platform.protocol.InterfaceRspCode;
-import com.zxevpop.gateway.sgcc.domains.UserRegisterRequest;
-import com.zxevpop.gateway.sgcc.domains.UserRegisterResponse;
-import com.zxevpop.gateway.sgcc.facade.UserFacade;
 
 import java.util.concurrent.Future;
 
@@ -20,34 +17,53 @@ public class ServiceFactoryTest {
 
     @org.junit.Test
     public void testGet() throws Exception {
-        ServiceFactory.setting("localhost", 8081, "/api", "car_manage");
+        ServiceFactory.setting("gateway-car.dev.zxevpop.com", 80, "/api", "car_manage");
 //        ServiceFactory.ssl();
-        ServiceFactory.addServiceClasses(UserFacade.class);
+        ServiceFactory.addServiceClasses(DemoService.class);
         ServiceFactory.scan();
         ServiceFactory.getServiceConfigure().enableDebug();
         ServiceFactory.getServiceConfigure().setAutoLocate(false);
-        UserFacade demoService = null;
+        DemoService demoService = null;
         try {
-            demoService = ServiceFactory.get(UserFacade.class);
+            demoService = ServiceFactory.get(DemoService.class);
         }finally {
             for (String log : ServiceFactory.getServiceConfigure().getLogs()){
                 System.out.println(log);
             }
 
         }
-        UserRegisterRequest registerRequest = new UserRegisterRequest();
-        for (int i = 0; i < 200; i++) {
-           Future<Boolean> future = demoService.userRegister(registerRequest, new AsyncHandler<UserRegisterResponse>() {
-               @Override
-               public void fail(String code, String desc, String detail) {
-                   System.out.println(code + detail);
-               }
+        DemoRequest request = new DemoRequest();
+        request.setMobilePhone("18223478223");
+        request.setPassword("pengsong123.");
+        AsyncHandler asyncHandler = new AsyncHandler<DemoResponse>() {
+            @Override
+            public void exception(Throwable cause) throws Throwable {
+                cause.printStackTrace();
+            }
 
-               @Override
-               public void success(UserRegisterResponse response) {
-                   System.out.println(response);
-               }
-           });
+            @Override
+            public void fail(String code, String desc, String detail) {
+                System.out.println(Thread.currentThread() + ":--------------------->" +  code + ":" + desc + detail);
+            }
+
+            @Override
+            public void fail(InterfaceRspCode rspCode, String detail) {
+                super.fail(rspCode, detail);
+            }
+
+            @Override
+            public void success(DemoResponse response) {
+                System.out.println(Thread.currentThread() + ":" + response);
+            }
+        };
+        for (int i = 0; i < 200; i++) {
+           Future<Boolean> future = demoService.login(request, asyncHandler);
+            if (i == 180){
+                future.get();
+                for (String log : ServiceFactory.getServiceConfigure().getLogs()){
+                    System.out.println(log);
+                }
+            }
         }
 //        DemoResponse response = demoService.login(request);
 //        System.out.println(response);
