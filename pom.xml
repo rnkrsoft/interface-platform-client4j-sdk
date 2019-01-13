@@ -1,31 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-     <groupId>com.rnkrsoft.platform</groupId>
-    <artifactId>interface-platform-client-sdk</artifactId>
-     <version>1.0.0-SNAPSHOT</version>
-    <name>接口平台客户端模块</name>
+    <groupId>com.rnkrsoft.platform</groupId>
+    <artifactId>interface-platform-client4j-sdk</artifactId>
+    <version>1.0.0</version>
+    <name>接口平台客户端 for Java</name>
+    <description>接口平台客户端 for Java</description>
+    <url>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</url>
+    <licenses>
+        <license>
+            <name>RNKRSOFT OPEN SOURCE SOFTWARE LICENSE TERMS 1.0</name>
+            <url>http://www.rnkrsoft.com/open-source-licenses</url>
+        </license>
+    </licenses>
+    <scm>
+        <connection>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</connection>
+        <developerConnection>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</developerConnection>
+        <url>https://www.rnkrsoft.com</url>
+    </scm>
     <properties>
+        <maven.compiler.target>1.6</maven.compiler.target>
+        <maven.compiler.source>1.6</maven.compiler.source>
+        <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jdk.version>1.6</jdk.version>
-        <sourceEncoding>UTF-8</sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
     <dependencies>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.8.2</version>
-            <optional>true</optional>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.rnkrsoft.platform</groupId>
+            <artifactId>interface-platform-protocol</artifactId>
+            <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>lombok</artifactId>
+                    <groupId>org.projectlombok</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>bcprov-jdk16</artifactId>
+                    <groupId>org.bouncycastle</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>commons-codec</artifactId>
+                    <groupId>commons-codec</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>mysql-connector-java</artifactId>
+                    <groupId>mysql</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-api</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-core</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-web</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>log4j-slf4j-impl</artifactId>
+                    <groupId>org.apache.logging.log4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jcl-over-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>jul-to-slf4j</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+                <exclusion>
+                    <artifactId>disruptor</artifactId>
+                    <groupId>com.lmax</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.rnkrsoft.android</groupId>
+            <artifactId>android-stub</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/android-stub-1.0.0-SNAPSHOT.jar</systemPath>
+        </dependency>
     </dependencies>
+    <developers>
+        <developer>
+            <id>rnkrsoft.com</id>
+            <name>rnkrsoft.com</name>
+            <email>devops@rnkrsoft.com</email>
+            <url>http://www.rnkrsoft.com</url>
+            <organization>rnkrsoft.com</organization>
+            <organizationUrl>http://www.rnkrsoft.com</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
     <build>
         <plugins>
             <plugin>
@@ -33,28 +123,116 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.0</version>
                 <configuration>
-                    <source>${jdk.version}</source>
-                    <target>${jdk.version}</target>
-                    <encoding>${sourceEncoding}</encoding>
                 </configuration>
+            </plugin>
+            <!-- Source -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+                <version>2.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar-no-fork</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.16</version>
+                <configuration>
+                    <forkMode>always</forkMode>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>1.4</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createSourcesJar>true</createSourcesJar>
+                            <promoteTransitiveDependencies>true</promoteTransitiveDependencies>
+                            <artifactSet>
+                                <includes>
+                                    <include>com.rnkrsoft.platform:interface-platform-protocol</include>
+                                    <include>com.rnkrsoft.skeleton4j:skeleton4j-api</include>
+                                    <include>com.rnkrsoft.groundwork:groundwork</include>
+                                </includes>
+                            </artifactSet>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
-    <repositories>
-        <repository>
-            <id>rnkrsoft</id>
-            <name>RnKrSoft Repository</name>
-            <url>http://nexus.rnkrsoft.com/content/groups/public/</url>
-        </repository>
-    </repositories>
-    <distributionManagement>
-        <snapshotRepository>
-            <id>rnkrsoft</id>
-            <url>http://nexus.rnkrsoft.com/content/repositories/snapshots/</url>
-        </snapshotRepository>
-        <repository>
-            <id>rnkrsoft</id>
-            <url>http://nexus.rnkrsoft.com/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
+    <profiles>
+        <profile>
+            <id>release</id>
+            <build>
+                <plugins>
+                    <!-- Javadoc -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>2.9.1</version>
+                        <configuration>
+                            <charset>UTF-8</charset>
+                            <encoding>UTF-8</encoding>
+                            <docencoding>UTF-8</docencoding>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>jar</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.2</version>
+                        <configuration>
+                            <useReleaseProfile>false</useReleaseProfile>
+                            <goals>deploy</goals>
+                        </configuration>
+                    </plugin>
+                    <!-- GPG -->
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.5</version>
+                        <executions>
+                            <execution>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+                </snapshotRepository>
+                <repository>
+                    <id>oss</id>
+                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+    </profiles>
 </project>
