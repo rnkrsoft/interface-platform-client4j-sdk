@@ -1,83 +1,167 @@
-/**
- * RNKRSOFT OPEN SOURCE SOFTWARE LICENSE TERMS ver.1
- * - 氡氪网络科技(重庆)有限公司 开源软件许可条款(版本1)
- * 氡氪网络科技(重庆)有限公司 以下简称Rnkrsoft。
- * 这些许可条款是 Rnkrsoft Corporation（或您所在地的其中一个关联公司）与您之间达成的协议。
- * 请阅读本条款。本条款适用于所有Rnkrsoft的开源软件项目，任何个人或企业禁止以下行为：
- * .禁止基于删除开源代码所附带的本协议内容、
- * .以非Rnkrsoft的名义发布Rnkrsoft开源代码或者基于Rnkrsoft开源源代码的二次开发代码到任何公共仓库,
- * 除非上述条款附带有其他条款。如果确实附带其他条款，则附加条款应适用。
- * <p/>
- * 使用该软件，即表示您接受这些条款。如果您不接受这些条款，请不要使用该软件。
- * 如下所述，安装或使用该软件也表示您同意在验证、自动下载和安装某些更新期间传输某些标准计算机信息以便获取基于 Internet 的服务。
- * <p/>
- * 如果您遵守这些许可条款，将拥有以下权利。
- * 1.阅读源代码和文档
- * 如果您是个人用户，则可以在任何个人设备上阅读、分析、研究Rnkrsoft开源源代码。
- * 如果您经营一家企业，则禁止在任何设备上阅读Rnkrsoft开源源代码,禁止分析、禁止研究Rnkrsoft开源源代码。
- * 2.编译源代码
- * 如果您是个人用户，可以对Rnkrsoft开源源代码以及修改后产生的源代码进行编译操作，编译产生的文件依然受本协议约束。
- * 如果您经营一家企业，不可以对Rnkrsoft开源源代码以及修改后产生的源代码进行编译操作。
- * 3.二次开发拓展功能
- * 如果您是个人用户，可以基于Rnkrsoft开源源代码进行二次开发，修改产生的元代码同样受本协议约束。
- * 如果您经营一家企业，不可以对Rnkrsoft开源源代码进行任何二次开发，但是可以通过联系Rnkrsoft进行商业授予权进行修改源代码。
- * 完整协议。本协议以及开源源代码附加协议，共同构成了Rnkrsoft开源软件的完整协议。
- * <p/>
- * 4.免责声明
- * 该软件按“原样”授予许可。 使用本文档的风险由您自己承担。Rnkrsoft 不提供任何明示的担保、保证或条件。
- * 5.版权声明
- * 本协议所对应的软件为 Rnkrsoft 所拥有的自主知识产权，如果基于本软件进行二次开发，在不改变本软件的任何组成部分的情况下的而二次开发源代码所属版权为贵公司所有。
- */
 package com.rnkrsoft.platform.client;
 
+
+import com.rnkrsoft.com.google.gson.Gson;
+import com.rnkrsoft.com.google.gson.GsonBuilder;
+import com.rnkrsoft.platform.client.configure.RemoteConfigureProvider;
+import com.rnkrsoft.platform.client.connector.InterfaceConnector;
 import com.rnkrsoft.platform.client.exception.InitException;
-import com.rnkrsoft.platform.client.exception.UnsupportedPlatformException;
-import com.rnkrsoft.platform.client.log.LogProvider;
+import com.rnkrsoft.platform.client.exception.LocationProviderNotFoundException;
+import com.rnkrsoft.platform.client.logger.Logger;
+import com.rnkrsoft.platform.client.logger.LoggerFactory;
+import com.rnkrsoft.platform.client.logger.LoggerLevel;
 import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
-import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
+import com.rnkrsoft.platform.client.scanner.ClassScanner;
 import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
-import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
-import com.rnkrsoft.platform.protocol.service.FetchPublishResponse;
-import com.rnkrsoft.platform.protocol.service.PublishService;
+import com.rnkrsoft.platform.protocol.service.*;
 import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
+import lombok.Getter;
 
+import javax.web.doc.annotation.ApidocService;
+import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
- * Created by rnkrsoft.com on 2018/6/27.
+ * Created by rnkrsoft.com on 2019/1/17.
+ * 服务工厂，用于获取本地服务接口包装的实例
  */
 public final class ServiceFactory {
-    private final static ServiceConfigure SERVICE_CONFIGURE = new ServiceConfigure();
+    static Logger log = LoggerFactory.getLogger(ServiceFactory.class);
     /**
-     * 定时器
+     * 接口连接器
      */
-    static Timer TIMER;
+    private InterfaceConnector interfaceConnector;
+    /**
+     * 定义信息注册中心
+     */
+    @Getter
+    private final DefinitionRegister definitionRegister = new DefinitionRegister();
+    /**
+     * 元信息信息注册中心
+     */
+    @Getter
+    private final MetadataRegister metadataRegister = new MetadataRegister();
+    /**
+     * 服务注册中心
+     */
+    @Getter
+    private final ServiceRegister serviceRegister = new ServiceRegister();
+    /**
+     * 配置对象
+     */
+    @Getter
+    private final ServiceConfigure serviceConfigure = new ServiceConfigure();
+    /**
+     * 定位信息提供者
+     */
+    private LocationProvider locationProvider;
+    /**
+     * 远程配置提供者
+     */
+    private ConfigureProvider configureProvider = new RemoteConfigureProvider();
 
+    /**
+     * 已注册的服务类
+     */
+    final List<Class> serviceClasses = new ArrayList<Class>();
+    final List<String> basePackages = new ArrayList<String>();
 
-    public static ServiceConfigure getServiceConfigure() {
-        return SERVICE_CONFIGURE;
-    }
+    final Gson gson = new GsonBuilder().create();
 
-    static {
-        String msg = "  _____           _                    __                           _____    _           _      __                                 _____   _____    _  __\n" +
-                " |_   _|         | |                  / _|                         |  __ \\  | |         | |    / _|                               / ____| |  __ \\  | |/ /\n" +
-                "   | |    _ __   | |_    ___   _ __  | |_    __ _    ___    ___    | |__) | | |   __ _  | |_  | |_    ___    _ __   _ __ ___     | (___   | |  | | | ' / \n" +
-                "   | |   | '_ \\  | __|  / _ \\ | '__| |  _|  / _` |  / __|  / _ \\   |  ___/  | |  / _` | | __| |  _|  / _ \\  | '__| | '_ ` _ \\     \\___ \\  | |  | | |  <  \n" +
-                "  _| |_  | | | | | |_  |  __/ | |    | |   | (_| | | (__  |  __/   | |      | | | (_| | | |_  | |   | (_) | | |    | | | | | |    ____) | | |__| | | . \\ \n" +
-                " |_____| |_| |_|  \\__|  \\___| |_|    |_|    \\__,_|  \\___|  \\___|   |_|      |_|  \\__,_|  \\__| |_|    \\___/  |_|    |_| |_| |_|   |_____/  |_____/  |_|\\_\\";
-        System.out.println(msg);
-    }
+    final AtomicBoolean init = new AtomicBoolean(false);
 
-    static class FetchInterfaceMetadataTask extends TimerTask {
-        @Override
-        public void run() {
-            fetchRemoteMetadata(true);
+    /**
+     * 工厂类，不能实例化
+     */
+    public ServiceFactory() {
+        try {
+            InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder()
+                    .channel("public")
+                    .txNo("000")
+                    .version("1")
+                    .interfaceClass(PublishService.class)
+                    .interfaceMethod(PublishService.class.getMethod("fetchPublish", new Class[]{FetchPublishRequest.class, AsyncHandler.class}))
+                    .build();
+            InterfaceDefinition interfaceDefinition = InterfaceDefinition.builder()
+                    .channel("public")
+                    .txNo("000")
+                    .version("1")
+                    .build();
+            InterfaceChannel interfaceChannel = new InterfaceChannel();
+            interfaceChannel.setChannel("public");
+            interfaceChannel.getInterfaces().add(interfaceDefinition);
+            metadataRegister.register(interfaceMetadata);
+            definitionRegister.register(interfaceChannel);
+            serviceConfigure.addChannel("public");
+        } catch (Exception e) {
+
         }
+    }
+
+    public boolean isInit() {
+        return init.get();
+    }
+
+    /**
+     * 设置配置中心
+     *
+     * @param ssl         是否启用HTTPS
+     * @param host        主机地址
+     * @param port        端口号
+     * @param contextPath 上下文路径
+     */
+    public final void settingConfigure(boolean ssl, String host, int port, String contextPath) {
+        log.info("set configure setting, {}://{}:{}/{}", ssl ? "https" : "http", host, port, contextPath);
+        serviceConfigure.configSchema = ssl ? "https" : "http";
+        serviceConfigure.configHost = host;
+        serviceConfigure.configPort = port;
+        serviceConfigure.configContextPath = contextPath;
+    }
+
+    /**
+     * 设置失败后退回配置
+     *
+     * @param channel     通道号
+     * @param ssl         是否启用HTTPS
+     * @param host        主机地址
+     * @param port        端口号
+     * @param contextPath 上下文路径
+     */
+    public final void settingFallback(String channel, boolean ssl, String host, int port, String contextPath) {
+        log.info("set fallback setting, {} --> {}://{}:{}/{}", channel, ssl ? "https" : "http", host, port, contextPath);
+        serviceConfigure.settingFallback(channel, ssl, host, port, contextPath);
+    }
+
+    /**
+     * 设置客户端固定密码
+     *
+     * @param password 密码
+     */
+    public final void setPassword(String password) {
+        serviceConfigure.setPassword(password);
+    }
+
+    /**
+     * 设置客户端秘钥向量
+     *
+     * @param keyVector 向量
+     */
+    public final void setKeyVector(String keyVector) {
+        serviceConfigure.setKeyVector(keyVector);
+    }
+
+    /**
+     * 设置APP版本号
+     * @param appVersion APP版本号
+     */
+    public final void setAppVersion(String appVersion) {
+        serviceConfigure.setAppVersion(appVersion);
     }
 
     /**
@@ -85,183 +169,144 @@ public final class ServiceFactory {
      *
      * @param locationProvider 位置提供者
      */
-    public static void registerLocationProvider(LocationProvider locationProvider) {
-        SERVICE_CONFIGURE.setLocationProvider(locationProvider);
-    }
-
-    public static void registerConfigureProvider(ConfigureProvider configureProvider) {
-        SERVICE_CONFIGURE.setConfigureProvider(configureProvider);
-    }
-
-    public static void registerLogProvider(LogProvider logProvider) {
-        SERVICE_CONFIGURE.setLogProvider(logProvider);
+    public void registerLocationProvider(LocationProvider locationProvider) {
+        this.locationProvider = locationProvider;
     }
 
     /**
-     * 获取配置网关失败退回配置
+     * 注册远程配置提供者
      *
-     * @param channel     通道名
-     * @param ssl         是否安全通信
-     * @param host        主机地址
-     * @param port        端口号
-     * @param contextPath 上下文，默认api
+     * @param configureProvider 配置提供者
      */
-    public static final void settingFallback(String channel, boolean ssl, String host, int port, String contextPath) {
-        if (contextPath == null) {
-            contextPath = "api";
-        }
-        SERVICE_CONFIGURE.settingFallback(channel, ssl ? "https" : "http", host, port, (contextPath.startsWith("/") ? contextPath.substring(1) : contextPath));
+    public void registerConfigureProvider(ConfigureProvider configureProvider) {
+        this.configureProvider = configureProvider;
     }
 
     /**
-     * 设置服务配置信息
+     * 进行初始化,将注册的服务类与接口信息进行绑定
      *
-     * @param ssl         是否安全通信
-     * @param host        主机地址
-     * @param port        端口号
-     * @param contextPath 上下文，默认configure
+     * @return 是否执行失败成功
      */
-    public static final void settingConfigure(boolean ssl, String host, int port, String contextPath) {
-        if (contextPath == null) {
-            contextPath = "configure";
-        }
-        SERVICE_CONFIGURE.setConfigSchema(ssl ? "https" : "http");
-        SERVICE_CONFIGURE.setConfigHost(host);
-        SERVICE_CONFIGURE.setConfigPort(port);
-        SERVICE_CONFIGURE.setConfigContextPath(contextPath.startsWith("/") ? contextPath.substring(1) : contextPath);
-        SERVICE_CONFIGURE.setLocalConfigure(false);
-    }
-    /**
-     * 初始化，调用配置提供者信息获取地址
-     */
-    public static synchronized final void init() {
-        scan();
-        SERVICE_CONFIGURE.init();
-        if (TIMER != null) {
-            TIMER.cancel();
-            TIMER = null;
-        }
+    public synchronized final boolean init() {
+        return init(false, null);
     }
 
     /**
-     * 初始化，调用配置提供者信息获取地址
-     * @param fetchIntervalSeconds 拉取接口信息频率
+     * 进行初始化,将注册的服务类与接口信息进行绑定
      */
-    public static synchronized final void init(int fetchIntervalSeconds) {
-        init();
-        boolean result = fetchRemoteMetadata(true);
-        if (result){
-            TIMER = new Timer("fetchInterfaceMetadataTask", true);
-            if (fetchIntervalSeconds < 1){
-                fetchIntervalSeconds = 60;
+    public synchronized final boolean init(final boolean silent, AsyncHandler asyncHandler) {
+        if (silent && asyncHandler == null) {
+            throw new InitException("静默模式下，必须传入AsyncHandler实例!");
+        }
+        Map<String, Set<InterfaceMetadata>> metadataMap = MetadataClassPathScanner.scan(serviceClasses);
+        serviceConfigure.initChannels(metadataMap.keySet());
+        for (Set<InterfaceMetadata> interfaceMetadataSet : metadataMap.values()) {
+            for (InterfaceMetadata metadata : interfaceMetadataSet) {
+                log.debug("register {}.{}-->{}:{}:{}", metadata.getInterfaceClass(), metadata.getInterfaceMethod(), metadata.getChannel(), metadata.getTxNo(), metadata.getVersion());
+                metadataRegister.register(metadata);
             }
-            TIMER.schedule(new FetchInterfaceMetadataTask(), fetchIntervalSeconds * 1000, fetchIntervalSeconds * 1000);
         }
-    }
-
-    /**
-     * 设置异步执行线程池大小
-     *
-     * @param size 异步执行线程池大小
-     */
-    public static final void setAsyncExecuteThreadPoolSize(int size) {
-        SERVICE_CONFIGURE.setAsyncExecuteThreadPoolSize(size);
-    }
-
-    /**
-     * 设置HTTP套接字链接超时时间，单位秒
-     *
-     * @param httpConnectTimeoutSecond HTTP套接字链接超时时间
-     */
-    public static final void setHttpConnectTimeoutSecond(int httpConnectTimeoutSecond) {
-        SERVICE_CONFIGURE.setHttpConnectTimeoutSecond(httpConnectTimeoutSecond);
-    }
-
-    /**
-     * 设置HTTP读取超时时间，单位秒
-     *
-     * @param httpReadTimeoutSecond HTTP读取超时时间
-     */
-    public static final void setHttpReadTimeoutSecond(int httpReadTimeoutSecond) {
-        SERVICE_CONFIGURE.setHttpReadTimeoutSecond(httpReadTimeoutSecond);
-    }
-
-    public static final void addBasePackage(String... basePackages) {
-        if (JavaEnvironmentDetector.isAndroid()) {
-            throw new UnsupportedPlatformException("not supported android!");
-        }
-        SERVICE_CONFIGURE.addBasePackage(basePackages);
-    }
-
-    public static final void addServiceClasses(Class... serviceClass) {
-        SERVICE_CONFIGURE.addServiceClasses(serviceClass);
-    }
-
-    public static final void scan() {
-        Map<String, Set<InterfaceMetadata>> metadatas = new HashMap();
-        if (!JavaEnvironmentDetector.isAndroid()) {
-            Map<String, Set<InterfaceMetadata>> metadatas0 = MetadataClassPathScanner.scan(SERVICE_CONFIGURE.getBasePackages());
-            metadatas.putAll(metadatas0);
-        }
-        Map<String, Set<InterfaceMetadata>> metadatas1 = MetadataClassPathScanner.scanClass(SERVICE_CONFIGURE.getServiceClasses());
-        for (String channel : metadatas1.keySet()) {
-            Set<InterfaceMetadata> metadatas0_ = metadatas.get(channel);
-            if (metadatas0_ == null) {
-                metadatas0_ = new HashSet();
-                metadatas.put(channel, metadatas0_);
+        if (configureProvider == null) {
+            log.warn("未配置远程配置, 启用本地配置");
+            LoggerFactory.level(LoggerLevel.TRACE);
+            serviceConfigure.setLocalConfigure(true);
+            serviceConfigure.channelAddresses.clear();
+            for (String channel : serviceConfigure.getChannels()) {
+                serviceConfigure.channelAddresses.clear();
+                //如果回退配置不存在这个通道，则不处理
+                if (serviceConfigure.fallbackChannelAddresses.containsKey(channel)) {
+                    serviceConfigure.channelAddresses.put(channel, Arrays.asList(serviceConfigure.fallbackChannelAddresses.get(channel)));
+                }
             }
-            Set<InterfaceMetadata> metadatas1_ = metadatas1.get(channel);
-            metadatas0_.addAll(metadatas1_);
+        } else {
+            if (serviceConfigure.isAutoLocate()) {
+                refreshLocation();
+            }
+            Configure configure = configureProvider.load(serviceConfigure.configSchema, serviceConfigure.configHost, serviceConfigure.configPort, serviceConfigure.configContextPath, serviceConfigure.getChannels(), serviceConfigure.getUic(), serviceConfigure.getDeviceType(), serviceConfigure.getAppVersion(), serviceConfigure.getLat(), serviceConfigure.getLng());
+            if (configure == null) {
+                log.warn("远程配置初始化失败, 启用本地配置");
+                serviceConfigure.setLocalConfigure(true);
+                serviceConfigure.channelAddresses.clear();
+                for (String channel : serviceConfigure.getChannels()) {
+                    if (!serviceConfigure.fallbackChannelAddresses.containsKey(channel)) {
+                        log.error("远程配置初始化失败，并且通道'{}'本地配置无效，请检查配置！", channel);
+                        if (!silent) {
+                            throw new InitException("远程配置初始化失败，并且通道'" + channel + "'本地配置无效，请检查配置！");
+                        } else {
+                            asyncHandler.fail(InterfaceRspCode.INTERFACE_FALLBACK_GATEWAY_IS_NOT_CONFIG, "远程配置初始化失败，并且通道'" + channel + "'本地配置无效，请检查配置！");
+                            return false;
+                        }
+                    }
+                    GatewayAddress gatewayAddress = serviceConfigure.getFallbackGatewayAddresses(channel);
+                    if (gatewayAddress.getSchema() == null || gatewayAddress.getHost() == null || gatewayAddress.getPort() == 0 || gatewayAddress.getContextPath() == null) {
+                        if (!silent) {
+                            throw new InitException("远程配置初始化失败，并且通道'" + channel + "'本地配置并未配置参数值，请检查配置！");
+                        } else {
+                            asyncHandler.fail(InterfaceRspCode.INTERFACE_FALLBACK_GATEWAY_IS_NOT_CONFIG, "远程配置初始化失败，并且通道'" + channel + "'本地配置并未配置参数值，请检查配置！");
+                            return false;
+                        }
+                    }
+                }
+            } else {
+                log.debug("远程配置初始化成功, 启用远程配置");
+                if (configure.isVerboseLog()) {
+                    LoggerFactory.level(LoggerLevel.TRACE);
+                } else if (configure.isDebug()) {
+                    LoggerFactory.level(LoggerLevel.DEBUG);
+                } else {
+                    LoggerFactory.level(LoggerLevel.INFO);
+                }
+                serviceConfigure.setAutoLocate(configure.isAutoLocate());
+                serviceConfigure.setKeyVector(configure.getKeyVector());
+                serviceConfigure.setHttpConnectTimeoutSecond(configure.getHttpConnectTimeoutSecond());
+                serviceConfigure.setHttpReadTimeoutSecond(configure.getHttpReadTimeoutSecond());
+                serviceConfigure.setAutoLocate(configure.isAutoLocate());
+                serviceConfigure.setAsyncExecuteThreadPoolSize(configure.getAsyncExecuteThreadPoolSize());
+                serviceConfigure.setEnv(configure.getEnv());
+                serviceConfigure.setEnvDesc(configure.getEnvDesc());
+                //重设异步线程池
+//                AsyncTask.setAsyncExecuteThreadPoolSize(configure.getAsyncExecuteThreadPoolSize());
+                List<GatewayChannel> channels = configure.getChannels();
+                log.debug("设置通道网关地址");
+                serviceConfigure.channelAddresses.clear();
+                for (GatewayChannel gatewayChannel : channels) {
+                    serviceConfigure.channelAddresses.put(gatewayChannel.getChannel(), gatewayChannel.getGatewayAddresses());
+                }
+                log.debug("初始化线程池");
+            }
         }
-        ServiceRegistry.initMetadataSet(metadatas);
-        List<String> channels = new ArrayList();
-        for (String channel : metadatas.keySet()) {
-            channels.add(channel);
-        }
-        SERVICE_CONFIGURE.getChannels().addAll(channels);
-    }
-
-    /**
-     * 用于服务器端情况下手工拉去接口信息
-     *
-     * @param silent 是否为静默模式
-     */
-    public static synchronized boolean fetchRemoteMetadata(final boolean silent) {
-        if (SERVICE_CONFIGURE.isDebug()) {
-            SERVICE_CONFIGURE.debug("begin to fetch remote metadata...");
-        }
-        PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
+        PublishService publishService = ServiceProxyFactory.newInstance(this, PublishService.class);
         FetchPublishRequest request = new FetchPublishRequest();
-        request.getChannels().addAll(SERVICE_CONFIGURE.getChannels());
+        request.getChannels().addAll(serviceConfigure.getChannels());
         Future<ApiResponse> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
             @Override
             public void fail(String code, String desc, String detail) {
-                getServiceConfigure().debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
+                log.debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
             }
 
             @Override
             public void success(FetchPublishResponse response) {
-                ServiceRegistry.initChannels(response.getChannels());
-                if (SERVICE_CONFIGURE.isDebug()) {
-                    SERVICE_CONFIGURE.debug("finish fetch remote metadata...");
+                for (InterfaceChannel interfaceChannel : response.getChannels()) {
+                    definitionRegister.register(interfaceChannel);
                 }
+                log.debug("finish fetch remote metadata...");
             }
         });
         ApiResponse result = null;
         try {
-            result = future.get(SERVICE_CONFIGURE.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
+            result = future.get(serviceConfigure.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
         } catch (Exception e) {
-            SERVICE_CONFIGURE.error("执行获取接口元信息发生错误");
+            log.error("获取元信息发生错误!");
             if (!silent) {
-                throw new InitException("执行获取接口元信息发生错误");
+                throw new InitException("获取元信息发生错误!");
             } else {
                 return false;
             }
         }
         if (result == null) {
-            SERVICE_CONFIGURE.error("获取发布的接口信息失败!");
+            log.error("获取发布信息失败!");
             if (!silent) {
-                throw new InitException("获取发布的接口信息失败");
+                throw new InitException("获取发布信息失败!");
             } else {
                 return false;
             }
@@ -274,129 +319,142 @@ public final class ServiceFactory {
                     desc = "手机" + result.getDesc();
                 }
             }
-            SERVICE_CONFIGURE.error("{}:{}", code, desc);
+            log.error("{}:{}", code, desc);
             if (!silent) {
-                throw new InitException("获取发布的接口信息发生错误!");
+                throw new InitException(desc);
             } else {
+                asyncHandler.fail(InterfaceRspCode.FAIL.getCode(), desc, desc);
                 return false;
             }
         } else {
-            return true;
-        }
-    }
-
-    public static synchronized boolean fetchRemoteMetadata(final AsyncHandler<Boolean> asyncHandler) {
-        if (SERVICE_CONFIGURE.isDebug()) {
-            SERVICE_CONFIGURE.debug("begin to fetch remote metadata...");
-        }
-        PublishService publishService = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, PublishService.class);
-        FetchPublishRequest request = new FetchPublishRequest();
-        request.getChannels().addAll(SERVICE_CONFIGURE.getChannels());
-        Future<ApiResponse> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
-            @Override
-            public void fail(String code, String desc, String detail) {
-                getServiceConfigure().debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
-            }
-
-            @Override
-            public void success(FetchPublishResponse response) {
-                ServiceRegistry.initChannels(response.getChannels());
-                if (SERVICE_CONFIGURE.isDebug()) {
-                    SERVICE_CONFIGURE.debug("finish fetch remote metadata...");
+            FetchPublishResponse response = gson.fromJson(result.getData(), FetchPublishResponse.class);
+            if (response.isSuccess()) {
+                init.set(true);
+                return true;
+            } else {
+                if (!silent) {
+                    throw new InitException("获取接口元信息失败！");
+                } else {
+                    asyncHandler.fail(InterfaceRspCode.FETCH_INTERFACE_METADATA_IS_FAILURE, "获取接口元信息失败！");
+                    return false;
                 }
             }
-        });
-        ApiResponse result = null;
-        try {
-            result = future.get(SERVICE_CONFIGURE.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
-        } catch (Exception e) {
-            asyncHandler.fail(InterfaceRspCode.FAIL, "执行获取接口元信息发生错误");
-            return false;
-        }
-        if (result == null) {
-            SERVICE_CONFIGURE.error("获取发布的接口信息失败!");
-            asyncHandler.fail(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE, "获取发布的接口信息失败!");
-            return false;
-        }
-        if (InterfaceRspCode.valueOfCode(result.getCode()) != InterfaceRspCode.SUCCESS) {
-            String code = result.getCode();
-            String desc = result.getDesc();
-            if (JavaEnvironmentDetector.isAndroid()) {
-                if (InterfaceRspCode.TIMESTAMP_ILLEGAL.getCode().equals(code)) {
-                    desc = "手机" + result.getDesc();
-                }
-            }
-            SERVICE_CONFIGURE.error("{}:{}", code, desc);
-            asyncHandler.fail(code, desc, "获取发布的接口信息失败!");
-            return false;
-        } else {
-            asyncHandler.success(true);
-            return true;
         }
     }
 
     /**
-     * 刷新地理位置坐标
+     * 增加服务类接口
      *
-     * @param lng 经度
-     * @param lat 纬度
+     * @param serviceClasses 服务类接口数组
      */
-    public static final void refreshLocation(double lng, double lat) {
-        SERVICE_CONFIGURE.refreshLocation(new Location(lng, lat));
+    public final void addServiceClasses(Class... serviceClasses) {
+        if (isInit()) {
+            throw new InitException("已经初始化不允许添加服务");
+        }
+        for (Class serviceClass : serviceClasses) {
+            this.serviceClasses.add(serviceClass);
+            log.debug("add service class {}", serviceClass);
+        }
     }
 
     /**
-     * 获取接口对应的 stub实例，用于安卓设备上的使用
+     * 扫描指定包路径下的服务接口
+     *
+     * @param basePackages 包路径数组
+     */
+    public final void scan(String... basePackages) {
+        scan(true, basePackages);
+    }
+
+    /**
+     * 扫描指定包路径下的服务接口
+     *
+     * @param subPackage   是否扫描子包
+     * @param basePackages 包路径数组
+     */
+    public final void scan(boolean subPackage, String... basePackages) {
+        if (isInit()) {
+            throw new InitException("已经初始化不允许添加服务");
+        }
+        ClassScanner scanner = new ClassScanner(this.getClass().getClassLoader(), subPackage);
+        for (String basePackage : basePackages) {
+            scanner.scan(basePackage, new ClassScanner.AnnotatedWithFilter(ApidocService.class));
+        }
+        serviceClasses.addAll(scanner.getClasses());
+    }
+
+    /**
+     * 将服务接口包装为服务实例，在发生系统异常时回调异步处理器
      *
      * @param serviceClass 服务类接口
      * @param asyncHandler 异步处理器
-     * @param <T>
-     * @return stub实例
+     * @param <T>          服务实例
+     * @return 服务实例
      */
-    public static synchronized final <T> T get(Class<T> serviceClass, final AsyncHandler<Boolean> asyncHandler) {
-        if (asyncHandler == null) {
-            return get(serviceClass);
-        }
-        if (!SERVICE_CONFIGURE.isInit()) {
-            SERVICE_CONFIGURE.error("ServiceFactory 未进行初始化");
-            init();
-            boolean reulst = fetchRemoteMetadata(asyncHandler);
-            if (!reulst){
-                return null;
-            }
-        }
-        T stub = ServiceRegistry.lookup(serviceClass, asyncHandler);
+    public synchronized final <T> T get(Class<T> serviceClass, final AsyncHandler<Boolean> asyncHandler) {
+        T stub = get(serviceClass);
         if (stub == null) {
-            stub = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, serviceClass);
-            ServiceRegistry.register(stub);
-            return stub;
-        }
-        if (SERVICE_CONFIGURE.isDebug()) {
-            SERVICE_CONFIGURE.debug("get '{}' stub instance ", serviceClass);
+            log.error("stub '{}' is not definition!", serviceClass);
+            asyncHandler.fail(InterfaceRspCode.INTERFACE_IS_ILLEGAL, "获取服务失败");
         }
         return stub;
     }
 
     /**
-     * 获取接口对应的 stub实例
+     * 将服务接口包装为服务实例，在发生系统异常时抛出运行时异常
      *
      * @param serviceClass 服务类接口
-     * @param <T>
-     * @return stub实例
+     * @param <T>          服务实例
+     * @return 服务实例
      */
-    public static synchronized final <T> T get(Class<T> serviceClass) {
-        if (!SERVICE_CONFIGURE.isInit()) {
-            SERVICE_CONFIGURE.error("ServiceFactory 未进行初始化");
-            throw new InitException("ServiceFactory 未进行初始化");
-        }
-        T stub = ServiceRegistry.lookup(serviceClass);
+    public synchronized final <T> T get(Class<T> serviceClass) {
+        T stub = serviceRegister.lookup(serviceClass);
         if (stub == null) {
-            stub = ServiceProxyFactory.newInstance(SERVICE_CONFIGURE, serviceClass);
-            ServiceRegistry.register(stub);
+            stub = ServiceProxyFactory.newInstance(this, serviceClass);
+            serviceRegister.register(serviceClass, stub);
         }
-        if (SERVICE_CONFIGURE.isDebug()) {
-            SERVICE_CONFIGURE.debug("get '{}' stub instance ", serviceClass);
-        }
+        log.debug("get '{}' stub instance ", serviceClass);
         return stub;
+    }
+
+    /**
+     * 获取接口连接器实例
+     *
+     * @return 连接器实例
+     * @throws Exception 异常
+     */
+    public InterfaceConnector getInterfaceConnector() {
+        if (interfaceConnector == null) {
+            try {
+                Constructor constructor = serviceConfigure.interfaceConnectorClass.getConstructor(ServiceFactory.class);
+                interfaceConnector = (InterfaceConnector) constructor.newInstance(this);
+            } catch (Exception e) {
+
+            }
+        }
+        log.debug("get Interface Connector {}", serviceConfigure.interfaceConnectorClass);
+        return interfaceConnector;
+    }
+
+    /**
+     * 调用定位信息提供者进行定位
+     */
+    public void refreshLocation() {
+        if (locationProvider == null) {
+            throw new LocationProviderNotFoundException("location provider is not found!");
+        }
+        locationProvider.locate(serviceConfigure);
+    }
+
+    //-----------------------------------服务工厂单例对象-----------------------------------------------
+    private static final ServiceFactory INSTANCE = new ServiceFactory();
+
+    /**
+     * 获取服务工厂的单例对象
+     *
+     * @return 服务工厂单例对象
+     */
+    public final static ServiceFactory getSingleInstance() {
+        return INSTANCE;
     }
 }
