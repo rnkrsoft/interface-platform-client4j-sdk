@@ -8,7 +8,7 @@ import java.io.Serializable;
  * Created by woate on 2019/1/22.
  */
 @Data
-public final class GatewayAddress implements Serializable{
+public final class GatewayAddress implements Serializable {
     String channel;
     boolean ssl;
     String host;

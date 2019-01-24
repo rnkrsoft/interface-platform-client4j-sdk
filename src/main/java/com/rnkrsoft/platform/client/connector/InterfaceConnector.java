@@ -1,7 +1,6 @@
 package com.rnkrsoft.platform.client.connector;
 
 import com.rnkrsoft.platform.client.InterfaceSetting;
-import com.rnkrsoft.platform.client.ServiceConfigure;
 import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;

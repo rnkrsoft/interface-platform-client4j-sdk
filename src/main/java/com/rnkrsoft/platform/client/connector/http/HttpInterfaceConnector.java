@@ -83,12 +83,12 @@ public class HttpInterfaceConnector implements InterfaceConnector {
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
                 return response;
-            }else if (exception instanceof SocketException && exception.getMessage().toLowerCase().contains("permission denied")) {
+            } else if (exception instanceof SocketException && exception.getMessage().toLowerCase().contains("permission denied")) {
                 log.error(MessageFormatter.format("call '{}', 设备无网络权限 ", url), exception);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.SOCKET_PERMISSION_DENIED);
                 return response;
-            }else{
+            } else {
                 log.error(MessageFormatter.format("call '{}', gateway not found ,cause: {}", url), e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
@@ -117,7 +117,7 @@ public class HttpInterfaceConnector implements InterfaceConnector {
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
             return response;
-        } else if (http.serverError()){
+        } else if (http.serverError()) {
             log.debug("call '{}' happens server error!", url);
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_HAPPENS_SERVER_ERROR);

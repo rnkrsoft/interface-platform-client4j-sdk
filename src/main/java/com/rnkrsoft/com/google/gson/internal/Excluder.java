@@ -36,7 +36,7 @@ import java.util.List;
  * supporting version attributes {@link Since} and {@link Until}, modifiers,
  * synthetic fields, anonymous and local classes, inner classes, and fields with
  * the {@link Expose} annotation.
- * <p>
+ * <p/>
  * <p>This class is a type adapter factory; types that are excluded will be
  * adapted to null. It may delegate to another type adapter if only one
  * direction is excluded.

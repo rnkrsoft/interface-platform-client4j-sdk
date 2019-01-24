@@ -19,10 +19,16 @@ public final class DefinitionRegister {
      * 接口定义信息列表
      * 键值存放的 通道名:交易码:版本号
      */
-    static Map<String, InterfaceDefinition> INTERFACE_CHANNEL = new ConcurrentHashMap();
+    final Map<String, InterfaceDefinition> INTERFACE_CHANNEL = new ConcurrentHashMap();
 
-    public DefinitionRegister(){
+    final InterfaceDefinition publicPublishDefinition;
 
+    public DefinitionRegister() {
+        publicPublishDefinition = InterfaceDefinition.builder()
+                .channel("public")
+                .txNo("000")
+                .version("1")
+                .build();
     }
 
     /**
@@ -37,16 +43,21 @@ public final class DefinitionRegister {
         }
     }
 
+    public void clear() {
+        INTERFACE_CHANNEL.clear();
+    }
+
     public InterfaceDefinition lookup(String channel, String txNo, String version) {
         return lookup(channel, txNo, version, false);
     }
+
     /**
      * 根据通道号，交易码和版本号获取接口定义信息
      *
      * @param channel 通道号
      * @param txNo    交易码
      * @param version 版本号
-     * @param silent 是否静默模式
+     * @param silent  是否静默模式
      * @return 接口定义信息
      */
     public InterfaceDefinition lookup(String channel, String txNo, String version, boolean silent) {
@@ -58,6 +69,9 @@ public final class DefinitionRegister {
         }
         if (version == null || version.isEmpty()) {
             version = "1";
+        }
+        if ("public".equals(channel) && "000".equals(txNo) && "1".equals(version)) {
+            return publicPublishDefinition;
         }
         String key = channel + ":" + txNo + ":" + version;
         InterfaceDefinition interfaceDefinition = INTERFACE_CHANNEL.get(key);

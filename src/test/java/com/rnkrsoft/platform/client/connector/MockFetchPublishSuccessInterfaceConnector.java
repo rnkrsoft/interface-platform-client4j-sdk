@@ -15,7 +15,7 @@ import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
 /**
  * Created by rnkrsoft.com on 2019/1/19.
  */
-public class MockFetchPublishSuccessInterfaceConnector implements InterfaceConnector{
+public class MockFetchPublishSuccessInterfaceConnector implements InterfaceConnector {
     ServiceFactory serviceFactory;
     ServiceConfigure serviceConfigure;
 
@@ -28,6 +28,7 @@ public class MockFetchPublishSuccessInterfaceConnector implements InterfaceConne
     public ServiceFactory getServiceFactory() {
         return serviceFactory;
     }
+
     @Override
     public ApiResponse call(ApiRequest request, InterfaceSetting setting) {
         System.out.println("channel:" + request.getChannel());

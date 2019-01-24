@@ -28,6 +28,16 @@ public class InterfacePlatformClientConfigure implements BeanDefinitionRegistryP
     String password = "1234567890";
     @Setter
     String[] basePackages;
+    /**
+     * 一个小时拉取一次远程配置
+     */
+    @Setter
+    int fetchConfigureIntervalSecond = 60 * 60 * 1000;
+    /**
+     * 一个小时拉取一次接口元信息
+     */
+    @Setter
+    int fetchMetadataIntervalSecond = 60 * 60 * 1000;
 
     @Setter
     @Getter
@@ -69,6 +79,8 @@ public class InterfacePlatformClientConfigure implements BeanDefinitionRegistryP
         serviceFactory.scan(basePackages);
         serviceFactory.setKeyVector(keyVector);
         serviceFactory.setPassword(password);
+        serviceFactory.setFetchConfigureIntervalSecond(fetchConfigureIntervalSecond);
+        serviceFactory.setFetchMetadataIntervalSecond(fetchMetadataIntervalSecond);
         serviceFactory.init();
         return serviceFactory;
     }

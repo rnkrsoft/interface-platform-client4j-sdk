@@ -6,14 +6,12 @@ import com.rnkrsoft.platform.client.environment.Environment;
 import com.rnkrsoft.platform.client.environment.EnvironmentDetector;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
-import com.rnkrsoft.platform.protocol.AsyncHandler;
 import com.rnkrsoft.platform.protocol.enums.EnvironmentEnum;
-import com.rnkrsoft.platform.protocol.service.*;
+import com.rnkrsoft.platform.protocol.service.GatewayAddress;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Created by rnkrsoft.com on 2019/1/17.
@@ -178,14 +176,28 @@ public final class ServiceConfigure implements LocationStore {
     }
 
     public List<String> getChannels() {
-        return Collections.unmodifiableList(channels);
+        List<String> channels = new ArrayList<String>();
+        for (String channel : this.channels) {
+            channels.add(channel);
+        }
+        channels.add("public");
+        return channels;
     }
 
-    public void addChannel(String channel){
+    public void addChannel(String channel) {
+        if ("public".equals(channel)) {
+            return;
+        }
         this.channels.add(channel);
     }
+
     public void initChannels(Set<String> channels) {
-        this.channels.addAll(channels);
+        for (String channel : channels) {
+            if ("public".equals(channel)) {
+                continue;
+            }
+            this.channels.add(channel);
+        }
     }
 
     public List<GatewayAddress> getGatewayAddresses(String channel) {

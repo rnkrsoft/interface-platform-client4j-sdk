@@ -19,11 +19,14 @@ import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.*;
 import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
 import lombok.Getter;
+import lombok.Setter;
 
 import javax.web.doc.annotation.ApidocService;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -70,38 +73,23 @@ public final class ServiceFactory {
      * 已注册的服务类
      */
     final List<Class> serviceClasses = new ArrayList<Class>();
-    final List<String> basePackages = new ArrayList<String>();
 
     final Gson gson = new GsonBuilder().create();
 
     final AtomicBoolean init = new AtomicBoolean(false);
 
+    @Setter
+    long fetchConfigureIntervalSecond = 0L;
+
+    @Setter
+    long fetchMetadataIntervalSecond = 0L;
+
+    final ScheduledExecutorService scheduleExecutor = Executors.newScheduledThreadPool(2);
+
     /**
      * 工厂类，不能实例化
      */
     public ServiceFactory() {
-        try {
-            InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder()
-                    .channel("public")
-                    .txNo("000")
-                    .version("1")
-                    .interfaceClass(PublishService.class)
-                    .interfaceMethod(PublishService.class.getMethod("fetchPublish", new Class[]{FetchPublishRequest.class, AsyncHandler.class}))
-                    .build();
-            InterfaceDefinition interfaceDefinition = InterfaceDefinition.builder()
-                    .channel("public")
-                    .txNo("000")
-                    .version("1")
-                    .build();
-            InterfaceChannel interfaceChannel = new InterfaceChannel();
-            interfaceChannel.setChannel("public");
-            interfaceChannel.getInterfaces().add(interfaceDefinition);
-            metadataRegister.register(interfaceMetadata);
-            definitionRegister.register(interfaceChannel);
-            serviceConfigure.addChannel("public");
-        } catch (Exception e) {
-
-        }
     }
 
     public boolean isInit() {
@@ -158,6 +146,7 @@ public final class ServiceFactory {
 
     /**
      * 设置APP版本号
+     *
      * @param appVersion APP版本号
      */
     public final void setAppVersion(String appVersion) {
@@ -182,30 +171,7 @@ public final class ServiceFactory {
         this.configureProvider = configureProvider;
     }
 
-    /**
-     * 进行初始化,将注册的服务类与接口信息进行绑定
-     *
-     * @return 是否执行失败成功
-     */
-    public synchronized final boolean init() {
-        return init(false, null);
-    }
-
-    /**
-     * 进行初始化,将注册的服务类与接口信息进行绑定
-     */
-    public synchronized final boolean init(final boolean silent, AsyncHandler asyncHandler) {
-        if (silent && asyncHandler == null) {
-            throw new InitException("静默模式下，必须传入AsyncHandler实例!");
-        }
-        Map<String, Set<InterfaceMetadata>> metadataMap = MetadataClassPathScanner.scan(serviceClasses);
-        serviceConfigure.initChannels(metadataMap.keySet());
-        for (Set<InterfaceMetadata> interfaceMetadataSet : metadataMap.values()) {
-            for (InterfaceMetadata metadata : interfaceMetadataSet) {
-                log.debug("register {}.{}-->{}:{}:{}", metadata.getInterfaceClass(), metadata.getInterfaceMethod(), metadata.getChannel(), metadata.getTxNo(), metadata.getVersion());
-                metadataRegister.register(metadata);
-            }
-        }
+    boolean fetchRemoteConfigure(boolean silent, AsyncHandler asyncHandler) {
         if (configureProvider == null) {
             log.warn("未配置远程配置, 启用本地配置");
             LoggerFactory.level(LoggerLevel.TRACE);
@@ -218,6 +184,7 @@ public final class ServiceFactory {
                     serviceConfigure.channelAddresses.put(channel, Arrays.asList(serviceConfigure.fallbackChannelAddresses.get(channel)));
                 }
             }
+            return true;
         } else {
             if (serviceConfigure.isAutoLocate()) {
                 refreshLocation();
@@ -247,6 +214,7 @@ public final class ServiceFactory {
                         }
                     }
                 }
+                return true;
             } else {
                 log.debug("远程配置初始化成功, 启用远程配置");
                 if (configure.isVerboseLog()) {
@@ -273,7 +241,43 @@ public final class ServiceFactory {
                     serviceConfigure.channelAddresses.put(gatewayChannel.getChannel(), gatewayChannel.getGatewayAddresses());
                 }
                 log.debug("初始化线程池");
+                return true;
             }
+        }
+    }
+
+    /**
+     * 进行初始化,将注册的服务类与接口信息进行绑定
+     *
+     * @return 是否执行失败成功
+     */
+    public synchronized final boolean init() {
+        return init(false, null);
+    }
+
+    /**
+     * 进行初始化,将注册的服务类与接口信息进行绑定
+     */
+    public synchronized final boolean init(final boolean silent, AsyncHandler asyncHandler) {
+        if (silent && asyncHandler == null) {
+            throw new InitException("静默模式下，必须传入AsyncHandler实例!");
+        }
+        Map<String, Set<InterfaceMetadata>> metadataMap = MetadataClassPathScanner.scan(serviceClasses);
+        serviceConfigure.initChannels(metadataMap.keySet());
+        for (Set<InterfaceMetadata> interfaceMetadataSet : metadataMap.values()) {
+            for (InterfaceMetadata metadata : interfaceMetadataSet) {
+                log.debug("register {}.{}-->{}:{}:{}", metadata.getInterfaceClass(), metadata.getInterfaceMethod(), metadata.getChannel(), metadata.getTxNo(), metadata.getVersion());
+                metadataRegister.register(metadata);
+            }
+        }
+        if (!fetchRemoteConfigure(silent, asyncHandler)) {
+            return false;
+        }
+        if (fetchConfigureIntervalSecond > 0) {
+            initScheduleFetchConfigure();
+        }
+        if (fetchMetadataIntervalSecond > 0) {
+            initScheduleFetchMetadata();
         }
         PublishService publishService = ServiceProxyFactory.newInstance(this, PublishService.class);
         FetchPublishRequest request = new FetchPublishRequest();
@@ -286,6 +290,7 @@ public final class ServiceFactory {
 
             @Override
             public void success(FetchPublishResponse response) {
+                definitionRegister.clear();
                 for (InterfaceChannel interfaceChannel : response.getChannels()) {
                     definitionRegister.register(interfaceChannel);
                 }
@@ -444,6 +449,60 @@ public final class ServiceFactory {
             throw new LocationProviderNotFoundException("location provider is not found!");
         }
         locationProvider.locate(serviceConfigure);
+    }
+
+    class FetchConfigureTask implements Runnable {
+        @Override
+        public void run() {
+            //调用拉取远程配置
+            try {
+                fetchRemoteConfigure(false, null);
+            } catch (Exception e) {
+                log.error("fetch Remote Configure happens error!", e);
+            }
+        }
+    }
+
+    class FetchMetadataTask implements Runnable {
+        @Override
+        public void run() {
+            try {
+                PublishService publishService = ServiceProxyFactory.newInstance(ServiceFactory.this, PublishService.class);
+                FetchPublishRequest request = new FetchPublishRequest();
+                request.getChannels().addAll(serviceConfigure.getChannels());
+                publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
+                    @Override
+                    public void fail(String code, String desc, String detail) {
+                        log.debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
+                    }
+
+                    @Override
+                    public void success(FetchPublishResponse response) {
+                        definitionRegister.clear();
+                        for (InterfaceChannel interfaceChannel : response.getChannels()) {
+                            definitionRegister.register(interfaceChannel);
+                        }
+                        log.debug("finish fetch remote metadata...");
+                    }
+                });
+            } catch (Exception e) {
+                log.error("fetch metadata happens error!", e);
+            }
+        }
+    }
+
+    /**
+     * 初始化拉取远程配置定时任务
+     */
+    void initScheduleFetchConfigure() {
+        scheduleExecutor.scheduleWithFixedDelay(new FetchConfigureTask(), fetchConfigureIntervalSecond, fetchConfigureIntervalSecond, TimeUnit.SECONDS);
+    }
+
+    /**
+     * 初始化拉取接口元信息
+     */
+    void initScheduleFetchMetadata() {
+        scheduleExecutor.scheduleWithFixedDelay(new FetchMetadataTask(), fetchMetadataIntervalSecond, fetchMetadataIntervalSecond, TimeUnit.SECONDS);
     }
 
     //-----------------------------------服务工厂单例对象-----------------------------------------------

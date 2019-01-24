@@ -41,18 +41,19 @@ public final class LoggerFactory {
     private LoggerFactory() {
     }
 
-    public static void level(LoggerLevel level){
-        if (CONFIG == null){
+    public static void level(LoggerLevel level) {
+        if (CONFIG == null) {
             return;
         }
         CONFIG.param(LoggerConstant.LOGGER_LEVEL, level.name());
     }
+
     /**
      * 完成初始化
      */
     final static void performInitialization() {
         if (INITIALIZATION_STATE == ONGOING_INITIALIZATION) {
-            if (CONFIG == null){
+            if (CONFIG == null) {
                 synchronized (LoggerFactory.class) {
                     if (CONFIG == null) {
                         try {

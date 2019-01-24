@@ -10,12 +10,11 @@ import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
-import com.rnkrsoft.security.AES;
 
 /**
  * Created by rnkrsoft.com on 2019/1/19.
  */
-public class MockHelloSuccessInterfaceConnector implements InterfaceConnector{
+public class MockHelloSuccessInterfaceConnector implements InterfaceConnector {
     ServiceFactory serviceFactory;
     ServiceConfigure serviceConfigure;
 
@@ -28,6 +27,7 @@ public class MockHelloSuccessInterfaceConnector implements InterfaceConnector{
     public ServiceFactory getServiceFactory() {
         return serviceFactory;
     }
+
     @Override
     public ApiResponse call(ApiRequest request, InterfaceSetting setting) {
         System.out.println("channel:" + request.getChannel());

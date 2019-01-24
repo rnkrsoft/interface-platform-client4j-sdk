@@ -6,8 +6,6 @@ import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerLevel;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by rnkrsoft.com on 2019/1/19.
  */

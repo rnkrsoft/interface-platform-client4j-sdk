@@ -25,7 +25,7 @@ import java.util.*;
  * A map of comparable keys to values. Unlike {@code TreeMap}, this class uses
  * insertion order for iteration order. Comparison order is only used as an
  * optimization for efficient insertion and removal.
- * <p>
+ * <p/>
  * <p>This implementation was derived from Android 4.1's TreeMap class.
  */
 public final class LinkedTreeMap<K, V> extends AbstractMap<K, V> implements Serializable {
@@ -191,7 +191,7 @@ public final class LinkedTreeMap<K, V> extends AbstractMap<K, V> implements Seri
     /**
      * Returns this map's entry that has the same key and value as {@code
      * entry}, or null if this map has no such entry.
-     * <p>
+     * <p/>
      * <p>This method uses the comparator for key equality rather than {@code
      * equals}. If this map's comparator isn't consistent with equals (such as
      * {@code String.CASE_INSENSITIVE_ORDER}), then {@code remove()} and {@code

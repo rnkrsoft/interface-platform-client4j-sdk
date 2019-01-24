@@ -1,6 +1,8 @@
 package com.rnkrsoft.platform.client.invoker;
 
-import com.rnkrsoft.platform.client.*;
+import com.rnkrsoft.platform.client.InterfaceMetadata;
+import com.rnkrsoft.platform.client.ServiceConfigure;
+import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.client.connector.MockHelloFailureInterfaceConnector;
 import com.rnkrsoft.platform.client.connector.MockHelloSuccessInterfaceConnector;
 import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
@@ -58,7 +60,7 @@ public class SyncInvokerTest {
         HelloRequest request = new HelloRequest();
         request.setName("test");
         try {
-            HelloResponse response = (HelloResponse) invoker.call(serviceFactory, PublishService.class, "fetchPublish",  HelloRequest.class, HelloResponse.class, request);
+            HelloResponse response = (HelloResponse) invoker.call(serviceFactory, PublishService.class, "fetchPublish", HelloRequest.class, HelloResponse.class, request);
             Assert.fail("不应该到这里");
         } catch (RemoteInterfaceExecutionException e) {
             Assert.assertEquals("sync call is failure, cause 系统正在维护，请稍后重试！(998)!", e.getMessage());

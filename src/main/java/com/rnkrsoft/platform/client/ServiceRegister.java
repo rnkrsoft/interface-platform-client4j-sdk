@@ -1,9 +1,7 @@
 package com.rnkrsoft.platform.client;
 
-import com.rnkrsoft.platform.client.exception.StubNotFoundException;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
-import com.rnkrsoft.platform.protocol.service.PublishService;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,7 +15,7 @@ public final class ServiceRegister {
     /**
      * 已注册的服务缓存
      */
-    private final static Map<Class, Object> SERVICE_CACHES = new ConcurrentHashMap<Class, Object>();
+    private final Map<Class, Object> SERVICE_CACHES = new ConcurrentHashMap<Class, Object>();
 
     public ServiceRegister() {
     }

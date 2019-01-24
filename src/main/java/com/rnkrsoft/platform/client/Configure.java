@@ -10,9 +10,10 @@ import java.util.List;
 
 @Data
 public class Configure implements Serializable {
-    public Configure(){
+    public Configure() {
 
     }
+
     public Configure(FetchConfigureResponse fetchConfigureResponse) {
         this.channels.addAll(fetchConfigureResponse.getChannels());
         this.keyVector = fetchConfigureResponse.getKeyVector();
@@ -25,6 +26,7 @@ public class Configure implements Serializable {
         this.env = fetchConfigureResponse.getEnv();
         this.envDesc = fetchConfigureResponse.getEnvDesc();
     }
+
     final List<GatewayChannel> channels = new ArrayList();
 
     String keyVector;

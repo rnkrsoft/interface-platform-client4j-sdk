@@ -27,6 +27,7 @@ import java.util.Set;
 public class InterfacePlatformServiceScanner extends ClassPathBeanDefinitionScanner {
     static Logger log = LoggerFactory.getLogger(InterfacePlatformServiceScanner.class);
     ServiceFactory serviceFactory;
+
     public InterfacePlatformServiceScanner(BeanDefinitionRegistry registry, ServiceFactory serviceFactory) {
         super(registry, false);
         this.serviceFactory = serviceFactory;
@@ -39,7 +40,7 @@ public class InterfacePlatformServiceScanner extends ClassPathBeanDefinitionScan
         addExcludeFilter(new TypeFilter() {
             @Override
             public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
-                ClassMetadata classMetadata =  metadataReader.getClassMetadata();
+                ClassMetadata classMetadata = metadataReader.getClassMetadata();
                 String className = classMetadata.getClassName();
                 return className.endsWith("package-info") || !classMetadata.isInterface();
             }

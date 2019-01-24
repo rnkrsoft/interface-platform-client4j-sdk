@@ -17,12 +17,14 @@ import org.springframework.test.context.ContextConfiguration;
 public class InterfacePlatformClientConfigureTest extends SpringTest {
     @Autowired
     HelloService helloService;
+
     @Test
     public void test1() throws Exception {
         HelloRequest request = new HelloRequest();
         request.setName("test");
         HelloResponse response = helloService.hello(request);
         System.out.println(response);
+        Thread.sleep(60 * 1000);
     }
 
     @Test

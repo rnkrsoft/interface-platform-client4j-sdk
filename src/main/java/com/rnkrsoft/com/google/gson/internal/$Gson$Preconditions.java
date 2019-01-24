@@ -18,7 +18,7 @@ package com.rnkrsoft.com.google.gson.internal;
 
 /**
  * A simple utility class used to check method Preconditions.
- * <p>
+ * <p/>
  * <pre>
  * public long divideBy(long value) {
  *   Preconditions.checkArgument(value != 0);

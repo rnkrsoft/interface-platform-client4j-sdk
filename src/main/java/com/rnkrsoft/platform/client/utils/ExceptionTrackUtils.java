@@ -8,7 +8,7 @@ import java.io.StringWriter;
  * 异常跟踪信息提取
  */
 public class ExceptionTrackUtils {
-    public static String toString(Throwable e){
+    public static String toString(Throwable e) {
         StringWriter stringWriter = new StringWriter(1024 * 1024 * 1);
         PrintWriter writer = new PrintWriter(stringWriter);
         writer.println("message:" + e.getMessage());

@@ -5,7 +5,10 @@ package com.rnkrsoft.platform.client.environment;
  */
 public interface Environment {
     String getOsVersion();
+
     String getDeviceManufacturer();
+
     String getDeviceModel();
+
     String getDeviceType();
 }

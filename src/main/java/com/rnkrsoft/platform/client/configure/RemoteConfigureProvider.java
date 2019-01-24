@@ -9,12 +9,14 @@ import com.rnkrsoft.platform.protocol.service.FetchConfigureRequest;
 import com.rnkrsoft.platform.protocol.service.FetchConfigureResponse;
 
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  * Created by rnkrsoft.com on 2019/1/17.
  */
-public class RemoteConfigureProvider implements ConfigureProvider{
+public class RemoteConfigureProvider implements ConfigureProvider {
     @Override
     public Configure load(String schema, String host, int port, String contextPath, List<String> channels, String uic, String deviceType, String appVersion, double lat, double lng) {
         final ConfigureService configureService = new ConfigureService(schema, host, port, contextPath);

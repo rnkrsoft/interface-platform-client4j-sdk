@@ -1,7 +1,6 @@
 package com.rnkrsoft.platform.client.connector.http;
 
 import com.rnkrsoft.platform.client.InterfaceSetting;
-import com.rnkrsoft.platform.client.ServiceConfigure;
 import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
@@ -9,8 +8,6 @@ import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.utils.DateUtils;
 import org.junit.Test;
-
-import static org.junit.Assert.*;
 
 /**
  * Created by rnkrsoft.com on 2019/1/19.

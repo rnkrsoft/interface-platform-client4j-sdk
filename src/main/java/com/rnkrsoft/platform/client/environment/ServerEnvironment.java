@@ -3,7 +3,7 @@ package com.rnkrsoft.platform.client.environment;
 /**
  * Created by rnkrsoft.com on 2019/1/22.
  */
-public class ServerEnvironment implements Environment{
+public class ServerEnvironment implements Environment {
     @Override
     public String getOsVersion() {
         return System.getProperty("os.version");

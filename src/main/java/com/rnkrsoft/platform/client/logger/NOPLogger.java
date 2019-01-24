@@ -3,7 +3,7 @@ package com.rnkrsoft.platform.client.logger;
 /**
  * Created by rnkrsoft.com on 2019/1/18.
  */
-class NOPLogger extends AbstractLogger implements Logger{
+class NOPLogger extends AbstractLogger implements Logger {
     static NOPLogger NOP_LOGGER = new NOPLogger();
 
     @Override

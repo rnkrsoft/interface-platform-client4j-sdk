@@ -7,7 +7,7 @@ import java.util.*;
 /**
  * Utilities methods for manipulating dates in iso8601 format. This is much much faster and GC friendly than using SimpleDateFormat so
  * highly suitable if you (un)serialize lots of date objects.
- * <p>
+ * <p/>
  * Supported parse format: [yyyy-MM-dd|yyyyMMdd][T(hh:mm[:ss[.sss]]|hhmm[ss[.sss]])]?[Z|[+-]hh[:]mm]]
  *
  * @see <a href="http://www.w3.org/TR/NOTE-datetime">this specification</a>

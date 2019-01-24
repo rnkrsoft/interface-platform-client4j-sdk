@@ -10,6 +10,7 @@ import com.rnkrsoft.platform.client.logger.Logger;
  */
 public class FileLoggerFactory implements ILoggerFactory {
     FileLogger logger;
+
     public FileLoggerFactory(ConfigProvider config) {
         this.logger = new FileLogger(config);
         this.logger.init();

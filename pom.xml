@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rnkrsoft.platform</groupId>
     <artifactId>interface-platform-client4j-sdk</artifactId>
-    <version>1.1.0</version>
+    <version>1.0.1</version>
     <name>接口平台客户端 for Java V1</name>
     <description>接口平台客户端 for Java V1</description>
     <url>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</url>
@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.rnkrsoft.platform</groupId>
             <artifactId>interface-platform-protocol</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>lombok</artifactId>
@@ -115,6 +115,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.22</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.rnkrsoft.android</groupId>
@@ -144,44 +145,52 @@
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
             <version>${log4j-over-slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j2.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--Apache Commons Logging instead of slf4j logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--java util logger insteas of slf4j logger -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jul-to-slf4j</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <!--slf4j logger api-->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
             <version>${log4j2.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j2.version}</version>
+            <scope>test</scope>
         </dependency>
         <dependency>
             <groupId>com.lmax</groupId>
             <artifactId>disruptor</artifactId>
             <version>${disruptor.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <developers>
@@ -249,6 +258,7 @@
                                     <include>com.rnkrsoft.platform:interface-platform-protocol</include>
                                     <include>com.rnkrsoft.skeleton4j:skeleton4j-api</include>
                                     <include>com.rnkrsoft.groundwork:groundwork</include>
+                                    <include>com.rnkrsoft.config:config</include>
                                 </includes>
                             </artifactSet>
                         </configuration>

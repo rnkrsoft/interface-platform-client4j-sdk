@@ -21,7 +21,6 @@ import com.rnkrsoft.com.google.gson.internal.Excluder;
 import com.rnkrsoft.com.google.gson.internal.bind.TreeTypeAdapter;
 import com.rnkrsoft.com.google.gson.internal.bind.TypeAdapters;
 import com.rnkrsoft.com.google.gson.reflect.TypeToken;
-import com.rnkrsoft.com.google.gson.stream.JsonReader;
 
 import java.lang.reflect.Type;
 import java.sql.Timestamp;
@@ -210,7 +209,7 @@ public final class GsonBuilder {
      * {@link JsonDeserializer}. It is best used when a single object {@code typeAdapter} implements
      * all the required interfaces for custom serialization with Gson. If a type adapter was
      * previously registered for the specified {@code type}, it is overwritten.
-     * <p>
+     * <p/>
      * <p>This registers the type specified and no other types: you must manually register related
      * types! For example, applications registering {@code boolean.class} should also register {@code
      * Boolean.class}.
@@ -288,7 +287,7 @@ public final class GsonBuilder {
      * values. Moreover, most JavaScript engines will accept these special values in JSON without
      * problem. So, at a practical level, it makes sense to accept these values as valid JSON even
      * though JSON specification disallows them.
-     * <p>
+     * <p/>
      * <p>Gson always accepts these special values during deserialization. However, it outputs
      * strictly compliant JSON. Hence, if it encounters a float value {@link Float#NaN},
      * {@link Float#POSITIVE_INFINITY}, {@link Float#NEGATIVE_INFINITY}, or a double value

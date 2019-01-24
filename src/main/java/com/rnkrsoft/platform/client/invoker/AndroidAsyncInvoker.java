@@ -4,7 +4,10 @@ import android.os.AsyncTask;
 import com.rnkrsoft.com.google.gson.Gson;
 import com.rnkrsoft.com.google.gson.GsonBuilder;
 import com.rnkrsoft.com.google.gson.JsonSyntaxException;
-import com.rnkrsoft.platform.client.*;
+import com.rnkrsoft.platform.client.InterfaceMetadata;
+import com.rnkrsoft.platform.client.InterfaceSetting;
+import com.rnkrsoft.platform.client.ServiceConfigure;
+import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.client.connector.InterfaceConnector;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
@@ -73,7 +76,7 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
             version = "1";
         } else {
             InterfaceMetadata interfaceMetadata = serviceFactory.getMetadataRegister().lookup(service.getName(), methodName, true);
-            if (interfaceMetadata == null){
+            if (interfaceMetadata == null) {
                 apiResponse.setCode(InterfaceRspCode.INTERFACE_NOT_DEFINED);
                 return apiResponse;
             }
@@ -97,7 +100,7 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
         InterfaceSetting.InterfaceSettingBuilder settingBuilder = InterfaceSetting.builder();
         if (service != PublishService.class) {
             InterfaceDefinition interfaceDefinition = serviceFactory.getDefinitionRegister().lookup(channel, txNo, version, true);
-            if (interfaceDefinition == null){
+            if (interfaceDefinition == null) {
                 apiResponse.setCode(InterfaceRspCode.INTERFACE_NOT_DEFINED);
                 return apiResponse;
             }

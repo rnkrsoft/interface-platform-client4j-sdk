@@ -9,7 +9,7 @@ import java.io.Serializable;
  * Created by rnkrsoft.com on 2018/10/6.
  */
 @ToString
-public class HelloRequest implements Serializable{
+public class HelloRequest implements Serializable {
     @ApidocElement("姓名")
     String name;
 

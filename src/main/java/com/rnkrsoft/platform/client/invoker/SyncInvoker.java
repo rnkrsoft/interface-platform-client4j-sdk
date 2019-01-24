@@ -4,7 +4,10 @@ import com.rnkrsoft.com.google.gson.Gson;
 import com.rnkrsoft.com.google.gson.GsonBuilder;
 import com.rnkrsoft.com.google.gson.JsonSyntaxException;
 import com.rnkrsoft.message.MessageFormatter;
-import com.rnkrsoft.platform.client.*;
+import com.rnkrsoft.platform.client.InterfaceMetadata;
+import com.rnkrsoft.platform.client.InterfaceSetting;
+import com.rnkrsoft.platform.client.ServiceConfigure;
+import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.client.connector.InterfaceConnector;
 import com.rnkrsoft.platform.client.exception.InterfaceConnectorNotFoundException;
 import com.rnkrsoft.platform.client.exception.RemoteInterfaceExecutionException;
@@ -36,11 +39,11 @@ public class SyncInvoker {
      * 调用接口
      *
      * @param serviceFactory 服务配置
-     * @param service          服务类
-     * @param methodName       方法名
-     * @param requestClass     请求类
-     * @param responseClass    应答类
-     * @param request          请求对象
+     * @param service        服务类
+     * @param methodName     方法名
+     * @param requestClass   请求类
+     * @param responseClass  应答类
+     * @param request        请求对象
      * @return 应答对象
      */
     public Object call(ServiceFactory serviceFactory, Class service, String methodName, Class requestClass, Class responseClass, Object request) {

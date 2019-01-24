@@ -5,8 +5,6 @@ import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
 import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
 /**
  * Created by rnkrsoft.com on 2019/1/21.
  */

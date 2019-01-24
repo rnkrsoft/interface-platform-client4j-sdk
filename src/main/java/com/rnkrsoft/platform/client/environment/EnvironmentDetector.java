@@ -5,9 +5,10 @@ import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
 /**
  * Created by rnkrsoft.com on 2019/1/22.
  */
-public class EnvironmentDetector implements Environment{
+public class EnvironmentDetector implements Environment {
     final static Environment ANDROID = new AndroidEnvironment();
     final static Environment SERVER = new ServerEnvironment();
+
     @Override
     public String getOsVersion() {
         return JavaEnvironmentDetector.isAndroid() ? ANDROID.getOsVersion() : SERVER.getOsVersion();

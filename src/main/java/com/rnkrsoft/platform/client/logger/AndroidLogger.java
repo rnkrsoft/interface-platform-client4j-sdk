@@ -1,7 +1,6 @@
 package com.rnkrsoft.platform.client.logger;
 
 import android.util.Log;
-import com.rnkrsoft.platform.client.logger.LoggerLevel;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
@@ -36,19 +35,20 @@ public class AndroidLogger {
      * Priority constant for the println method.
      */
     public static final int ASSERT = 7;
-    public static void println(LoggerLevel level, String className, String log){
+
+    public static void println(LoggerLevel level, String className, String log) {
         int priority = DEBUG;
-        if (LoggerLevel.TRACE == level){
+        if (LoggerLevel.TRACE == level) {
             priority = VERBOSE;
-        }else if (LoggerLevel.DEBUG == level){
+        } else if (LoggerLevel.DEBUG == level) {
             priority = DEBUG;
-        }else if (LoggerLevel.INFO == level){
+        } else if (LoggerLevel.INFO == level) {
             priority = INFO;
-        }else if (LoggerLevel.WARN == level){
+        } else if (LoggerLevel.WARN == level) {
             priority = WARN;
-        }else if (LoggerLevel.ERROR == level){
+        } else if (LoggerLevel.ERROR == level) {
             priority = ERROR;
-        }else if (LoggerLevel.FATAL == level){
+        } else if (LoggerLevel.FATAL == level) {
             priority = ASSERT;
         }
         Log.println(priority, className, log);

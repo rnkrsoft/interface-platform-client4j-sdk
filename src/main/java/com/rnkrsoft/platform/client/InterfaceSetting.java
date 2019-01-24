@@ -31,11 +31,11 @@ public class InterfaceSetting {
         return httpReadTimeoutSecond;
     }
 
-    public static InterfaceSettingBuilder builder(){
+    public static InterfaceSettingBuilder builder() {
         return new InterfaceSettingBuilder();
     }
 
-    public static class InterfaceSettingBuilder{
+    public static class InterfaceSettingBuilder {
         /**
          * 密钥向量
          */
@@ -66,7 +66,7 @@ public class InterfaceSetting {
             return this;
         }
 
-        public InterfaceSetting build(){
+        public InterfaceSetting build() {
             InterfaceSetting setting = new InterfaceSetting();
             setting.httpConnectTimeoutSecond = this.httpConnectTimeoutSecond;
             setting.httpReadTimeoutSecond = this.httpReadTimeoutSecond;
