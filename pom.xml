@@ -97,8 +97,7 @@
             <groupId>com.rnkrsoft.android</groupId>
             <artifactId>android-stub</artifactId>
             <version>1.0.0-SNAPSHOT</version>
-            <scope>system</scope>
-            <systemPath>${project.basedir}/libs/android-stub-1.0.0-SNAPSHOT.jar</systemPath>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
     <developers>
