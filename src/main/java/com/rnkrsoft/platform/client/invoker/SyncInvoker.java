@@ -16,6 +16,7 @@ import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
 import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
+import com.rnkrsoft.platform.protocol.TokenAble;
 import com.rnkrsoft.platform.protocol.TokenReadable;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
@@ -224,7 +225,7 @@ public class SyncInvoker {
         Object response = null;
         try {
             response = GSON.fromJson(plainTextData, responseClass);
-            if (response instanceof TokenReadable) {//如果有实现Token获取接口，则设置Token值
+            if (response instanceof TokenReadable || response instanceof TokenAble) {//如果有实现Token获取接口，则设置Token值
                 TokenReadable tokenReadable = (TokenReadable) response;
                 serviceConfigure.setToken(tokenReadable.getToken());
                 log.info("resetting token '{}'!", tokenReadable.getToken());

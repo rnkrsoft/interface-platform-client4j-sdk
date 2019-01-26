@@ -335,6 +335,7 @@ public final class ServiceFactory {
             FetchPublishResponse response = gson.fromJson(result.getData(), FetchPublishResponse.class);
             if (response.isSuccess()) {
                 init.set(true);
+                asyncHandler.success(response);
                 return true;
             } else {
                 if (!silent) {

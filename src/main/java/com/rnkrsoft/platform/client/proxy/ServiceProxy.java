@@ -9,6 +9,9 @@ import com.rnkrsoft.platform.client.invoker.SyncInvoker;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
+import com.rnkrsoft.platform.protocol.TokenAble;
+import com.rnkrsoft.platform.protocol.TokenReadable;
+import com.rnkrsoft.platform.protocol.TokenWritable;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
@@ -44,6 +47,9 @@ public class ServiceProxy<T> implements InvocationHandler {
             Object request = args[0];
             Class requestClass = method.getParameterTypes()[0];
             Class responseClass = method.getReturnType();
+            if (request instanceof TokenWritable || request instanceof TokenAble) {
+                ((TokenWritable) request).setToken(serviceFactory.getServiceConfigure().getToken());
+            }
             log.debug("synchronous execute remote service request '{}'", request);
             SyncInvoker invoker = new SyncInvoker();
             Object response = invoker.call(this.serviceFactory, serviceClass, method.getName(), requestClass, responseClass, request);
@@ -51,6 +57,9 @@ public class ServiceProxy<T> implements InvocationHandler {
             return response;
         } else if (args.length == 2) {
             Object request = args[0];
+            if (request instanceof TokenWritable || request instanceof TokenAble) {
+                ((TokenWritable) request).setToken(serviceFactory.getServiceConfigure().getToken());
+            }
             AsyncHandler asyncHandler = (AsyncHandler) args[1];
             Class requestClass = method.getParameterTypes()[0];
             ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];

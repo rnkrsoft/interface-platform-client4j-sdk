@@ -29,6 +29,17 @@ public class ServiceFactoryTest {
             }
         });
 //        serviceFactory.init();
+        serviceFactory.init(true, new AsyncHandler() {
+            @Override
+            public void fail(String code, String desc, String detail) {
+                System.out.println(desc);
+            }
+
+            @Override
+            public void success(Object response) {
+                System.out.println(response);
+            }
+        });
         HelloService helloService = serviceFactory.get(HelloService.class);
         HelloRequest request = new HelloRequest();
         request.setName("test");
