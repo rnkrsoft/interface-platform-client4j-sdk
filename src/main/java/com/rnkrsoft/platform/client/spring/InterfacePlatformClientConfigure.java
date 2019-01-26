@@ -16,16 +16,32 @@ import java.util.List;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
+ * 接口平台客户端Spring配置对象
  */
 public class InterfacePlatformClientConfigure implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
+    /**
+     * 配置远程网关配置
+     */
     @Setter
     ConfigureAddress configure;
+    /**
+     * 通道回退网关地址
+     */
     @Setter
     List<GatewayAddress> fallbackGateways;
+    /**
+     * 密钥向量
+     */
     @Setter
     String keyVector = "1234567890654321";
+    /**
+     * 服务器通信的固定密码
+     */
     @Setter
     String password = "1234567890";
+    /**
+     * 扫描的包路径
+     */
     @Setter
     String[] basePackages;
     /**
