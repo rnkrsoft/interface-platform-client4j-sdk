@@ -26,13 +26,13 @@ import java.io.*;
 
 /**
  * Converts Java objects to and from JSON.
- * <p>
+ * <p/>
  * <h3>Defining a type's JSON form</h3>
  * By default Gson converts application classes to JSON using its built-in type
  * adapters. If Gson's default JSON conversion isn't appropriate for a type,
  * extend this class to customize the conversion. Here's an example of a type
  * adapter for an (X,Y) coordinate point: <pre>   {@code
- * <p>
+ * <p/>
  *   public class PointAdapter extends TypeAdapter<Point> {
  *     public Point read(JsonReader reader) throws IOException {
  *       if (reader.peek() == JsonToken.NULL) {
@@ -57,7 +57,7 @@ import java.io.*;
  * With this type adapter installed, Gson will convert {@code Points} to JSON as
  * strings like {@code "5,8"} rather than objects like {@code {"x":5,"y":8}}. In
  * this case the type adapter binds a rich Java class to a compact JSON value.
- * <p>
+ * <p/>
  * <p>The {@link #read(JsonReader) read()} method must read exactly one value
  * and {@link #write(JsonWriter, Object) write()} must write exactly one value.
  * For primitive types this is means readers should make exactly one call to
@@ -69,7 +69,7 @@ import java.io.*;
  * objects, they should start with {@code beginObject()}, convert the object,
  * and finish with {@code endObject()}. Failing to convert a value or converting
  * too many values may cause the application to crash.
- * <p>
+ * <p/>
  * <p>Type adapters should be prepared to read null from the stream and write it
  * to the stream. Alternatively, they should use {@link #nullSafe()} method while
  * registering the type adapter with Gson. If your {@code Gson} instance
@@ -77,10 +77,10 @@ import java.io.*;
  * written to the final document. Otherwise the value (and the corresponding name
  * when writing to a JSON object) will be omitted automatically. In either case
  * your type adapter must handle null.
- * <p>
+ * <p/>
  * <p>To use a custom type adapter with Gson, you must <i>register</i> it with a
  * {@link GsonBuilder}: <pre>   {@code
- * <p>
+ * <p/>
  *   GsonBuilder builder = new GsonBuilder();
  *   builder.registerTypeAdapter(Point.class, new PointAdapter());
  *   // if PointAdapter didn't check for nulls in its read/write methods, you should instead use
@@ -144,7 +144,7 @@ public abstract class TypeAdapter<T> {
      * type adapter is required to handle nulls in write and read methods. Here is how this
      * is typically done:<br>
      * <pre>   {@code
-     * <p>
+     * <p/>
      * Gson gson = new GsonBuilder().registerTypeAdapter(Foo.class,
      *   new TypeAdapter<Foo>() {
      *     public Foo read(JsonReader in) throws IOException {
@@ -166,7 +166,7 @@ public abstract class TypeAdapter<T> {
      * You can avoid this boilerplate handling of nulls by wrapping your type adapter with
      * this method. Here is how we will rewrite the above example:
      * <pre>   {@code
-     * <p>
+     * <p/>
      * Gson gson = new GsonBuilder().registerTypeAdapter(Foo.class,
      *   new TypeAdapter<Foo>() {
      *     public Foo read(JsonReader in) throws IOException {

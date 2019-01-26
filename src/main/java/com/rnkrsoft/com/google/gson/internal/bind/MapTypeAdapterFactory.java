@@ -31,7 +31,7 @@ import java.util.Map;
 
 /**
  * Adapts maps to either JSON objects or JSON arrays.
- * <p>
+ * <p/>
  * <h3>Maps as JSON objects</h3>
  * For primitive keys or when complex map key serialization is not enabled, this
  * converts Java {@link Map Maps} to JSON Objects. This requires that map keys
@@ -56,7 +56,7 @@ import java.util.Map;
  *   at com.rnkrsoft.com.google.gson.JsonObjectDeserializationVisitor.visitFieldUsingCustomHandler
  *   at com.rnkrsoft.com.google.gson.ObjectNavigator.navigateClassFields
  *   ...</pre>
- * <p>
+ * <p/>
  * <h3>Maps as JSON arrays</h3>
  * An alternative approach taken by this type adapter when it is required and
  * complex map key serialization is enabled is to encode maps as arrays of map
@@ -64,7 +64,7 @@ import java.util.Map;
  * This approach is more flexible because any type can be used as the map's key;
  * not just strings. But it's also less portable because the receiver of such
  * JSON must be aware of the map entry convention.
- * <p>
+ * <p/>
  * <p>Register this adapter when you are creating your GSON instance.
  * <pre>   {@code
  *   Gson gson = new GsonBuilder()

@@ -1,103 +1,70 @@
 package com.rnkrsoft.platform.client.invoker;
 
+import com.rnkrsoft.platform.client.InterfaceMetadata;
 import com.rnkrsoft.platform.client.ServiceConfigure;
 import com.rnkrsoft.platform.client.ServiceFactory;
-import com.rnkrsoft.platform.client.ServiceRegistry;
-import com.rnkrsoft.platform.client.connector.http.HttpInterfaceConnector;
-import com.rnkrsoft.platform.client.connector.mock.MockHelloInterfaceConnector;
-import com.rnkrsoft.platform.client.connector.mock.MockHelloInterfaceConnector2;
-import com.rnkrsoft.platform.client.connector.mock.MockInterfaceConnector;
-import com.rnkrsoft.platform.demo.service.HelloRequest;
-import com.rnkrsoft.platform.demo.service.HelloResponse;
-import com.rnkrsoft.platform.demo.service.HelloService;
-import com.rnkrsoft.platform.client.scanner.InterfaceMetadata;
-import com.rnkrsoft.platform.protocol.service.*;
+import com.rnkrsoft.platform.client.connector.MockHelloFailureInterfaceConnector;
+import com.rnkrsoft.platform.client.connector.MockHelloSuccessInterfaceConnector;
+import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
+import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
+import com.rnkrsoft.platform.client.demo.service.HelloService;
+import com.rnkrsoft.platform.client.exception.RemoteInterfaceExecutionException;
+import com.rnkrsoft.platform.protocol.service.InterfaceChannel;
+import com.rnkrsoft.platform.protocol.service.InterfaceDefinition;
+import com.rnkrsoft.platform.protocol.service.PublishService;
+import org.junit.Assert;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-
 /**
- * Created by rnkrsoft.com on 2018/10/6.
+ * Created by rnkrsoft.com on 2019/1/20.
  */
 public class SyncInvokerTest {
 
     @Test
-    public void testSync() throws Exception {
-        FetchPublishRequest request = new FetchPublishRequest();
-        request.getChannels().add("car_manage");
-        ServiceConfigure serviceConfigure = new ServiceConfigure();
-        serviceConfigure.settingFallback("car_manage", "http", "47.96.169.97", 8001, "api");
-        serviceConfigure.setInterfaceConnectorClass(HttpInterfaceConnector.class);
-        Object response = SyncInvoker.call(serviceConfigure, PublishService.class, "fetchPublish", FetchPublishRequest.class, FetchPublishResponse.class, request);
+    public void testCallSuccess() throws Exception {
+        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
+        serviceConfigure.setInterfaceConnectorClass(MockHelloSuccessInterfaceConnector.class);
+        serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");
+        SyncInvoker invoker = new SyncInvoker();
+        InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
+        InterfaceDefinition interfaceDefinition = InterfaceDefinition.builder().channel("test-channel").txNo("010").version("1").build();
+        InterfaceChannel interfaceChannel = new InterfaceChannel();
+        interfaceChannel.setChannel("test-channel");
+        interfaceChannel.getInterfaces().add(interfaceDefinition);
+        serviceFactory.getMetadataRegister().register(interfaceMetadata);
+        serviceFactory.getDefinitionRegister().register(interfaceChannel);
+        HelloRequest request = new HelloRequest();
+        request.setName("test");
+        HelloResponse response = (HelloResponse) invoker.call(serviceFactory, PublishService.class, "fetchPublish", HelloRequest.class, HelloResponse.class, request);
         System.out.println(response);
+        Assert.assertEquals("0000", response.getRspCode());
+        Assert.assertEquals("成功", response.getRspDesc());
+        Assert.assertEquals("hello," + request.getName(), response.getText());
     }
 
     @Test
-    public void testSync2() throws Exception {
-        InterfaceMetadata metadata = new InterfaceMetadata();
-        metadata.setChannel("test-channel");
-        metadata.setTxNo("010");
-        metadata.setVersion("1");
-        metadata.setInterfaceClass(HelloService.class);
-        metadata.setInterfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class));
-        Map metadatas = new HashMap();
-        metadatas.put("test-channel", new HashSet(Arrays.asList(metadata)));
-        ServiceRegistry.initMetadataSet(metadatas);
-        InterfaceChannel channel = new InterfaceChannel();
-        channel.setChannel("test-channel");
-        InterfaceDefinition interfaceDefinition = new InterfaceDefinition();
-        interfaceDefinition.setChannel("test-channel");
-        interfaceDefinition.setTxNo("010");
-        interfaceDefinition.setVersion("1");
-        interfaceDefinition.setEncryptAlgorithm("AES");
-        interfaceDefinition.setDecryptAlgorithm("");
-        interfaceDefinition.setSignAlgorithm("SHA512");
-        interfaceDefinition.setVerifyAlgorithm("");
-        interfaceDefinition.setUseTokenAsPassword(false);
-        channel.getInterfaces().add(interfaceDefinition);
-        ServiceRegistry.initChannels(Arrays.asList(channel));
+    public void testCallFailure() throws Exception {
+        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
+        serviceConfigure.setInterfaceConnectorClass(MockHelloFailureInterfaceConnector.class);
+        serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");
+        SyncInvoker invoker = new SyncInvoker();
+        InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
+        InterfaceDefinition interfaceDefinition = InterfaceDefinition.builder().channel("test-channel").txNo("010").version("1").build();
+        InterfaceChannel interfaceChannel = new InterfaceChannel();
+        interfaceChannel.setChannel("test-channel");
+        interfaceChannel.getInterfaces().add(interfaceDefinition);
+        serviceFactory.getMetadataRegister().register(interfaceMetadata);
+        serviceFactory.getDefinitionRegister().register(interfaceChannel);
         HelloRequest request = new HelloRequest();
-        request.setName("张三");
-        ServiceConfigure serviceConfigure = ServiceFactory.getServiceConfigure();
-        serviceConfigure.setPassword("");
-        serviceConfigure.setInterfaceConnectorClass(MockHelloInterfaceConnector.class);
-        Object response = SyncInvoker.call(serviceConfigure, HelloService.class, "hello", HelloRequest.class, HelloResponse.class, request);
-        System.out.println(response);
-    }
-
-    @Test
-    public void testSync3() throws Exception {
-        InterfaceMetadata metadata = new InterfaceMetadata();
-        metadata.setChannel("test-channel");
-        metadata.setTxNo("010");
-        metadata.setVersion("1");
-        metadata.setInterfaceClass(HelloService.class);
-        metadata.setInterfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class));
-        Map metadatas = new HashMap();
-        metadatas.put("test-channel", new HashSet(Arrays.asList(metadata)));
-        ServiceRegistry.initMetadataSet(metadatas);
-        InterfaceChannel channel = new InterfaceChannel();
-        channel.setChannel("test-channel");
-        InterfaceDefinition interfaceDefinition = new InterfaceDefinition();
-        interfaceDefinition.setChannel("test-channel");
-        interfaceDefinition.setTxNo("010");
-        interfaceDefinition.setVersion("1");
-        interfaceDefinition.setEncryptAlgorithm("AES");
-        interfaceDefinition.setDecryptAlgorithm("AES");
-        interfaceDefinition.setSignAlgorithm("SHA512");
-        interfaceDefinition.setVerifyAlgorithm("");
-        interfaceDefinition.setUseTokenAsPassword(false);
-        channel.getInterfaces().add(interfaceDefinition);
-        ServiceRegistry.initChannels(Arrays.asList(channel));
-        HelloRequest request = new HelloRequest();
-        request.setName("张三");
-        ServiceConfigure serviceConfigure = ServiceFactory.getServiceConfigure();
-        serviceConfigure.setPassword("");
-        serviceConfigure.setInterfaceConnectorClass(MockHelloInterfaceConnector2.class);
-        Object response = SyncInvoker.call(serviceConfigure, HelloService.class, "hello", HelloRequest.class, HelloResponse.class, request);
-        System.out.println(response);
+        request.setName("test");
+        try {
+            HelloResponse response = (HelloResponse) invoker.call(serviceFactory, PublishService.class, "fetchPublish", HelloRequest.class, HelloResponse.class, request);
+            Assert.fail("不应该到这里");
+        } catch (RemoteInterfaceExecutionException e) {
+            Assert.assertEquals("sync call is failure, cause 系统正在维护，请稍后重试！(998)!", e.getMessage());
+        }
+        Assert.fail("不应该到这里");
     }
 }

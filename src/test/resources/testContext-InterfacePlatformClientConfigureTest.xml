@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd">
+    <!-- 配置接口平台配置对象 -->
+    <bean class="com.rnkrsoft.platform.client.spring.InterfacePlatformClientConfigure">
+        <!--配置远程网关配置-->
+        <property name="configure">
+            <bean class="com.rnkrsoft.platform.client.spring.ConfigureAddress">
+                <property name="ssl" value="false"/>
+                <property name="host" value="localhost"/>
+                <property name="port" value="80"/>
+                <property name="contextPath" value="configure"/>
+            </bean>
+        </property>
+        <!--失败回退网关地址-->
+        <property name="fallbackGateways">
+            <array>
+                <bean class="com.rnkrsoft.platform.client.spring.GatewayAddress">
+                    <property name="channel" value="public"/>
+                    <property name="ssl" value="false"/>
+                    <property name="host" value="localhost"/>
+                    <property name="port" value="80"/>
+                    <property name="contextPath" value="api"/>
+                </bean>
+                <bean class="com.rnkrsoft.platform.client.spring.GatewayAddress">
+                    <property name="channel" value="test-channel"/>
+                    <property name="ssl" value="false"/>
+                    <property name="host" value="localhost"/>
+                    <property name="port" value="80"/>
+                    <property name="contextPath" value="api"/>
+                </bean>
+            </array>
+        </property>
+        <!--密钥向量-->
+        <property name="keyVector" value="1234567890654321"/>
+        <!--固定密码-->
+        <property name="password" value="1234567890"/>
+        <!--拉取远程网关配置间隔 大于0周期性拉取-->
+        <property name="fetchConfigureIntervalSecond" value="10"/>
+        <!--拉取远程元信息间隔 大于0周期性拉取-->
+        <property name="fetchMetadataIntervalSecond" value="20"/>
+        <!--扫描服务包路径-->
+        <property name="basePackages">
+            <array>
+                <value>com.rnkrsoft.platform.client.demo</value>
+            </array>
+        </property>
+    </bean>
+
+</beans>

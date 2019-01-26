@@ -66,7 +66,7 @@ import java.lang.reflect.Type;
  * overwrite them with the deserialized values specified in Json. You should also ensure that a
  * <i>new</i> object is returned, not a common object since its fields will be overwritten.
  * The developer will need to register {@code IdInstanceCreator} with Gson as follows:</p>
- * <p>
+ * <p/>
  * <pre>
  * Gson gson = new GsonBuilder().registerTypeAdapter(Id.class, new IdInstanceCreator()).create();
  * </pre>

@@ -25,7 +25,7 @@ import static java.net.Proxy.Type.HTTP;
 /**
  * A fluid interface for making HTTP requests using an underlying
  * {@link HttpURLConnection} (or sub-class).
- * <p>
+ * <p/>
  * Each instance supports making a single request and cannot be reused for
  * further requests.
  */
@@ -783,7 +783,7 @@ public class HttpRequest {
 
     /**
      * Encode the given URL as an ASCII {@link String}
-     * <p>
+     * <p/>
      * This method ensures the path and query segments of the URL are properly
      * encoded such as ' ' characters being encoded to '%20' or any UTF-8
      * characters that are non-ASCII. No encoding of URLs is done by default by
@@ -825,7 +825,7 @@ public class HttpRequest {
 
     /**
      * Append given map as query parameters to the base URL
-     * <p>
+     * <p/>
      * Each map entry's key will be a parameter name and the value's
      * {@link Object#toString()} will be the parameter value.
      *
@@ -859,7 +859,7 @@ public class HttpRequest {
 
     /**
      * Append given name/value pairs as query parameters to the base URL
-     * <p>
+     * <p/>
      * The params argument is interpreted as a sequence of name/value pairs so the
      * given number of params must be divisible by 2.
      *
@@ -1219,7 +1219,7 @@ public class HttpRequest {
 
     /**
      * Set the 'http.keepAlive' property to the given value.
-     * <p>
+     * <p/>
      * This setting will apply to all requests.
      *
      * @param keepAlive
@@ -1230,7 +1230,7 @@ public class HttpRequest {
 
     /**
      * Set the 'http.maxConnections' property to the given value.
-     * <p>
+     * <p/>
      * This setting will apply to all requests.
      *
      * @param maxConnections
@@ -1242,7 +1242,7 @@ public class HttpRequest {
     /**
      * Set the 'http.proxyHost' and 'https.proxyHost' properties to the given host
      * value.
-     * <p>
+     * <p/>
      * This setting will apply to all requests.
      *
      * @param host
@@ -1255,7 +1255,7 @@ public class HttpRequest {
     /**
      * Set the 'http.proxyPort' and 'https.proxyPort' properties to the given port
      * number.
-     * <p>
+     * <p/>
      * This setting will apply to all requests.
      *
      * @param port
@@ -1268,9 +1268,9 @@ public class HttpRequest {
 
     /**
      * Set the 'http.nonProxyHosts' property to the given host values.
-     * <p>
+     * <p/>
      * Hosts will be separated by a '|' character.
-     * <p>
+     * <p/>
      * This setting will apply to all requests.
      *
      * @param hosts
@@ -1289,7 +1289,7 @@ public class HttpRequest {
 
     /**
      * Set property to given value.
-     * <p>
+     * <p/>
      * Specifying a null value will cause the property to be cleared
      *
      * @param name
@@ -1410,7 +1410,7 @@ public class HttpRequest {
     /**
      * Set whether or not to ignore exceptions that occur from calling
      * {@link Closeable#close()}
-     * <p>
+     * <p/>
      * The default value of this setting is <code>true</code>
      *
      * @param ignore
@@ -1568,10 +1568,10 @@ public class HttpRequest {
 
     /**
      * Set the size used when buffering and copying between streams
-     * <p>
+     * <p/>
      * This size is also used for send and receive buffers created for both char
      * and byte arrays
-     * <p>
+     * <p/>
      * The default buffer size is 8,192 bytes
      *
      * @param size
@@ -1586,7 +1586,7 @@ public class HttpRequest {
 
     /**
      * Get the configured buffer size
-     * <p>
+     * <p/>
      * The default buffer size is 8,192 bytes
      *
      * @return buffer size
@@ -1598,14 +1598,14 @@ public class HttpRequest {
     /**
      * Set whether or not the response body should be automatically uncompressed
      * when read from.
-     * <p>
+     * <p/>
      * This will only affect requests that have the 'Content-Encoding' response
      * header set to 'gzip'.
-     * <p>
+     * <p/>
      * This causes all receive methods to use a {@link GZIPInputStream} when
      * applicable so that higher level streams and readers can read the data
      * uncompressed.
-     * <p>
+     * <p/>
      * Setting this option does not cause any request headers to be set
      * automatically so {@link #acceptGzipEncoding()} should be used in
      * conjunction with this setting to tell the server to gzip the response.
@@ -1633,7 +1633,7 @@ public class HttpRequest {
 
     /**
      * Get response as {@link String} in given character set
-     * <p>
+     * <p/>
      * This will fall back to using the UTF-8 character set if the given charset
      * is null
      *
@@ -1766,7 +1766,7 @@ public class HttpRequest {
 
     /**
      * Get reader to response body using given character set.
-     * <p>
+     * <p/>
      * This will fall back to using the UTF-8 character set if the given charset
      * is null
      *
@@ -2093,7 +2093,7 @@ public class HttpRequest {
 
     /**
      * Get all parameters from header value in response
-     * <p>
+     * <p/>
      * This will be all key=value pairs after the first ';' that are separated by
      * a ';'
      *
@@ -2868,7 +2868,7 @@ public class HttpRequest {
 
     /**
      * Write stream to request body
-     * <p>
+     * <p/>
      * The given stream will be closed once sending completes
      *
      * @param input
@@ -2887,7 +2887,7 @@ public class HttpRequest {
 
     /**
      * Write reader to request body
-     * <p>
+     * <p/>
      * The given reader will be closed once sending completes
      *
      * @param input
@@ -2913,7 +2913,7 @@ public class HttpRequest {
 
     /**
      * Write char sequence to request body
-     * <p>
+     * <p/>
      * The charset configured via {@link #contentType(String)} will be used and
      * UTF-8 will be used if it is unset.
      *
@@ -2948,7 +2948,7 @@ public class HttpRequest {
 
     /**
      * Write the values in the map as form data to the request body
-     * <p>
+     * <p/>
      * The pairs specified will be URL-encoded in UTF-8 and sent with the
      * 'application/x-www-form-urlencoded' content-type
      *
@@ -2962,7 +2962,7 @@ public class HttpRequest {
 
     /**
      * Write the key and value in the entry as form data to the request body
-     * <p>
+     * <p/>
      * The pair specified will be URL-encoded in UTF-8 and sent with the
      * 'application/x-www-form-urlencoded' content-type
      *
@@ -2976,7 +2976,7 @@ public class HttpRequest {
 
     /**
      * Write the key and value in the entry as form data to the request body
-     * <p>
+     * <p/>
      * The pair specified will be URL-encoded and sent with the
      * 'application/x-www-form-urlencoded' content-type
      *
@@ -2992,7 +2992,7 @@ public class HttpRequest {
 
     /**
      * Write the name/value pair as form data to the request body
-     * <p>
+     * <p/>
      * The pair specified will be URL-encoded in UTF-8 and sent with the
      * 'application/x-www-form-urlencoded' content-type
      *
@@ -3008,7 +3008,7 @@ public class HttpRequest {
 
     /**
      * Write the name/value pair as form data to the request body
-     * <p>
+     * <p/>
      * The values specified will be URL-encoded and sent with the
      * 'application/x-www-form-urlencoded' content-type
      *
@@ -3058,7 +3058,7 @@ public class HttpRequest {
 
     /**
      * Configure HTTPS connection to trust all certificates
-     * <p>
+     * <p/>
      * This method does nothing if the current request is not a HTTPS request
      *
      * @return this request
@@ -3076,7 +3076,7 @@ public class HttpRequest {
      * Configure HTTPS connection to trust all hosts using a custom
      * {@link HostnameVerifier} that always returns <code>true</code> for each
      * host verified
-     * <p>
+     * <p/>
      * This method does nothing if the current request is not a HTTPS request
      *
      * @return this request

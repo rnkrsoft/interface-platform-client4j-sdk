@@ -63,7 +63,7 @@ public class LoginRequest{
     String mobileNo;
      @ApidocElement(value = "密码")
     String password;
-    
+
     //--------------------------
     //getter or setter
 }
@@ -74,7 +74,7 @@ public class LoginRequest{
 public class LoginResponse{
     @ApidocElement(value = "令牌")
     String token;
-    
+
     //--------------------------
     //getter or setter
 }
@@ -82,53 +82,41 @@ public class LoginResponse{
 
 客户端进行同步方式调用远程接口
 ```java
-    ServiceFactory.settingConfigure(false, "gateway-configure.xxx.com", 80, "/configure");
+    ServiceFactory serviceFactory = new ServiceFactory();
+    serviceFactory.settingConfigure(false, "gateway-configure.xxx.com", 80, "/configure");
      //设置接口连接器实现
-    ServiceFactory.getServiceConfigure().setInterfaceConnectorClass(HttpInterfaceConnector.class);
+    serviceFactory.getServiceConfigure().setInterfaceConnectorClass(HttpInterfaceConnector.class);
     //设置远程配置获取失败后的退回接口服务器信息
-    ServiceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
-    ServiceFactory.settingFallback("public", false, "localhost", 80, "/api");
+    serviceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
+    serviceFactory.settingFallback("public", false, "localhost", 80, "/api");
     //是否自动获取定位信息
-    ServiceFactory.getServiceConfigure().setAutoLocate(true);
-    ServiceFactory.getServiceConfigure().setDeviceManufacturer("huawei");
-    ServiceFactory.getServiceConfigure().setDeviceModel("honer6");
-    ServiceFactory.getServiceConfigure().setMacAddress("44-45-53-54-00-00");
+    serviceFactory.getServiceConfigure().setAutoLocate(true);
+    serviceFactory.getServiceConfigure().setDeviceManufacturer("huawei");
+    serviceFactory.getServiceConfigure().setDeviceModel("honer6");
+    serviceFactory.getServiceConfigure().setMacAddress("44-45-53-54-00-00");
     //用户版本号
-    ServiceFactory.getServiceConfigure().setAppVersion("4.0.0");
+    serviceFactory.getServiceConfigure().setAppVersion("4.0.0");
     //如果不使用TOKEN作为密码时的固定密码
-    ServiceFactory.getServiceConfigure().setPassword("1234567890123456");
+    serviceFactory.getServiceConfigure().setPassword("1234567890123456");
     //加密时或者解密时的秘钥向量 默认配置，在configure无法成功获取时使用
-    ServiceFactory.getServiceConfigure().setKeyVector("1234567890654321");
+    serviceFactory.getServiceConfigure().setKeyVector("1234567890654321");
     //用户标识
-    ServiceFactory.getServiceConfigure().setUid("sssss");
-    ServiceFactory.getServiceConfigure().setUic("2542563b-a153-48af-84d4-d40542c8bc3b");
+    serviceFactory.getServiceConfigure().setUid("sssss");
+    serviceFactory.getServiceConfigure().setUic("2542563b-a153-48af-84d4-d40542c8bc3b");
     //启用DEBUG模式，会进行日志的记录
-    ServiceFactory.getServiceConfigure().enableDebug();
+    serviceFactory.getServiceConfigure().enableDebug();
 	//启用啰嗦模式，只在DEBUG模式启动的情况下生效
-    ServiceFactory.getServiceConfigure().enableVerbosLog();
+    serviceFactory.getServiceConfigure().enableVerbosLog();
 	//向客户端中注册用户服务类, 安卓环境下只能使用该方法注册服务
-    ServiceFactory.addServiceClasses(UserService.class);
+    serviceFactory.addServiceClasses(UserService.class);
 	//扫描指定包路径下的标注有@ApidocService的接口类，与addServiceClasses可以同时使用
-    ServiceFactory.scan();
+    serviceFactory.scan();
     //增加需要调用的服务
-    //ServiceFactory.addServiceClasses(HelloService.class);
+    //serviceFactory.addServiceClasses(HelloService.class);
     //初始化
-    ServiceFactory.init(0);
+    serviceFactory.init(0);
     //如果需要处理拉取远程的接口错误 与 ServiceFactory.init(0)不能并列使用
-    ServiceFactory.init();
-    ServiceFactory.fetchRemoteMetadata(new AsyncHandler<Boolean>() {
-        @Override
-        public void fail(String code, String desc, String detail) {
-            //拉取远程的接口元信息定义失败的提示
-            System.out.println("-------------" + desc);
-        }
-
-        @Override
-        public void success(Boolean response) {
-            //拉取远程的接口元信息定义成功后提示信息或者后续操作
-            System.out.println("-------------" + "success");
-        }
-    });
+    serviceFactory.init();
 
     //获取业务的门面类
     UserService userService = ServiceFactory.get(UserService.class);

@@ -28,7 +28,7 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  * encoded value to a stream, one token at a time. The stream includes both
  * literal values (strings, numbers, booleans and nulls) as well as the begin
  * and end delimiters of objects and arrays.
- * <p>
+ * <p/>
  * <h3>Encoding JSON</h3>
  * To encode your data as JSON, create a new {@code JsonWriter}. Each JSON
  * document must contain one top-level array or object. Call methods on the
@@ -45,7 +45,7 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  * appropriate {@link #value} method or by nesting other objects or arrays.
  * Finally close the object using {@link #endObject()}.
  * </ul>
- * <p>
+ * <p/>
  * <h3>Example</h3>
  * Suppose we'd like to encode a stream of messages such as the following: <pre> {@code
  * [
@@ -75,7 +75,7 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  *     writeMessagesArray(writer, messages);
  *     writer.close();
  *   }
- * <p>
+ * <p/>
  *   public void writeMessagesArray(JsonWriter writer, List<Message> messages) throws IOException {
  *     writer.beginArray();
  *     for (Message message : messages) {
@@ -83,7 +83,7 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  *     }
  *     writer.endArray();
  *   }
- * <p>
+ * <p/>
  *   public void writeMessage(JsonWriter writer, Message message) throws IOException {
  *     writer.beginObject();
  *     writer.name("id").value(message.getId());
@@ -98,14 +98,14 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  *     writeUser(writer, message.getUser());
  *     writer.endObject();
  *   }
- * <p>
+ * <p/>
  *   public void writeUser(JsonWriter writer, User user) throws IOException {
  *     writer.beginObject();
  *     writer.name("name").value(user.getName());
  *     writer.name("followers_count").value(user.getFollowersCount());
  *     writer.endObject();
  *   }
- * <p>
+ * <p/>
  *   public void writeDoublesArray(JsonWriter writer, List<Double> doubles) throws IOException {
  *     writer.beginArray();
  *     for (Double value : doubles) {
@@ -113,7 +113,7 @@ import static com.rnkrsoft.com.google.gson.stream.JsonScope.*;
  *     }
  *     writer.endArray();
  *   }}</pre>
- * <p>
+ * <p/>
  * <p>Each {@code JsonWriter} may be used to write a single JSON stream.
  * Instances of this class are not thread safe. Calls that would result in a
  * malformed JSON string will fail with an {@link IllegalStateException}.

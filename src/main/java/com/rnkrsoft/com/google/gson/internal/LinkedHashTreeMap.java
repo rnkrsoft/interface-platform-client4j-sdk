@@ -25,7 +25,7 @@ import java.util.*;
  * A map of comparable keys to values. Unlike {@code TreeMap}, this class uses
  * insertion order for iteration order. Comparison order is only used as an
  * optimization for efficient insertion and removal.
- * <p>
+ * <p/>
  * <p>This implementation was derived from Android 4.1's TreeMap and
  * LinkedHashMap classes.
  */
@@ -206,7 +206,7 @@ public final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements 
     /**
      * Returns this map's entry that has the same key and value as {@code
      * entry}, or null if this map has no such entry.
-     * <p>
+     * <p/>
      * <p>This method uses the comparator for key equality rather than {@code
      * equals}. If this map's comparator isn't consistent with equals (such as
      * {@code String.CASE_INSENSITIVE_ORDER}), then {@code remove()} and {@code
@@ -621,7 +621,7 @@ public final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements 
      * Walks an AVL tree in iteration order. Once a node has been returned, its
      * left, right and parent links are <strong>no longer used</strong>. For this
      * reason it is safe to transform these links as you walk a tree.
-     * <p>
+     * <p/>
      * <p><strong>Warning:</strong> this iterator is destructive. It clears the
      * parent node of all nodes in the tree. It is an error to make a partial
      * iteration of a tree.
@@ -666,12 +666,12 @@ public final class LinkedHashTreeMap<K, V> extends AbstractMap<K, V> implements 
      * <li>Call {@link #add} <i>size</i> times with increasing values.
      * <li>Call {@link #root} to get the root of the balanced tree.
      * </ol>
-     * <p>
+     * <p/>
      * <p>The returned tree will satisfy the AVL constraint: for every node
      * <i>N</i>, the height of <i>N.left</i> and <i>N.right</i> is different by at
      * most 1. It accomplishes this by omitting deepest-level leaf nodes when
      * building trees whose size isn't a power of 2 minus 1.
-     * <p>
+     * <p/>
      * <p>Unlike rebuilding a tree from scratch, this approach requires no value
      * comparisons. Using this class to create a tree of size <i>S</i> is
      * {@code O(S)}.

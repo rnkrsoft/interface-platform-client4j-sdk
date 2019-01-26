@@ -535,8 +535,8 @@ public final class Gson {
      *                  this type by using the {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example,
      *                  to get the type for {@code Collection<Foo>}, you should use:
      *                  <pre>
-     *                  Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                  </pre>
+     *                                   Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                   </pre>
      * @return Json representation of {@code src}
      * @since 1.4
      */
@@ -577,8 +577,8 @@ public final class Gson {
      *                  this type by using the {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example,
      *                  to get the type for {@code Collection<Foo>}, you should use:
      *                  <pre>
-     *                  Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                  </pre>
+     *                                   Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                   </pre>
      * @return Json representation of {@code src}
      */
     public String toJson(Object src, Type typeOfSrc) {
@@ -619,8 +619,8 @@ public final class Gson {
      *                  this type by using the {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example,
      *                  to get the type for {@code Collection<Foo>}, you should use:
      *                  <pre>
-     *                  Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                  </pre>
+     *                                   Type typeOfSrc = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                                   </pre>
      * @param writer    Writer to which the Json representation of src needs to be written.
      * @throws JsonIOException if there was a problem writing to the writer
      * @since 1.2
@@ -776,8 +776,8 @@ public final class Gson {
      *                {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example, to get the type for
      *                {@code Collection<Foo>}, you should use:
      *                <pre>
-     *                Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                </pre>
+     *                               Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                               </pre>
      * @return an object of type T from the string. Returns {@code null} if {@code json} is {@code null}.
      * @throws JsonParseException  if json is not a valid representation for an object of type typeOfT
      * @throws JsonSyntaxException if json is not a valid representation for an object of type
@@ -829,8 +829,8 @@ public final class Gson {
      *                {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example, to get the type for
      *                {@code Collection<Foo>}, you should use:
      *                <pre>
-     *                Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                </pre>
+     *                               Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                               </pre>
      * @return an object of type T from the json. Returns {@code null} if {@code json} is at EOF.
      * @throws JsonIOException     if there was a problem reading from the Reader
      * @throws JsonSyntaxException if json is not a valid representation for an object of type
@@ -931,8 +931,8 @@ public final class Gson {
      *                {@link com.rnkrsoft.com.google.gson.reflect.TypeToken} class. For example, to get the type for
      *                {@code Collection<Foo>}, you should use:
      *                <pre>
-     *                Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
-     *                </pre>
+     *                               Type typeOfT = new TypeToken&lt;Collection&lt;Foo&gt;&gt;(){}.getType();
+     *                               </pre>
      * @return an object of type T from the json. Returns {@code null} if {@code json} is {@code null}.
      * @throws JsonSyntaxException if json is not a valid representation for an object of type typeOfT
      * @since 1.3
