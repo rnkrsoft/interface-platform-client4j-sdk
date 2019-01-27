@@ -1,5 +1,15 @@
-# 接口平台客户端 for Java
+## 接口平台客户端 for Java
 采用原生Java编写，内置Gson,实现零依赖。Gson版权归Google所有，其余代码归rnkrsoft.com所有。
+
+[![Maven central](https://maven-badges.herokuapp.com/maven-central/com.rnkrsoft.platform/interface-platform-client4j-sdk/badge.svg)](http://search.maven.org/#search|ga|1|g%3A%22com.rnkrsoft.platform%22%20AND%20a%3A%22interface-platform-client4j-sdk%22)
+
+```xml
+<dependency>
+    <groupId>com.rnkrsoft.platform</groupId>
+    <artifactId>interface-platform-client4j-sdk</artifactId>
+    <version>最新版本号</version>
+</dependency>
+```
 
 ## 原理
 
@@ -397,4 +407,69 @@ public class HelloResponse extends AbstractResponse implements TokenAble{
 }
 ```
 
-区别在于实现了TokenAble接口，他可以实现在返回应答中，自动提取Token方法ServiceFactory中，在需要登录验证的接口中Request对象只要实现TokenWritable接口则可以自动填入Token值
+区别在于实现了TokenAble接口，他可以实现在返回应答中，自动提取Token方法ServiceFactory中，在需要登录验证的接口中Request对象自动填入TOKEN值。如果TOKEN错误则会收到错误InterfaceRspCode.TOKEN_ILLEGAL("020","TOKEN无效").
+
+
+
+## 错误码
+
+| 枚举名称 | 代码 | 描述 | 原因 |
+| ---- | ---- | ---- | ---- |
+|    SUCCESS| 000| 成功 | 正常情况 |
+|   PARAM_IS_NULL| 001| 参数不能为空 | 有参数为null时返回 |
+|    TIMESTAMP_ILLEGAL| 002| 系统时间与北京时间不一致，请校准后再重试 | 调用端时间与服务器端时间不一致导致 |
+|   REQUEST_SIGN_ILLEGAL| 003| 请求签字信息无效 | 请求时，服务器无法校验签字信息 |
+|    ACCOUNT_HAS_LOGIN_ON_OTHER_DEVICE| 004| 您的帐号已在其它设备登录 | 存在其他客户端登录相同的账号引发 |
+|   PARAM_TYPE_NOT_MATCH| 005| 参数类型不匹配 |  |
+|    USER_IS_NOT_LOGIN| 006| 用户未登录 | 调用需要校验的业务接口前，为调用登录接口导致服务器没有TOKEN值 |
+|   INTERFACE_IS_ILLEGAL| 007| 接口无效 |  |
+|    INTERFACE_IS_DEV| 008| 接口正在开发 |  |
+|   INTERFACE_HAPPEN_UNKNOWN_ERROR| 009| 接口发生未知错误 | 服务器在执行业务代码时发生了错误 |
+|    INTERFACE_EXECUTE_HAPPENS_ERROR| 010| 接口执行发生错误 | 服务器在执行业务代码时发生了错误 |
+|   INTERFACE_NOT_DEFINED| 011| 接口未定义 | 服务器中未配置正在调用的交易码映射关系 |
+|    INTERFACE_SERVICE_CLASS_NOT_FOUND| 012| 接口对应的服务类不存在 | 服务器中的业务代码不存在交易码映射的服务类，可能为开发或者部署导致 |
+|   INTERFACE_SERVICE_METHOD_NOT_EXIST| 013| 接口对应的服务方法不存在 | 服务器中的业务代码存在服务类，但是不存在交易码映射的方法，可能为开发或者部署导致 |
+|    INTERFACE_EXISTS_OTHER_VERSION| 014| 存在其他版本的接口，但不存在当前版本号的接口 |  |
+|   CHANNEL_NOT_EXISTS| 015| 接口通道不存在 | 调用服务器上的接口时，服务器未配置channel中指定的通道 |
+|    DECRYPT_HAPPENS_FAIL| 016| 解密发生错误 | 服务器在进行请求数据解密时发生错误 |
+|   VERIFY_HAPPENS_FAIL| 017| 验签发生错误 | 服务器在进行请求数据验证签字时发生错误 |
+|    SIGN_HAPPENS_FAIL| 018| 签字发生错误 | 服务器在进行应答数据签字时发生错误 |
+|   ENCRYPT_HAPPENS_FAIL| 019| 加密发生错误 | 服务器在进行应答数据加密时发生错误 |
+|    TOKEN_ILLEGAL| 020| TOKEN无效 | 调用时发送的TOKEN值在服务器端不存在，有可能被攻击也有可能调用了不同的环境导致 |
+|   UPDATE_REQUEST_HAPPENS_ERROR| 021| 更新请求信息发生错误 |  |
+|    UPDATE_RESPONSE_HAPPENS_ERROR| 022| 更新应答信息发生错误 |  |
+|   REQUEST_DATA_IS_NULL| 023| 请求数据为空 | 调用请求时未传data数据域中的内容导致 |
+|    TX_NO_IS_NULL| 024| 交易码为空 | 调用请求时未传txNo数据域中的交易码导致 |
+|   TOKEN_SERVICE_NOT_EXISTS| 025| TOKEN服务不存在 | 服务器端未配置TokenService实现导致 |
+|    DATA_CONVERT_HAPPENS_ERROR| 026| 数据转换发生错误 |  |
+|   DATA_CONVERT_SERVICE_EXISTS_ERROR| 027| 数据转换服务存在错误 |  |
+|    DEVICE_CAN_NOT_ACCESS_INTERNET| 028  |设备不能访问互联网||
+|   NOT_SUPPORTED_ENCRYPT_DECRYPT_ALGORITHM| 029 |不支持的加密解密算法||
+|    NOT_SUPPORTED_SIGN_VERIFY_ALGORITHM| 030 |不支持的签字验签算法||
+|   INVALID_COMMUNICATION_MESSAGE| 031 |无效的通信报文||
+|    RESPONSE_DATA_IS_NULL| 032| 应答数据为空 |  |
+|   SOCKET_PERMISSION_DENIED| 033| 无网络权限 | 客户端在调用时无网络权限，一般发生在安卓平台上，需要配置网络权限 |
+|    INTERFACE_PLATFORM_GATEWAY_NOT_FOUND| 034| 接口平台网关未发现 |  |
+|   CONFIGURE_GATEWAY_NOT_FOUND| 035| 配置网关未发现 |  |
+|    USE_TOKEN_AS_PASSWORD_BUT_TOKEN_IS_NULL| 036 |使用TOKEN作为密码，但是TOKEN为空||
+|   ENCRYPT_DATA_IS_NULL| 037| 加密数据为空 |  |
+|    DECRYPT_DATA_IS_NULL| 038| 解密数据为空 |  |
+|   SYNC_SEND_SERVICE_HAPPENS_ERROR| 039| 同步发送服务发生错误 |  |
+|    UNSUPPORTED_DIRECTION| 040| 不支持的方向 |  |
+|   GATEWAY_CONFIGURE_IS_NOT_CONFIG| 041| 网关配置信息未配置 |  |
+|    SIGN_ILLEGAL| 042 |签字信息无效||
+|   VERSION_ILLEGAL| 043| 版本号无效 |  |
+|    INTERFACE_CONNECTOR_IS_NOT_CONFIG| 044| 接口连接器未配置 |  |
+|   OVER_FLOW_LIMITING| 045| 超过流量限制 |  |
+|    CONVERT_REQUEST_DATA_FAIL| 046| 转换请求数据失败 |  |
+|   CONVERT_RESPONSE_DATA_FAIL| 047| 转换应答数据失败 |  |
+|    REQUEST_DATA_ILLEGAL| 048| 请求数据无效，请重新输入！ |  |
+|   ENVIRONMENT_IS_ALREADY_DISABLED| 049| 环境已经禁用 |  |
+|    LOCATION_PROVIDER_IS_NOT_CONFIG| 050| 定位提供者未配置！ |  |
+|   CONFIGURE_PROVIDER_IS_NOT_CONFIG| 051| 配置提供者未配置！ |  |
+|    CLIENT_IS_NOT_INITIALIZED| 052| 客服端未初始化！ |  |
+|   INTERFACE_FALLBACK_GATEWAY_IS_NOT_CONFIG| 053| 接口失败回退网关未配置！ |  |
+|    FETCH_INTERFACE_METADATA_IS_FAILURE| 054| 获取接口元信息失败！ |  |
+|   INTERFACE_HAPPENS_SERVER_ERROR| 055| 执行接口发生服务器错误！ |  |
+|    SYSTEM_MAINTENANCE| 998| 系统正在维护，请稍后重试！ |  |
+|   FAIL| 999| 错误 |  |
