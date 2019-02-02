@@ -181,8 +181,8 @@ public class JavaAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRespo
             }
         } else {
             apiRequest.setChannel(PUBLIC_CHANNEL);
-            settingBuilder.httpConnectTimeoutSecond(10);
-            settingBuilder.httpReadTimeoutSecond(10);
+            settingBuilder.httpConnectTimeoutSecond(5);
+            settingBuilder.httpReadTimeoutSecond(5);
         }
 
         log.debug("asynchronous call ApiRequest:{} ", apiRequest);

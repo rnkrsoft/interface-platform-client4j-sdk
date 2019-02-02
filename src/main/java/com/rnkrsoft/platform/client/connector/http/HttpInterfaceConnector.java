@@ -89,7 +89,7 @@ public class HttpInterfaceConnector implements InterfaceConnector {
                 response.setCode(InterfaceRspCode.SOCKET_PERMISSION_DENIED);
                 return response;
             } else {
-                log.error(MessageFormatter.format("call '{}', gateway not found ,cause: {}", url), e);
+                log.error(MessageFormatter.format("call '{}', gateway not found", url), e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
                 return response;
@@ -102,28 +102,28 @@ public class HttpInterfaceConnector implements InterfaceConnector {
                 response = GSON.fromJson(responseJson, ApiResponse.class);
                 return response;
             } catch (JsonSyntaxException e) {
-                log.debug("call '{}' response happens json syntax error!, json {}", url, responseJson);
+                log.error("call '{}' response happens json syntax error!, json {}", url, responseJson, e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE);
                 return response;
             } catch (Exception e) {
-                log.debug("call '{}' response happens unknown error!, json {}, cause:'{}'", url, responseJson, e.getMessage());
+                log.error("call '{}' response happens unknown error!, json {}", url, responseJson, e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE);
                 return response;
             }
         } else if (http.notFound()) {
-            log.debug("call '{}' not found, cause gateway not found!", url);
+            log.error("call '{}' not found, cause gateway not found!", url);
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
             return response;
         } else if (http.serverError()) {
-            log.debug("call '{}' happens server error!", url);
+            log.error("call '{}' happens server error!", url);
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_HAPPENS_SERVER_ERROR);
             return response;
         } else {
-            log.debug("call '{}' happens unknown error! http code:{}", url, http.code());
+            log.error("call '{}' happens unknown error! http code:{}", url, http.code());
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.FAIL);
             return response;
