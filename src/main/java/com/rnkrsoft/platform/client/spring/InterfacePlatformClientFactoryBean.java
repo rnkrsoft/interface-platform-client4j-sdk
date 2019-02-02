@@ -7,6 +7,7 @@ import org.springframework.beans.factory.FactoryBean;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
+ * 接口平台客户端工厂Bean
  */
 public class InterfacePlatformClientFactoryBean<T> implements FactoryBean<T> {
     @Setter

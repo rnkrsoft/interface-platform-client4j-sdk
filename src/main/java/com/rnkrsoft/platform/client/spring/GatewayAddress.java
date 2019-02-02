@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
+ * 网关地址配置对象
  */
 @Data
 public final class GatewayAddress implements Serializable {

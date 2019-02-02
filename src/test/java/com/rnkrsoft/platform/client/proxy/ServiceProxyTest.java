@@ -27,7 +27,7 @@ public class ServiceProxyTest {
     public void testHellSuccess() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.generateSessionId();
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
         serviceFactory.getMetadataRegister().register(interfaceMetadata);
@@ -51,7 +51,7 @@ public class ServiceProxyTest {
     public void testHelloFailure() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.generateSessionId();
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
         serviceFactory.getMetadataRegister().register(interfaceMetadata);
@@ -77,7 +77,7 @@ public class ServiceProxyTest {
     public void testHelloAsyncSuccess() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.generateSessionId();
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
         serviceFactory.getMetadataRegister().register(interfaceMetadata);
@@ -110,7 +110,7 @@ public class ServiceProxyTest {
     public void testHelloAsyncFailure() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.generateSessionId();
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         InterfaceMetadata interfaceMetadata = InterfaceMetadata.builder().channel("test-channel").txNo("010").version("1").interfaceClass(HelloService.class).interfaceMethod(HelloService.class.getMethod("hello", HelloRequest.class)).build();
         serviceFactory.getMetadataRegister().register(interfaceMetadata);

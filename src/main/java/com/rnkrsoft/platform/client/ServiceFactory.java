@@ -89,7 +89,7 @@ public final class ServiceFactory {
     /**
      * 工厂类，不能实例化
      */
-    public ServiceFactory() {
+    private ServiceFactory() {
     }
 
     public boolean isInit() {
@@ -510,11 +510,18 @@ public final class ServiceFactory {
     private static final ServiceFactory INSTANCE = new ServiceFactory();
 
     /**
+     * 新建一个服务工厂对象
+     * @return 服务工厂对象
+     */
+    public final static ServiceFactory newInstance(){
+        return new ServiceFactory();
+    }
+    /**
      * 获取服务工厂的单例对象
      *
-     * @return 服务工厂单例对象
+     * @return 服务工厂对象
      */
-    public final static ServiceFactory getSingleInstance() {
+    public final static ServiceFactory getInstance() {
         return INSTANCE;
     }
 }

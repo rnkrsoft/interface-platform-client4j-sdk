@@ -6,6 +6,7 @@ import java.io.Serializable;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
+ * 远程网关配置地址
  */
 @Data
 public final class ConfigureAddress implements Serializable {

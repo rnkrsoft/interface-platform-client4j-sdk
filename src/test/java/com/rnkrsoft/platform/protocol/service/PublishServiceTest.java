@@ -10,7 +10,8 @@ import org.junit.Test;
 public class PublishServiceTest {
     @Test
     public void test1() throws NoSuchMethodException {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+
         serviceFactory.settingFallback("public", true, "gateway-public.zxevpop.com", 8001, "api");
         PublishService publishService = ServiceProxyFactory.newInstance(serviceFactory, PublishService.class);
         FetchPublishRequest request = new FetchPublishRequest();

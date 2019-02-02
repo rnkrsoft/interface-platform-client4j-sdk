@@ -23,6 +23,7 @@ import java.util.Set;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
+ * 接口平台服务扫描器
  */
 public class InterfacePlatformServiceScanner extends ClassPathBeanDefinitionScanner {
     static Logger log = LoggerFactory.getLogger(InterfacePlatformServiceScanner.class);

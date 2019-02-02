@@ -85,7 +85,7 @@ public class InterfacePlatformClientConfigure implements BeanDefinitionRegistryP
         if (fallbackGateways == null) {
             throw new NullPointerException("未配置回退配置！");
         }
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
         if (configure != null) {
             serviceFactory.settingConfigure(configure.ssl, configure.host, configure.port, configure.contextPath);
         }

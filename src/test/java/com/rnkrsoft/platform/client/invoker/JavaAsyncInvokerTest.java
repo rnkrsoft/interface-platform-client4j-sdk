@@ -29,7 +29,7 @@ public class JavaAsyncInvokerTest {
     public void testDoInBackgroundFailure() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.debug("begin");
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         serviceConfigure.setInterfaceConnectorClass(MockHelloFailureInterfaceConnector.class);
         serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");
@@ -66,7 +66,7 @@ public class JavaAsyncInvokerTest {
     public void testDoInBackgroundSuccess() throws Exception {
         final Logger logger = LoggerFactory.getLogger("");
         logger.debug("begin");
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         serviceConfigure.setInterfaceConnectorClass(MockHelloSuccessInterfaceConnector.class);
         serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");

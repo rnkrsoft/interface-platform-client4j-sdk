@@ -92,10 +92,10 @@ public class LoginResponse extends AbstractResponse implements TokenAble{
 
 客户端进行同步方式调用远程接口
 ```java
-    ServiceFactory serviceFactory = new ServiceFactory();
+    ServiceFactory serviceFactory =ServiceFactory.newInstance();
     serviceFactory.settingConfigure(false, "gateway-configure.xxx.com", 80, "/configure");
-//设置接口连接器实现
 
+    //设置接口连接器实现
     serviceFactory.getServiceConfigure().setInterfaceConnectorClass(HttpInterfaceConnector.class);
     //设置远程配置获取失败后的退回接口服务器信息
     serviceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
@@ -137,7 +137,7 @@ public class LoginResponse extends AbstractResponse implements TokenAble{
     });
 
     //获取业务的门面类
-    UserService userService = ServiceFactory.get(UserService.class);
+    UserService userService = serviceFactory.get(UserService.class);
 
     //构建一个业务对象
     LoginRequest request = new LoginRequest();
@@ -159,12 +159,12 @@ public class LoginResponse extends AbstractResponse implements TokenAble{
 
 
 ```java
- ServiceFactory serviceFactory = new ServiceFactory();
+ ServiceFactory serviceFactory =ServiceFactory.newInstance();
     serviceFactory.settingConfigure(false, "gateway-configure.xxx.com", 80, "/configure");
-//设置接口连接器实现
-serviceFactory.getServiceConfigure().setInterfaceConnectorClass(HttpInterfaceConnector.class);
+    //设置接口连接器实现
+    serviceFactory.getServiceConfigure().setInterfaceConnectorClass(HttpInterfaceConnector.class);
     //设置远程配置获取失败后的退回接口服务器信息
-serviceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
+    serviceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
     serviceFactory.settingFallback("public", false, "localhost", 80, "/api");
     //如果不使用TOKEN作为密码时的固定密码
     serviceFactory.setPassword("1234567890123456");
@@ -202,7 +202,7 @@ serviceFactory.settingFallback("test-channel", false, "localhost", 80, "/api");
         }
     });
     //获取业务的门面类
-    UserService userService = ServiceFactory.get(UserService.class);
+    UserService userService = serviceFactory.get(UserService.class);
 
     //构建一个业务对象
     LoginRequest request = new LoginRequest();

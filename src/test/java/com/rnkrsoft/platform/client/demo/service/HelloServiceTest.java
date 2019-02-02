@@ -12,7 +12,7 @@ public class HelloServiceTest {
 
     @Test
     public void testHello() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         serviceFactory.addServiceClasses(HelloService.class);
         serviceFactory.init();
         serviceFactory.getServiceConfigure().setAutoLocate(false);

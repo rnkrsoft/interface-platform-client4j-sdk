@@ -16,7 +16,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testSuccess() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");
@@ -49,7 +49,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testFailure() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
 //        serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");
@@ -94,7 +94,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testSettingFallback() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         Assert.assertFalse(serviceFactory.getServiceConfigure().fallbackChannelAddresses.keySet().contains("test-channel"));
         serviceFactory.settingFallback("test-channel", false, "127.0.0.1", 80, "api");
         Assert.assertTrue(serviceFactory.getServiceConfigure().fallbackChannelAddresses.keySet().contains("test-channel"));
@@ -102,7 +102,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testFailure1() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");

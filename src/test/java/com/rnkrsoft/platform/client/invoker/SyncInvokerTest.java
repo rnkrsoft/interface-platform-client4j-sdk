@@ -22,7 +22,7 @@ public class SyncInvokerTest {
 
     @Test
     public void testCallSuccess() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         serviceConfigure.setInterfaceConnectorClass(MockHelloSuccessInterfaceConnector.class);
         serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");
@@ -45,7 +45,7 @@ public class SyncInvokerTest {
 
     @Test
     public void testCallFailure() throws Exception {
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         ServiceConfigure serviceConfigure = serviceFactory.getServiceConfigure();
         serviceConfigure.setInterfaceConnectorClass(MockHelloFailureInterfaceConnector.class);
         serviceConfigure.settingFallback("test-channel", true, "localhost", 80, "api");

@@ -18,7 +18,7 @@ public class HttpInterfaceConnectorTest {
     public void testCall0() throws Exception {
         Logger log = LoggerFactory.getLogger(HttpInterfaceConnectorTest.class);
         log.generateSessionId();
-        ServiceFactory serviceFactory = new ServiceFactory();
+        ServiceFactory serviceFactory =ServiceFactory.newInstance();
         HttpInterfaceConnector connector = new HttpInterfaceConnector(serviceFactory);
         ApiRequest apiRequest = new ApiRequest();
         apiRequest.setChannel("user_app");

@@ -11,6 +11,7 @@ import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
 import com.rnkrsoft.utils.ClassUtils;
 
 import java.io.*;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,8 +20,6 @@ import java.util.Date;
  * Created by rnkrsoft.com on 2019/1/18.
  */
 class FileLogger extends AbstractLogger implements Logger {
-
-
     /**
      * 时间戳
      */
@@ -53,7 +52,19 @@ class FileLogger extends AbstractLogger implements Logger {
 
     void init() {
         // Create the directory if necessary
-        File dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        File dir = null;
+        if (JavaEnvironmentDetector.isAndroid()) {
+            File externalStorageDirectory = null;
+            try {
+                Class clazz = Class.forName("android.os.Environment");
+                Method method = clazz.getMethod("isExternalStorageEmulated", new Class[0]);
+                externalStorageDirectory = (File) method.invoke(null);
+            } catch (Exception e) {
+            }
+            dir = new File(externalStorageDirectory, config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        } else {
+            dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        }
         if (!dir.mkdirs() && !dir.isDirectory()) {
             System.err.println("dir " + dir + "is not exists!");
             return;
@@ -146,7 +157,12 @@ class FileLogger extends AbstractLogger implements Logger {
      */
     protected synchronized void open() {
         // Create the directory if necessary
-        File dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        File dir = null;
+        if (JavaEnvironmentDetector.isAndroid()) {
+            dir = new File(android.os.Environment.getExternalStorageDirectory(), config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        } else {
+            dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
+        }
         if (!dir.mkdirs() && !dir.isDirectory()) {
             System.err.println("open " + dir + " happens error!");
             return;
