@@ -1,20 +1,26 @@
 package com.rnkrsoft.platform.client.spring;
 
-import com.rnkrsoft.framework.test.SpringTest;
 import com.rnkrsoft.platform.client.async.AsyncTask;
 import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
 import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
 import com.rnkrsoft.platform.client.demo.service.HelloService;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestExecutionListeners;
+import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.test.context.support.DirtiesContextTestExecutionListener;
 
 /**
  * Created by rnkrsoft.com on 2019/1/22.
  */
 @ContextConfiguration("classpath*:testContext-InterfacePlatformClientConfigureTest.xml")
-public class InterfacePlatformClientConfigureTest extends SpringTest {
+@RunWith(SpringJUnit4ClassRunner.class)
+@TestExecutionListeners({DirtiesContextTestExecutionListener.class, DependencyInjectionTestExecutionListener.class})
+public class InterfacePlatformClientConfigureTest{
     @Autowired
     HelloService helloService;
 
@@ -27,13 +33,6 @@ public class InterfacePlatformClientConfigureTest extends SpringTest {
         Thread.sleep(60 * 1000);
     }
 
-    @Test
-    public void test2() throws Exception {
-        HelloRequest helloService = getBean(HelloRequest.class);
-        HelloRequest request = new HelloRequest();
-        request.setName("test");
-        System.out.println(helloService.getName());
-    }
 
     @Test
     public void test3() throws Exception {
