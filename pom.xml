@@ -41,7 +41,7 @@
         <dependency>
             <groupId>com.rnkrsoft.platform</groupId>
             <artifactId>interface-platform-protocol</artifactId>
-            <version>1.0.1</version>
+            <version>${project.version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>lombok</artifactId>
@@ -120,7 +120,7 @@
         <dependency>
             <groupId>com.rnkrsoft.android</groupId>
             <artifactId>android-stub</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <version>1.0.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

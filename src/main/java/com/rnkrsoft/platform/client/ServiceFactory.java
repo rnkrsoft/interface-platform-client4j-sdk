@@ -232,6 +232,10 @@ public final class ServiceFactory {
                 serviceConfigure.setAsyncExecuteThreadPoolSize(configure.getAsyncExecuteThreadPoolSize());
                 serviceConfigure.setEnv(configure.getEnv());
                 serviceConfigure.setEnvDesc(configure.getEnvDesc());
+                //不进行自动定位时，使用模拟定位数据
+                if (!serviceConfigure.isAutoLocate()) {
+                    serviceConfigure.refreshLocation(new Location(Double.valueOf(configure.getMockLng()), Double.valueOf(configure.getMockLat())));
+                }
                 //重设异步线程池
 //                AsyncTask.setAsyncExecuteThreadPoolSize(configure.getAsyncExecuteThreadPoolSize());
                 List<GatewayChannel> channels = configure.getChannels();
@@ -335,7 +339,9 @@ public final class ServiceFactory {
             FetchPublishResponse response = gson.fromJson(result.getData(), FetchPublishResponse.class);
             if (response.isSuccess()) {
                 init.set(true);
-                asyncHandler.success(response);
+                if (asyncHandler != null) {
+                    asyncHandler.success(response);
+                }
                 return true;
             } else {
                 if (!silent) {

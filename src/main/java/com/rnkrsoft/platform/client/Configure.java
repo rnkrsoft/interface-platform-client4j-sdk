@@ -4,6 +4,7 @@ import com.rnkrsoft.platform.protocol.service.FetchConfigureResponse;
 import com.rnkrsoft.platform.protocol.service.GatewayChannel;
 import lombok.Data;
 
+import javax.web.doc.annotation.ApidocElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,6 +26,8 @@ public class Configure implements Serializable {
         this.verboseLog = fetchConfigureResponse.isVerboseLog();
         this.env = fetchConfigureResponse.getEnv();
         this.envDesc = fetchConfigureResponse.getEnvDesc();
+        this.mockLat = fetchConfigureResponse.getMockLat();
+        this.mockLng = fetchConfigureResponse.getMockLng();
     }
 
     final List<GatewayChannel> channels = new ArrayList();
@@ -46,4 +49,8 @@ public class Configure implements Serializable {
     int env;
 
     String envDesc;
+
+    String mockLng;
+
+    String mockLat;
 }
