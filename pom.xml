@@ -136,12 +136,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.rnkrsoft.framework</groupId>
-            <artifactId>framework-test-standalone</artifactId>
-            <version>1.0.0</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>log4j-over-slf4j</artifactId>
             <version>${log4j-over-slf4j.version}</version>
@@ -324,6 +318,19 @@
                 <repository>
                     <id>oss</id>
                     <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+        <profile>
+            <id>rnkrsoft</id>
+            <distributionManagement>
+                <snapshotRepository>
+                    <id>rnkrsoft</id>
+                    <url>http://nexus.rnkrsoft.com/content/repositories/open-source-snapshots/</url>
+                </snapshotRepository>
+                <repository>
+                    <id>rnkrsoft</id>
+                    <url>http://nexus.rnkrsoft.com/content/repositories/open-source-releases/</url>
                 </repository>
             </distributionManagement>
         </profile>
