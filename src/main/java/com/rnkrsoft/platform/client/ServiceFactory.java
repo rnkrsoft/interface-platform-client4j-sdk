@@ -283,49 +283,96 @@ public final class ServiceFactory {
         if (fetchMetadataIntervalSecond > 0) {
             initScheduleFetchMetadata();
         }
-        PublishService publishService = ServiceProxyFactory.newInstance(this, PublishService.class);
-        FetchPublishRequest request = new FetchPublishRequest();
-        request.getChannels().addAll(serviceConfigure.getChannels());
-        Future<ApiResponse> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
-            @Override
-            public void fail(String code, String desc, String detail) {
-                log.debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
-            }
-
-            @Override
-            public void success(FetchPublishResponse response) {
-                definitionRegister.clear();
-                for (InterfaceChannel interfaceChannel : response.getChannels()) {
-                    definitionRegister.register(interfaceChannel);
+        String code = null;
+        String desc = null;
+        String data = null;
+        if (!JavaEnvironmentDetector.isAndroid()) {
+            PublishService publishService = ServiceProxyFactory.newInstance(this, PublishService.class);
+            FetchPublishRequest request = new FetchPublishRequest();
+            request.getChannels().addAll(serviceConfigure.getChannels());
+            Future<ApiResponse> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
+                @Override
+                public void fail(String code, String desc, String detail) {
+                    log.debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
                 }
-                log.debug("finish fetch remote metadata...");
+
+                @Override
+                public void success(FetchPublishResponse response) {
+                    definitionRegister.clear();
+                    for (InterfaceChannel interfaceChannel : response.getChannels()) {
+                        definitionRegister.register(interfaceChannel);
+                    }
+                    log.debug("finish fetch remote metadata...");
+                }
+            });
+            ApiResponse result = null;
+            try {
+                result = future.get(serviceConfigure.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
+            } catch (Exception e) {
+                log.error("获取元信息发生错误!");
+                if (!silent) {
+                    throw new InitException("获取元信息发生错误!");
+                } else {
+                    return false;
+                }
             }
-        });
-        ApiResponse result = null;
-        try {
-            result = future.get(serviceConfigure.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
-        } catch (Exception e) {
-            log.error("获取元信息发生错误!");
-            if (!silent) {
-                throw new InitException("获取元信息发生错误!");
-            } else {
-                return false;
+            if (result == null) {
+                log.error("获取发布信息失败!");
+                if (!silent) {
+                    throw new InitException("获取发布信息失败!");
+                } else {
+                    return false;
+                }
             }
+            code = result.getCode();
+            desc = result.getDesc();
+            data = result.getData();
+        }else{
+            AndroidPublishService publishService = ServiceProxyFactory.newInstance(this, AndroidPublishService.class);
+            FetchPublishRequest request = new FetchPublishRequest();
+            request.getChannels().addAll(serviceConfigure.getChannels());
+            android.os.AsyncTask<FetchPublishRequest, Void, ApiResponse> future = publishService.fetchPublish(request, new AsyncHandler<FetchPublishResponse>() {
+                @Override
+                public void fail(String code, String desc, String detail) {
+                    log.debug("call publishService.fetchPublish happens error!  {}:{} cause :{} ", code, desc, detail);
+                }
+
+                @Override
+                public void success(FetchPublishResponse response) {
+                    definitionRegister.clear();
+                    for (InterfaceChannel interfaceChannel : response.getChannels()) {
+                        definitionRegister.register(interfaceChannel);
+                    }
+                    log.debug("finish fetch remote metadata...");
+                }
+            });
+            ApiResponse result = null;
+            try {
+                result = future.get(serviceConfigure.getHttpReadTimeoutSecond() * 2, TimeUnit.SECONDS); //取得结果，同时设置超时执行时间为5秒。同样可以用future.get()，不设置执行超时时间取得结果
+            } catch (Exception e) {
+                log.error("获取元信息发生错误!");
+                if (!silent) {
+                    throw new InitException("获取元信息发生错误!");
+                } else {
+                    return false;
+                }
+            }
+            if (result == null) {
+                log.error("获取发布信息失败!");
+                if (!silent) {
+                    throw new InitException("获取发布信息失败!");
+                } else {
+                    return false;
+                }
+            }
+            code = result.getCode();
+            desc = result.getDesc();
+            data = result.getData();
         }
-        if (result == null) {
-            log.error("获取发布信息失败!");
-            if (!silent) {
-                throw new InitException("获取发布信息失败!");
-            } else {
-                return false;
-            }
-        }
-        if (InterfaceRspCode.valueOfCode(result.getCode()) != InterfaceRspCode.SUCCESS) {
-            String code = result.getCode();
-            String desc = result.getDesc();
+        if (InterfaceRspCode.valueOfCode(code) != InterfaceRspCode.SUCCESS) {
             if (JavaEnvironmentDetector.isAndroid()) {
                 if (InterfaceRspCode.TIMESTAMP_ILLEGAL.getCode().equals(code)) {
-                    desc = "手机" + result.getDesc();
+                    desc = "手机" + desc;
                 }
             }
             log.error("{}:{}", code, desc);
@@ -336,7 +383,7 @@ public final class ServiceFactory {
                 return false;
             }
         } else {
-            FetchPublishResponse response = gson.fromJson(result.getData(), FetchPublishResponse.class);
+            FetchPublishResponse response = gson.fromJson(data, FetchPublishResponse.class);
             if (response.isSuccess()) {
                 init.set(true);
                 if (asyncHandler != null) {

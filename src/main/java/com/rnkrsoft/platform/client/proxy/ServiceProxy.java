@@ -60,7 +60,15 @@ public class ServiceProxy<T> implements InvocationHandler {
                 return null;
             }
             log.debug("asynchronous execute remote service request '{}'", request);
-            if (serviceClass == PublishService.class) {
+            if (JavaEnvironmentDetector.isAndroid()) {
+                AndroidAsyncInvoker<Object> asyncInvoker = new AndroidAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
+                android.os.AsyncTask asyncTask = asyncInvoker.execute(request);
+                if (method.getReturnType() == android.os.AsyncTask.class) {
+                    return asyncTask;
+                } else {
+                    return null;
+                }
+            } else {
                 JavaAsyncInvoker<Object> javaAsyncInvoker = new JavaAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
                 AsyncTask asyncTask = javaAsyncInvoker.execute(request);
                 if (method.getReturnType() == AsyncTask.class) {
@@ -69,26 +77,6 @@ public class ServiceProxy<T> implements InvocationHandler {
                     return asyncTask.getFuture();
                 } else {
                     return null;
-                }
-            } else {
-                if (JavaEnvironmentDetector.isAndroid()) {
-                    AndroidAsyncInvoker<Object> asyncInvoker = new AndroidAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
-                    android.os.AsyncTask asyncTask = asyncInvoker.execute(request);
-                    if (method.getReturnType() == android.os.AsyncTask.class) {
-                        return asyncTask;
-                    } else {
-                        return null;
-                    }
-                } else {
-                    JavaAsyncInvoker<Object> javaAsyncInvoker = new JavaAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
-                    AsyncTask asyncTask = javaAsyncInvoker.execute(request);
-                    if (method.getReturnType() == AsyncTask.class) {
-                        return asyncTask;
-                    } else if (method.getReturnType() == Future.class) {
-                        return asyncTask.getFuture();
-                    } else {
-                        return null;
-                    }
                 }
             }
         } else {
