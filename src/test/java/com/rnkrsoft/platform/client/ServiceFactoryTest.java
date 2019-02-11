@@ -1,11 +1,18 @@
 package com.rnkrsoft.platform.client;
 
+import com.rnkrsoft.config.ConfigProvider;
+import com.rnkrsoft.config.ConfigProviderFactory;
 import com.rnkrsoft.platform.client.async.AsyncTask;
 import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
 import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
 import com.rnkrsoft.platform.client.demo.service.HelloService;
+import com.rnkrsoft.platform.client.logger.LoggerFactory;
+import com.rnkrsoft.platform.client.logger.LoggerLevel;
+import com.rnkrsoft.platform.client.logger.file.LoggerConstant;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -14,9 +21,24 @@ import org.junit.Test;
  */
 public class ServiceFactoryTest {
 
+   static {
+       ConfigProvider config = null;
+       try {
+           config = ConfigProviderFactory.getPropertiesInstance("logger");
+       } catch (Exception e) {
+           e.printStackTrace();
+       }
+       config.param(LoggerConstant.LOGGER_DIRECTORY, "./target/logs");
+        config.param(LoggerConstant.LOGGER_PREFIX, "interface-platform");
+        config.param(LoggerConstant.LOGGER_SUFFIX, "log");
+        config.param(LoggerConstant.LOGGER_LEVEL, LoggerLevel.TRACE.name());
+        config.param(LoggerConstant.LOGGER_SOUT, "true");
+        config.init("./target", 60 * 24);
+        LoggerFactory.setting(config);
+    }
     @Test
     public void testSuccess() throws Exception {
-        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
         serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");
@@ -49,7 +71,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testFailure() throws Exception {
-        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
 //        serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");
@@ -94,7 +116,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testSettingFallback() throws Exception {
-        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
         Assert.assertFalse(serviceFactory.getServiceConfigure().fallbackChannelAddresses.keySet().contains("test-channel"));
         serviceFactory.settingFallback("test-channel", false, "127.0.0.1", 80, "api");
         Assert.assertTrue(serviceFactory.getServiceConfigure().fallbackChannelAddresses.keySet().contains("test-channel"));
@@ -102,7 +124,7 @@ public class ServiceFactoryTest {
 
     @Test
     public void testFailure1() throws Exception {
-        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
         serviceFactory.settingFallback("public", false, "localhost", 80, "api");
         serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
         serviceFactory.setPassword("1234567890");
