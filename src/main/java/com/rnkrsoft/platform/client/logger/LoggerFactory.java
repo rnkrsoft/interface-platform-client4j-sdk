@@ -3,6 +3,10 @@ package com.rnkrsoft.platform.client.logger;
 import com.rnkrsoft.config.ConfigProvider;
 import com.rnkrsoft.config.ConfigProviderFactory;
 import com.rnkrsoft.platform.client.logger.file.LoggerConstant;
+import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
+
+import java.io.File;
+import java.lang.reflect.Method;
 
 /**
  * Created by rnkrsoft.com on 2019/1/18.
@@ -41,6 +45,24 @@ public final class LoggerFactory {
     private LoggerFactory() {
     }
 
+    /**
+     * 设置日志配置对象
+     *
+     * @param configProvider 配置对象
+     */
+    public static void setting(ConfigProvider configProvider) {
+        if (configProvider != null) {
+            synchronized (LoggerFactory.class) {
+                CONFIG = configProvider;
+            }
+        }
+    }
+
+    /**
+     * 设置日志的级别
+     *
+     * @param level 日志级别
+     */
     public static void level(LoggerLevel level) {
         if (CONFIG == null) {
             return;
@@ -63,7 +85,7 @@ public final class LoggerFactory {
                             config.param(LoggerConstant.LOGGER_SUFFIX, "log");
                             config.param(LoggerConstant.LOGGER_LEVEL, LoggerLevel.TRACE.name());
                             config.param(LoggerConstant.LOGGER_SOUT, "true");
-                            config.init("./target", 60 * 24);
+                            config.init(getDir().getAbsolutePath(), 60 * 24);
                             CONFIG = config;
                         } catch (Exception e) {
                             ;
@@ -106,6 +128,35 @@ public final class LoggerFactory {
     public static Logger getLogger(Class<?> clazz) {
         Logger logger = getLogger(clazz.getName());
         return logger;
+    }
+
+    /**
+     * 获取日志文件夹
+     *
+     * @return
+     */
+    static File getDir() {
+        File file = null;
+        if (JavaEnvironmentDetector.isAndroid()) {
+            File externalStorageDirectory = null;
+            try {
+                Class clazz = Class.forName("android.os.Environment");
+                Method method = clazz.getMethod("getExternalStorageDirectory", new Class[0]);
+                externalStorageDirectory = (File) method.invoke(null);
+            } catch (Exception e) {
+            }
+            file = new File(externalStorageDirectory, "interface-platform").getAbsoluteFile();
+        } else {
+            file = new File("interface-platform").getAbsoluteFile();
+        }
+        if (!file.exists()) {
+            file.mkdirs();
+        }
+        if (!file.isDirectory()) {
+            System.err.println(file + "is not directory!");
+            return null;
+        }
+        return file;
     }
 
 }
