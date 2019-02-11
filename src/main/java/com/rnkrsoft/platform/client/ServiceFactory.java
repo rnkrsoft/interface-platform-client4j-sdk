@@ -109,7 +109,7 @@ public final class ServiceFactory {
      * @param loggerLevel 日志级别
      * @throws IOException IO异常
      */
-    public final void settingLogger(String logDir, String prefix, String suffix, boolean sout, LoggerLevel loggerLevel){
+    public static final void settingLogger(String logDir, String prefix, String suffix, boolean sout, LoggerLevel loggerLevel){
         final Properties properties = new Properties();
         properties.setProperty(LoggerConstant.LOGGER_DIRECTORY, logDir);
         properties.setProperty(LoggerConstant.LOGGER_PREFIX, prefix);
