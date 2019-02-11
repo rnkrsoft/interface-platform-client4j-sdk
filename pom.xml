@@ -323,6 +323,12 @@
         </profile>
         <profile>
             <id>rnkrsoft</id>
+            <repositories>
+                <repository>
+                    <id>rnkrsoft</id>
+                    <url>http://nexus.rnkrsoft.com/content/repositories/public/</url>
+                </repository>
+            </repositories>
             <distributionManagement>
                 <snapshotRepository>
                     <id>rnkrsoft</id>
