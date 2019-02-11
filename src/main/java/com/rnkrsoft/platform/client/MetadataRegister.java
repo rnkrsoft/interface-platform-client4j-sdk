@@ -4,8 +4,10 @@ import com.rnkrsoft.platform.client.exception.InterfaceDefinitionNotFoundExcepti
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
+import com.rnkrsoft.platform.protocol.service.AndroidPublishService;
 import com.rnkrsoft.platform.protocol.service.FetchPublishRequest;
 import com.rnkrsoft.platform.protocol.service.PublishService;
+import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -26,18 +28,23 @@ public final class MetadataRegister {
     final InterfaceMetadata publicPublishMetadata;
 
     public MetadataRegister() {
-        InterfaceMetadata interfaceMetadata = null;
+        InterfaceMetadata.InterfaceMetadataBuilder builder = InterfaceMetadata
+                .builder()
+                .channel("public")
+                .txNo("000")
+                .version("1");
         try {
-            interfaceMetadata = InterfaceMetadata.builder()
-                    .channel("public")
-                    .txNo("000")
-                    .version("1")
-                    .interfaceClass(PublishService.class)
-                    .interfaceMethod(PublishService.class.getMethod("fetchPublish", new Class[]{FetchPublishRequest.class, AsyncHandler.class}))
-                    .build();
+            if (JavaEnvironmentDetector.isAndroid()) {
+                builder.interfaceClass(AndroidPublishService.class)
+                        .interfaceMethod(AndroidPublishService.class.getMethod("fetchPublish", new Class[]{FetchPublishRequest.class, AsyncHandler.class}));
+
+            } else {
+                builder.interfaceClass(PublishService.class)
+                        .interfaceMethod(PublishService.class.getMethod("fetchPublish", new Class[]{FetchPublishRequest.class, AsyncHandler.class}));
+            }
         } catch (NoSuchMethodException e) {
         }
-        publicPublishMetadata = interfaceMetadata;
+        publicPublishMetadata = builder.build();
     }
 
     /**
@@ -64,7 +71,7 @@ public final class MetadataRegister {
      */
     public InterfaceMetadata lookup(String className, String methodName, boolean silent) {
         String key = className + ":" + methodName;
-        if (PublishService.class.getName().equals(className) && "fetchPublish".equals(methodName)) {
+        if ((PublishService.class.getName().equals(className) || AndroidPublishService.class.getName().equals(className)) && "fetchPublish".equals(methodName)) {
             return publicPublishMetadata;
         }
         InterfaceMetadata interfaceMetadata = INTERFACE_METADATA.get(key);

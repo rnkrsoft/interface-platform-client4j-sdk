@@ -10,6 +10,7 @@ import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
+import com.rnkrsoft.platform.protocol.service.AndroidPublishService;
 import com.rnkrsoft.platform.protocol.service.PublishService;
 import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
 
@@ -38,8 +39,10 @@ public class ServiceProxy<T> implements InvocationHandler {
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
         log.debug("execute invoke method");
         if (args.length == 1) {
-            if (serviceClass != PublishService.class && !serviceFactory.isInit()) {
-                throw new InitException("client is not initialization, please execute init() or init(boolean, AsyncHandler)!");
+            if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {
+                if (!serviceFactory.isInit()) {
+                    throw new InitException("client is not initialization, please execute init() or init(boolean, AsyncHandler)!");
+                }
             }
             Object request = args[0];
             Class requestClass = method.getParameterTypes()[0];
@@ -55,9 +58,11 @@ public class ServiceProxy<T> implements InvocationHandler {
             Class requestClass = method.getParameterTypes()[0];
             ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];
             Class responseClass = (Class) asyncHandlerClass.getActualTypeArguments()[0];
-            if (serviceClass != PublishService.class && !serviceFactory.isInit()) {
-                asyncHandler.fail(InterfaceRspCode.CLIENT_IS_NOT_INITIALIZED, "client is not initialization, please execute init() or init(boolean, AsyncHandler)!");
-                return null;
+            if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {
+                if (!serviceFactory.isInit()) {
+                    asyncHandler.fail(InterfaceRspCode.CLIENT_IS_NOT_INITIALIZED, "client is not initialization, please execute init() or init(boolean, AsyncHandler)!");
+                    return null;
+                }
             }
             log.debug("asynchronous execute remote service request '{}'", request);
             if (JavaEnvironmentDetector.isAndroid()) {

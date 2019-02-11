@@ -46,59 +46,14 @@ class FileLogger extends AbstractLogger implements Logger {
 
     ConfigProvider config;
 
+    File logDir = null;
+
     public FileLogger(ConfigProvider config) {
         this.config = config;
     }
 
     void init() {
-        // Create the directory if necessary
-        File dir = null;
-        if (JavaEnvironmentDetector.isAndroid()) {
-            File externalStorageDirectory = null;
-            try {
-                Class clazz = Class.forName("android.os.Environment");
-                Method method = clazz.getMethod("isExternalStorageEmulated", new Class[0]);
-                externalStorageDirectory = (File) method.invoke(null);
-            } catch (Exception e) {
-            }
-            dir = new File(externalStorageDirectory, config.getString(LoggerConstant.LOGGER_DIRECTORY));
-        } else {
-            dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
-        }
-        if (!dir.mkdirs() && !dir.isDirectory()) {
-            System.err.println("dir " + dir + "is not exists!");
-            return;
-        }
-        // Open the current log file
-        File pathname;
-        if (format == null) {
-            this.format = new SimpleDateFormat("yyyyMMdd");
-        }
-        this.timestamp = this.format.format(new Date());
-        // If no rotate - no need for timestamp in fileName
-        if (rotatable) {
-            pathname = new File(dir.getAbsoluteFile(), config.getString(LoggerConstant.LOGGER_PREFIX) + ((timestamp == null || timestamp.isEmpty()) ? "" : "." + timestamp) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
-        } else {
-            pathname = new File(dir.getAbsoluteFile(), config.getString(LoggerConstant.LOGGER_PREFIX) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
-        }
-        File parent = pathname.getParentFile();
-        if (!parent.mkdirs() && !parent.isDirectory()) {
-            System.err.println("parent " + parent + "is not exists!");
-            return;
-        }
-
-        Charset charset = null;
-        if (charset == null) {
-            charset = Charset.forName("UTF-8");
-        }
-        try {
-            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathname, true), charset), 128000), false);
-            currentLogFile = pathname;
-        } catch (IOException e) {
-            writer = null;
-            System.err.println("open " + pathname + " happens error!");
-            currentLogFile = null;
-        }
+        open();
     }
 
     /**
@@ -108,11 +63,6 @@ class FileLogger extends AbstractLogger implements Logger {
     void log(String log) {
         long systemTime = System.currentTimeMillis();
         if ((systemTime - rotationLastChecked) > 1000) {
-            File dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
-            if (!dir.mkdirs() && !dir.isDirectory()) {
-                System.err.println("open " + dir + " happens error!");
-                return;
-            }
             synchronized (this) {
                 if ((systemTime - rotationLastChecked) > 1000) {
                     rotationLastChecked = systemTime;
@@ -123,7 +73,10 @@ class FileLogger extends AbstractLogger implements Logger {
                     if (!timestamp.equals(tsDate)) {
                         close();
                         timestamp = tsDate;
-                        open();
+                        if (!open()) {
+                            System.err.println("write log happens error!");
+                            return;
+                        }
                     }
                 }
             }
@@ -139,7 +92,10 @@ class FileLogger extends AbstractLogger implements Logger {
                 }
                 /* Make sure date is correct */
                 timestamp = format.format(new Date(System.currentTimeMillis()));
-                open();
+                if (!open()) {
+                    System.err.println("write log happens error!");
+                    return;
+                }
             }
         }
 
@@ -155,34 +111,20 @@ class FileLogger extends AbstractLogger implements Logger {
     /**
      * Open the new log file for the date specified by <code>timestamp</code>.
      */
-    protected synchronized void open() {
-        // Create the directory if necessary
-        File dir = null;
-        if (JavaEnvironmentDetector.isAndroid()) {
-            dir = new File(android.os.Environment.getExternalStorageDirectory(), config.getString(LoggerConstant.LOGGER_DIRECTORY));
-        } else {
-            dir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY));
-        }
-        if (!dir.mkdirs() && !dir.isDirectory()) {
-            System.err.println("open " + dir + " happens error!");
-            return;
-        }
-
+    protected synchronized boolean open() {
         this.timestamp = this.format.format(new Date());
         // Open the current log file
+        File dir = getLogDir();
+        if (dir == null) {
+            return false;
+        }
         File pathname;
         // If no rotate - no need for timestamp in fileName
         if (rotatable) {
-            pathname = new File(dir.getAbsoluteFile(), config.getString(LoggerConstant.LOGGER_PREFIX) + ((timestamp == null || timestamp.isEmpty()) ? "" : "." + timestamp) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
+            pathname = new File(dir, config.getString(LoggerConstant.LOGGER_PREFIX) + ((timestamp == null || timestamp.isEmpty()) ? "" : "." + timestamp) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
         } else {
-            pathname = new File(dir.getAbsoluteFile(), config.getString(LoggerConstant.LOGGER_PREFIX) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
+            pathname = new File(dir, config.getString(LoggerConstant.LOGGER_PREFIX) + ((config.getString(LoggerConstant.LOGGER_SUFFIX) == null || config.getString(LoggerConstant.LOGGER_SUFFIX).isEmpty()) ? "" : "." + config.getString(LoggerConstant.LOGGER_SUFFIX)));
         }
-        File parent = pathname.getParentFile();
-        if (!parent.mkdirs() && !parent.isDirectory()) {
-            System.err.println("open " + parent + " happens error!");
-            return;
-        }
-
         Charset charset = null;
         if (charset == null) {
             charset = Charset.forName("UTF-8");
@@ -192,10 +134,11 @@ class FileLogger extends AbstractLogger implements Logger {
                     new FileOutputStream(pathname, true), charset), 128000),
                     false);
             currentLogFile = pathname;
+            return true;
         } catch (IOException e) {
             writer = null;
             System.err.println("write log happens error!");
-            return;
+            return false;
         }
     }
 
@@ -327,5 +270,36 @@ class FileLogger extends AbstractLogger implements Logger {
             String log = getFormat() + " ERROR " + msg + "\n" + ExceptionTrackUtils.toString(t);
             log(LoggerLevel.ERROR, ClassUtils.getClassName(true, 1), log);
         }
+    }
+
+    /**
+     * 获取日志文件夹
+     *
+     * @return
+     */
+    synchronized File getLogDir() {
+        if (logDir != null) {
+            return logDir;
+        }
+        if (JavaEnvironmentDetector.isAndroid()) {
+            File externalStorageDirectory = null;
+            try {
+                Class clazz = Class.forName("android.os.Environment");
+                Method method = clazz.getMethod("getExternalStorageDirectory", new Class[0]);
+                externalStorageDirectory = (File) method.invoke(null);
+            } catch (Exception e) {
+            }
+            logDir = new File(externalStorageDirectory, config.getString(LoggerConstant.LOGGER_DIRECTORY)).getAbsoluteFile();
+        } else {
+            logDir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY)).getAbsoluteFile();
+        }
+        if (!logDir.exists()) {
+            logDir.mkdirs();
+        }
+        if (!logDir.isDirectory()) {
+            System.err.println(logDir + "is not directory!");
+            return null;
+        }
+        return logDir;
     }
 }

@@ -58,7 +58,7 @@ public final class LoggerFactory {
                     if (CONFIG == null) {
                         try {
                             ConfigProvider config = ConfigProviderFactory.getPropertiesInstance("logger");
-                            config.param(LoggerConstant.LOGGER_DIRECTORY, "./target/logs");
+                            config.param(LoggerConstant.LOGGER_DIRECTORY, "logs");
                             config.param(LoggerConstant.LOGGER_PREFIX, "interface-platform");
                             config.param(LoggerConstant.LOGGER_SUFFIX, "log");
                             config.param(LoggerConstant.LOGGER_LEVEL, LoggerLevel.TRACE.name());
