@@ -112,6 +112,9 @@ class FileLogger extends AbstractLogger implements Logger {
      * Open the new log file for the date specified by <code>timestamp</code>.
      */
     protected synchronized boolean open() {
+        if (this.format == null){
+            this.format = new SimpleDateFormat("yyyyMMdd");
+        }
         this.timestamp = this.format.format(new Date());
         // Open the current log file
         File dir = getLogDir();
@@ -130,9 +133,7 @@ class FileLogger extends AbstractLogger implements Logger {
             charset = Charset.forName("UTF-8");
         }
         try {
-            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(
-                    new FileOutputStream(pathname, true), charset), 128000),
-                    false);
+            writer = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(pathname, true), charset), 128000), false);
             currentLogFile = pathname;
             return true;
         } catch (IOException e) {
