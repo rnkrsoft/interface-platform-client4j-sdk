@@ -3,6 +3,7 @@ package com.rnkrsoft.platform.client;
 
 import com.rnkrsoft.com.google.gson.Gson;
 import com.rnkrsoft.com.google.gson.GsonBuilder;
+import com.rnkrsoft.config.AbstractConfigProvider;
 import com.rnkrsoft.platform.client.configure.RemoteConfigureProvider;
 import com.rnkrsoft.platform.client.connector.InterfaceConnector;
 import com.rnkrsoft.platform.client.exception.InitException;
@@ -10,6 +11,7 @@ import com.rnkrsoft.platform.client.exception.LocationProviderNotFoundException;
 import com.rnkrsoft.platform.client.logger.Logger;
 import com.rnkrsoft.platform.client.logger.LoggerFactory;
 import com.rnkrsoft.platform.client.logger.LoggerLevel;
+import com.rnkrsoft.platform.client.logger.file.LoggerConstant;
 import com.rnkrsoft.platform.client.proxy.ServiceProxyFactory;
 import com.rnkrsoft.platform.client.scanner.ClassScanner;
 import com.rnkrsoft.platform.client.scanner.MetadataClassPathScanner;
@@ -22,6 +24,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.web.doc.annotation.ApidocService;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -94,6 +98,62 @@ public final class ServiceFactory {
 
     public boolean isInit() {
         return init.get();
+    }
+
+    /**
+     * 配置日志
+     * @param logDir 日志目录
+     * @param prefix 前缀
+     * @param suffix 后缀
+     * @param sout 标准输出
+     * @param loggerLevel 日志级别
+     * @throws IOException IO异常
+     */
+    public final void settingLogger(String logDir, String prefix, String suffix, boolean sout, LoggerLevel loggerLevel){
+        final Properties properties = new Properties();
+        properties.setProperty(LoggerConstant.LOGGER_DIRECTORY, logDir);
+        properties.setProperty(LoggerConstant.LOGGER_PREFIX, prefix);
+        properties.setProperty(LoggerConstant.LOGGER_SUFFIX, suffix);
+        properties.setProperty(LoggerConstant.LOGGER_SOUT, Boolean.toString(sout));
+        properties.setProperty(LoggerConstant.LOGGER_LEVEL, loggerLevel.name());
+
+        final Properties defaults = new Properties();
+        LoggerFactory.setting(new AbstractConfigProvider() {
+            @Override
+            public void init(String configDir, int reloadInterval) {
+
+            }
+
+            @Override
+            public void init(int reloadInterval) {
+
+            }
+
+            @Override
+            public void reload() {
+
+            }
+
+            @Override
+            public void save() {
+
+            }
+
+            public void param(String name, String value) {
+                defaults.setProperty(name, value);
+            }
+
+
+            public <T> T getParam(String paramName, Class<T> paramClass) {
+                Object value = null;
+                if (!properties.containsKey(paramName)) {
+                    value = defaults.getProperty(paramName);
+                }else {
+                    value = properties.getProperty(paramName);
+                }
+                return convert(value, paramClass);
+            }
+        });
     }
 
     /**
@@ -327,7 +387,7 @@ public final class ServiceFactory {
             code = result.getCode();
             desc = result.getDesc();
             data = result.getData();
-        }else{
+        } else {
             AndroidPublishService publishService = ServiceProxyFactory.newInstance(this, AndroidPublishService.class);
             FetchPublishRequest request = new FetchPublishRequest();
             request.getChannels().addAll(serviceConfigure.getChannels());
@@ -564,11 +624,13 @@ public final class ServiceFactory {
 
     /**
      * 新建一个服务工厂对象
+     *
      * @return 服务工厂对象
      */
-    public final static ServiceFactory newInstance(){
+    public final static ServiceFactory newInstance() {
         return new ServiceFactory();
     }
+
     /**
      * 获取服务工厂的单例对象
      *

@@ -11,8 +11,6 @@ import com.rnkrsoft.platform.client.logger.LoggerLevel;
 import com.rnkrsoft.platform.client.logger.file.LoggerConstant;
 import com.rnkrsoft.platform.protocol.AsyncHandler;
 import org.junit.Assert;
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 
@@ -21,14 +19,14 @@ import org.junit.Test;
  */
 public class ServiceFactoryTest {
 
-   static {
-       ConfigProvider config = null;
-       try {
-           config = ConfigProviderFactory.getPropertiesInstance("logger");
-       } catch (Exception e) {
-           e.printStackTrace();
-       }
-       config.param(LoggerConstant.LOGGER_DIRECTORY, "./target/logs");
+    static {
+        ConfigProvider config = null;
+        try {
+            config = ConfigProviderFactory.getPropertiesInstance("logger");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        config.param(LoggerConstant.LOGGER_DIRECTORY, "./target/logs");
         config.param(LoggerConstant.LOGGER_PREFIX, "interface-platform");
         config.param(LoggerConstant.LOGGER_SUFFIX, "log");
         config.param(LoggerConstant.LOGGER_LEVEL, LoggerLevel.TRACE.name());
@@ -36,6 +34,7 @@ public class ServiceFactoryTest {
         config.init("./target", 60 * 24);
         LoggerFactory.setting(config);
     }
+
     @Test
     public void testSuccess() throws Exception {
         ServiceFactory serviceFactory = ServiceFactory.newInstance();
