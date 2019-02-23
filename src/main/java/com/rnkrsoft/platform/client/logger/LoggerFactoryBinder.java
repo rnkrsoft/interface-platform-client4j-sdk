@@ -14,7 +14,7 @@ public interface LoggerFactoryBinder {
     /**
      * 获取日志工厂
      *
-     * @return
+     * @return 日志工厂
      */
     ILoggerFactory getLoggerFactory();
 

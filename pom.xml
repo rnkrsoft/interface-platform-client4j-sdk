@@ -275,6 +275,8 @@
                             <charset>UTF-8</charset>
                             <encoding>UTF-8</encoding>
                             <docencoding>UTF-8</docencoding>
+                            <show>public</show>
+                            <excludePackageNames>com.rnkrsoft.com.google.gson,com.rnkrsoft.platform.client.connector</excludePackageNames>
                         </configuration>
                         <executions>
                             <execution>

@@ -356,7 +356,7 @@ public class ServiceProxyFactory {
      *
      * @param serviceFactory 服务工厂
      * @param serviceClass   服务类
-     * @param <Service>
+     * @param <Service> 服务
      * @return Stub实例
      */
     public static <Service> Service newInstance(ServiceFactory serviceFactory, Class<Service> serviceClass) {

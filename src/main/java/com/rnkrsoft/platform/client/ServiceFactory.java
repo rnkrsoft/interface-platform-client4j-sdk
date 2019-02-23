@@ -365,8 +365,6 @@ import lombok.Getter;
 import lombok.Setter;
 
 import javax.web.doc.annotation.ApidocService;
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.concurrent.Executors;
@@ -443,14 +441,14 @@ public final class ServiceFactory {
 
     /**
      * 配置日志
-     * @param logDir 日志目录
-     * @param prefix 前缀
-     * @param suffix 后缀
-     * @param sout 标准输出
+     *
+     * @param logDir      日志目录
+     * @param prefix      前缀
+     * @param suffix      后缀
+     * @param sout        标准输出
      * @param loggerLevel 日志级别
-     * @throws IOException IO异常
      */
-    public static final void settingLogger(String logDir, String prefix, String suffix, boolean sout, LoggerLevel loggerLevel){
+    public static final void settingLogger(String logDir, String prefix, String suffix, boolean sout, LoggerLevel loggerLevel) {
         final Properties properties = new Properties();
         properties.setProperty(LoggerConstant.LOGGER_DIRECTORY, logDir);
         properties.setProperty(LoggerConstant.LOGGER_PREFIX, prefix);
@@ -489,7 +487,7 @@ public final class ServiceFactory {
                 Object value = null;
                 if (!properties.containsKey(paramName)) {
                     value = defaults.getProperty(paramName);
-                }else {
+                } else {
                     value = properties.getProperty(paramName);
                 }
                 return convert(value, paramClass);
@@ -662,6 +660,10 @@ public final class ServiceFactory {
 
     /**
      * 进行初始化,将注册的服务类与接口信息进行绑定
+     *
+     * @param silent       是否静默模式
+     * @param asyncHandler 异步处理器
+     * @return 是否成功
      */
     public synchronized final boolean init(final boolean silent, AsyncHandler asyncHandler) {
         if (silent && asyncHandler == null) {
@@ -881,7 +883,6 @@ public final class ServiceFactory {
      * 获取接口连接器实例
      *
      * @return 连接器实例
-     * @throws Exception 异常
      */
     public InterfaceConnector getInterfaceConnector() {
         if (interfaceConnector == null) {

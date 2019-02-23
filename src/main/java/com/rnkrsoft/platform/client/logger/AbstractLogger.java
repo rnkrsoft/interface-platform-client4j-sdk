@@ -15,7 +15,7 @@ public abstract class AbstractLogger implements Logger {
     /**
      * 获取每次请求的会话号
      *
-     * @return
+     * @return 会话号
      */
     public String getSessionId() {
         String session = SESSION_ID.get();

@@ -494,7 +494,7 @@ public class ClassScanner {
      *
      * @param _package 包路径
      * @param filter   过滤器
-     * @return
+     * @return 类扫描器实例
      */
     public ClassScanner scan(String _package, Filter filter) {
         return scan(_package, Thread.currentThread().getContextClassLoader(), filter);

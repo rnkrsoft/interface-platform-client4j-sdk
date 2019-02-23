@@ -12,7 +12,7 @@ public class PublishServiceTest {
     public void test1() throws NoSuchMethodException {
         ServiceFactory serviceFactory =ServiceFactory.newInstance();
 
-        serviceFactory.settingFallback("public", true, "gateway-public.zxevpop.com", 8001, "api");
+        serviceFactory.settingFallback("public", true, "localhost", 8001, "api");
         PublishService publishService = ServiceProxyFactory.newInstance(serviceFactory, PublishService.class);
         FetchPublishRequest request = new FetchPublishRequest();
         request.getChannels().add("user_app");
