@@ -85,8 +85,11 @@ public final class LoggerFactory {
                             config.param(LoggerConstant.LOGGER_SUFFIX, "log");
                             config.param(LoggerConstant.LOGGER_LEVEL, LoggerLevel.TRACE.name());
                             config.param(LoggerConstant.LOGGER_SOUT, "true");
-                            config.init(getDir().getAbsolutePath(), 60 * 24);
                             CONFIG = config;
+                            File dir = getDir();
+                            if (dir != null){
+                                config.init(dir.getAbsolutePath(), 60 * 24);
+                            }
                         } catch (Exception e) {
                             ;
                         }
@@ -143,9 +146,10 @@ public final class LoggerFactory {
                 Class clazz = Class.forName("android.os.Environment");
                 Method method = clazz.getMethod("getExternalStorageDirectory", new Class[0]);
                 externalStorageDirectory = (File) method.invoke(null);
+                file = new File(externalStorageDirectory, "interface-platform").getAbsoluteFile();
             } catch (Exception e) {
+                return null;
             }
-            file = new File(externalStorageDirectory, "interface-platform").getAbsoluteFile();
         } else {
             file = new File("interface-platform").getAbsoluteFile();
         }

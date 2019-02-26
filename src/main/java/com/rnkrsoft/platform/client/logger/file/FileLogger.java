@@ -453,7 +453,7 @@ class FileLogger extends AbstractLogger implements Logger {
      * Open the new log file for the date specified by <code>timestamp</code>.
      */
     protected synchronized boolean open() {
-        if (this.format == null){
+        if (this.format == null) {
             this.format = new SimpleDateFormat("yyyyMMdd");
         }
         this.timestamp = this.format.format(new Date());
@@ -629,9 +629,10 @@ class FileLogger extends AbstractLogger implements Logger {
                 Class clazz = Class.forName("android.os.Environment");
                 Method method = clazz.getMethod("getExternalStorageDirectory", new Class[0]);
                 externalStorageDirectory = (File) method.invoke(null);
+                logDir = new File(externalStorageDirectory, config.getString(LoggerConstant.LOGGER_DIRECTORY)).getAbsoluteFile();
             } catch (Exception e) {
+                return null;
             }
-            logDir = new File(externalStorageDirectory, config.getString(LoggerConstant.LOGGER_DIRECTORY)).getAbsoluteFile();
         } else {
             logDir = new File(config.getString(LoggerConstant.LOGGER_DIRECTORY)).getAbsoluteFile();
         }
