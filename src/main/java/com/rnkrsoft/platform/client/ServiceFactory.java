@@ -787,7 +787,7 @@ public final class ServiceFactory {
             }
         } else {
             FetchPublishResponse response = gson.fromJson(data, FetchPublishResponse.class);
-            if (response.isSuccess()) {
+            if ("0000".equals(response.getRspCode())) {
                 init.set(true);
                 if (asyncHandler != null) {
                     asyncHandler.success(response);
