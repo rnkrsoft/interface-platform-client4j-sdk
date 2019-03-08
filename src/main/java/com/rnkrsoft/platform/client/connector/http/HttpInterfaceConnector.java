@@ -440,33 +440,33 @@ public class HttpInterfaceConnector implements InterfaceConnector {
         }
         if (http.ok()) {
             String responseJson = http.body("UTF-8");
-            log.debug("call '{}' success, response '{}' ", url, responseJson);
+            log.debug("call '{}', success, response '{}' ", url, responseJson);
             try {
                 response = GSON.fromJson(responseJson, ApiResponse.class);
                 return response;
             } catch (JsonSyntaxException e) {
-                log.error("call '{}' response happens json syntax error!, json {}", url, responseJson, e);
+                log.error("call '{}', response happens json syntax error!, json {}", url, responseJson, e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE);
                 return response;
             } catch (Exception e) {
-                log.error("call '{}' response happens unknown error!, json {}", url, responseJson, e);
+                log.error("call '{}', response happens unknown error!, json {}", url, responseJson, e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INVALID_COMMUNICATION_MESSAGE);
                 return response;
             }
         } else if (http.notFound()) {
-            log.error("call '{}' not found, cause gateway not found!", url);
+            log.error("call '{}', not found, cause gateway not found!", url);
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_PLATFORM_GATEWAY_NOT_FOUND);
             return response;
         } else if (http.serverError()) {
-            log.error("call '{}' happens server error!", url);
+            log.error("call '{}', happens server error!", url);
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.INTERFACE_HAPPENS_SERVER_ERROR);
             return response;
         } else {
-            log.error("call '{}' happens unknown error! http code:{}", url, http.code());
+            log.error("call '{}', happens unknown error! http code:{}", url, http.code());
             response = new ApiResponse();
             response.setCode(InterfaceRspCode.FAIL);
             return response;
@@ -511,12 +511,12 @@ public class HttpInterfaceConnector implements InterfaceConnector {
                 response = call0(url, request, setting);
                 return response;
             } catch (LocationProviderNotFoundException e) {
-                log.error("call gateway '{}'happens location provider is not found ! cause: '{}'", url, e.getMessage());
+                log.error("call gateway '{}', happens location provider is not found ! cause: '{}'", url, e.getMessage());
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.LOCATION_PROVIDER_IS_NOT_CONFIG);
                 return response;
             } catch (RuntimeException e) {
-                log.error("call gateway '{}' happens error! cause: '{}'", url, e);
+                log.error("call gateway '{}', happens error! cause: '{}'", url, e);
                 response = new ApiResponse();
                 response.setCode(InterfaceRspCode.INTERFACE_EXECUTE_HAPPENS_ERROR);
                 return response;
