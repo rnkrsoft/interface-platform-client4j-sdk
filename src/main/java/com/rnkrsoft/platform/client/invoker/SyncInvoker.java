@@ -408,11 +408,8 @@ public class SyncInvoker {
         apiRequest.setChannel(channel);
         apiRequest.setTxNo(txNo);
         apiRequest.setVersion(version);
-        apiRequest.setSessionId(log.getSessionId());
-        apiRequest.setUic(serviceConfigure.getUic());
-        apiRequest.setUid(serviceConfigure.getUid());
-        apiRequest.setToken(serviceConfigure.getToken());
         apiRequest.setTimestamp(DateUtils.getTimestamp());
+        apiRequest.setSessionId(log.getSessionId());
         String plainText = GSON.toJson(request);
         apiRequest.setData(plainText);
         log.debug("async call channel:'{}' txNo:'{}' version:'{}' ", channel, txNo, version);

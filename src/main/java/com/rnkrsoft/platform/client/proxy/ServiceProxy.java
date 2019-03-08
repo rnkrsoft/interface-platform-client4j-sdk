@@ -378,6 +378,7 @@ public class ServiceProxy<T> implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+        log.generateSessionId();
         log.debug("execute invoke method");
         if (args.length == 1) {
             if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {

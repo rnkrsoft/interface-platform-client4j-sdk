@@ -430,11 +430,8 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
         apiRequest.setChannel(channel);
         apiRequest.setTxNo(txNo);
         apiRequest.setVersion(version);
-        apiRequest.setSessionId(sessionId);
-        apiRequest.setUic(serviceConfigure.getUic());
-        apiRequest.setUid(serviceConfigure.getUid());
-        apiRequest.setToken(serviceConfigure.getToken());
         apiRequest.setTimestamp(DateUtils.getTimestamp());
+        apiRequest.setSessionId(log.getSessionId());
         String plainText = GSON.toJson(requests[0]);
         apiRequest.setData(plainText);
         String password = null;

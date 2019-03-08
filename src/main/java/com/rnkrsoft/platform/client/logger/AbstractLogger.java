@@ -19,7 +19,10 @@ public abstract class AbstractLogger implements Logger {
      */
     public String getSessionId() {
         String session = SESSION_ID.get();
-        return session == null ? "" : session;
+        if (session == null) {
+            session = generateSessionId();
+        }
+        return session;
     }
 
     @Override
@@ -27,6 +30,10 @@ public abstract class AbstractLogger implements Logger {
         SESSION_ID.set(sessionId);
     }
 
+    /**
+     * 生成会话号
+     * @return 会话号
+     */
     public String generateSessionId() {
         String session = UUID.randomUUID().toString();
         SESSION_ID.set(session);

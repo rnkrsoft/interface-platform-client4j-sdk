@@ -356,6 +356,7 @@ import com.rnkrsoft.platform.protocol.ApiRequest;
 import com.rnkrsoft.platform.protocol.ApiResponse;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.GatewayAddress;
+import com.rnkrsoft.utils.DateUtils;
 
 import java.net.ConnectException;
 import java.net.SocketException;
@@ -401,6 +402,7 @@ public class HttpInterfaceConnector implements InterfaceConnector {
         request.setLat(serviceConfigure.getLat());
         request.setUic(serviceConfigure.getUic());
         request.setUid(serviceConfigure.getUid());
+        request.setToken(serviceConfigure.getToken());
         request.setDeviceManufacturer(serviceConfigure.getDeviceManufacturer());
         request.setDeviceModel(serviceConfigure.getDeviceModel());
         request.setDeviceType(serviceConfigure.getDeviceType());
