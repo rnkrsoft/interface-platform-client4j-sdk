@@ -1,5 +1,8 @@
 package com.rnkrsoft.platform.client.demo.service;
 
+import com.rnkrsoft.platform.client.Location;
+import com.rnkrsoft.platform.client.LocationProvider;
+import com.rnkrsoft.platform.client.LocationStore;
 import com.rnkrsoft.platform.client.ServiceFactory;
 import com.rnkrsoft.platform.client.demo.domain.HelloRequest;
 import com.rnkrsoft.platform.client.demo.domain.HelloResponse;
@@ -12,7 +15,17 @@ public class HelloServiceTest {
 
     @Test
     public void testHello() throws Exception {
-        ServiceFactory serviceFactory =ServiceFactory.newInstance();
+        ServiceFactory serviceFactory = ServiceFactory.newInstance();
+        serviceFactory.settingConfigure(false, "localhost", 80, "configure");
+        serviceFactory.getServiceConfigure().setUic("123");
+        serviceFactory.setPassword("1234567890");
+        serviceFactory.addServiceClasses(HelloService.class);
+        serviceFactory.registerLocationProvider(new LocationProvider() {
+            @Override
+            public void locate(LocationStore locationStore) {
+                locationStore.refreshLocation(new Location(1, 2));
+            }
+        });
         serviceFactory.addServiceClasses(HelloService.class);
         serviceFactory.init();
         serviceFactory.getServiceConfigure().setAutoLocate(false);

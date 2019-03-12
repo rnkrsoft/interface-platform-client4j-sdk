@@ -361,6 +361,7 @@ import com.rnkrsoft.platform.protocol.AsyncHandler;
 import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.*;
 import com.rnkrsoft.platform.protocol.utils.JavaEnvironmentDetector;
+import com.rnkrsoft.utils.StringUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -633,7 +634,7 @@ public final class ServiceFactory {
                 serviceConfigure.setEnvDesc(configure.getEnvDesc());
                 //不进行自动定位时，使用模拟定位数据
                 if (!serviceConfigure.isAutoLocate()) {
-                    serviceConfigure.refreshLocation(new Location(Double.valueOf(configure.getMockLng()), Double.valueOf(configure.getMockLat())));
+                    serviceConfigure.refreshLocation(new Location(Double.valueOf(StringUtils.safeToString(configure.getMockLng(), "0")), Double.valueOf(StringUtils.safeToString(configure.getMockLat(), "0"))));
                 }
                 //重设异步线程池
 //                AsyncTask.setAsyncExecuteThreadPoolSize(configure.getAsyncExecuteThreadPoolSize());

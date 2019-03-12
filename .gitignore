@@ -9,3 +9,5 @@ target
 .DS_Store
 .svn
 ~
+/interface-platform/logger.properties
+/logs/interface-platform.20190312.log
