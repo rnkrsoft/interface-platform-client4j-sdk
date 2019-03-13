@@ -495,8 +495,6 @@ public class HttpInterfaceConnector implements InterfaceConnector {
                 }
             }
             log.error("call all gateway '{}' happens error!", gatewayAddresses);
-            response = new ApiResponse();
-            response.setCode(InterfaceRspCode.INTERFACE_EXECUTE_HAPPENS_ERROR);
             return response;
         } else {
             GatewayAddress gatewayAddress = serviceConfigure.getFallbackGatewayAddresses(request.getChannel());

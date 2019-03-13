@@ -16,7 +16,7 @@ public class HelloServiceTest {
     @Test
     public void testHello() throws Exception {
         ServiceFactory serviceFactory = ServiceFactory.newInstance();
-        serviceFactory.settingConfigure(false, "localhost", 80, "configure");
+        serviceFactory.settingConfigure(false, "localhost", 8080, "configure");
         serviceFactory.getServiceConfigure().setUic("123");
         serviceFactory.setPassword("1234567890");
         serviceFactory.addServiceClasses(HelloService.class);
