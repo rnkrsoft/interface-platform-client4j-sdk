@@ -400,14 +400,15 @@ public class ServiceProxy<T> implements InvocationHandler {
             Class requestClass = method.getParameterTypes()[0];
             ParameterizedType asyncHandlerClass = (ParameterizedType) method.getGenericParameterTypes()[1];
             Class responseClass = (Class) asyncHandlerClass.getActualTypeArguments()[0];
-            if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {
-                if (!serviceFactory.isInit()) {
-                    asyncHandler.fail(InterfaceRspCode.CLIENT_IS_NOT_INITIALIZED, "client is not initialization, please execute init() or init(boolean, AsyncHandler)!");
-                    return null;
-                }
-            }
             log.debug("asynchronous execute remote service request '{}'", request);
             if (JavaEnvironmentDetector.isAndroid()) {
+                //如果在安卓情况下，发现未初始化，则调用初始化逻辑
+                if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {
+                    if (!serviceFactory.isInit()) {
+                        log.warn("client is not init,now begin to init!");
+                        serviceFactory.init();
+                    }
+                }
                 AndroidAsyncInvoker<Object> asyncInvoker = new AndroidAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
                 android.os.AsyncTask asyncTask = asyncInvoker.execute(request);
                 if (method.getReturnType() == android.os.AsyncTask.class) {
@@ -416,6 +417,12 @@ public class ServiceProxy<T> implements InvocationHandler {
                     return null;
                 }
             } else {
+                if (serviceClass != PublishService.class && serviceClass != AndroidPublishService.class) {
+                    if (!serviceFactory.isInit()) {
+                        log.warn("client is not init,now begin to init!");
+                        serviceFactory.init();
+                    }
+                }
                 JavaAsyncInvoker<Object> javaAsyncInvoker = new JavaAsyncInvoker<Object>(this.serviceFactory, log.getSessionId(), serviceClass, method.getName(), requestClass, responseClass, asyncHandler);
                 AsyncTask asyncTask = javaAsyncInvoker.execute(request);
                 if (method.getReturnType() == AsyncTask.class) {

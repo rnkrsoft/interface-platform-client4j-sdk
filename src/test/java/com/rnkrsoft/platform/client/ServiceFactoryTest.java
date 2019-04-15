@@ -13,6 +13,8 @@ import com.rnkrsoft.platform.protocol.AsyncHandler;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.util.concurrent.Future;
+
 
 /**
  * Created by rnkrsoft.com on 2019/1/17.
@@ -38,8 +40,8 @@ public class ServiceFactoryTest {
     @Test
     public void testSuccess() throws Exception {
         ServiceFactory serviceFactory = ServiceFactory.newInstance();
-        serviceFactory.settingFallback("public", false, "localhost", 80, "api");
-        serviceFactory.settingFallback("test-channel", false, "localhost", 80, "api");
+        serviceFactory.settingFallback("public", false, "localhost", 8080, "api");
+        serviceFactory.settingFallback("test-channel", false, "localhost", 8080, "api");
         serviceFactory.setPassword("1234567890");
         serviceFactory.setKeyVector("1234567890654321");
         serviceFactory.addServiceClasses(HelloService.class);
@@ -50,22 +52,32 @@ public class ServiceFactoryTest {
             }
         });
 //        serviceFactory.init();
-        serviceFactory.init(true, new AsyncHandler() {
-            @Override
-            public void fail(String code, String desc, String detail) {
-                System.out.println(desc);
-            }
-
-            @Override
-            public void success(Object response) {
-                System.out.println(response);
-            }
-        });
+//        serviceFactory.init(true, new AsyncHandler() {
+//            @Override
+//            public void fail(String code, String desc, String detail) {
+//                System.out.println(desc);
+//            }
+//
+//            @Override
+//            public void success(Object response) {
+//                System.out.println(response);
+//            }
+//        });
         HelloService helloService = serviceFactory.get(HelloService.class);
         HelloRequest request = new HelloRequest();
         request.setName("test");
-        HelloResponse response = helloService.hello(request);
-        System.out.println(response);
+        AsyncTask future = helloService.hello(request, new AsyncHandler<HelloResponse>() {
+            @Override
+            public void fail(String code, String desc, String detail) {
+                System.out.println(detail);
+            }
+
+            @Override
+            public void success(HelloResponse response) {
+                System.out.println("------------------" + response);
+            }
+        });
+        future.get();
     }
 
     @Test
