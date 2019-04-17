@@ -12,14 +12,14 @@ public class ConfigureServiceTest {
 
     @Test
     public void testFetchConfigure() throws Exception {
-        ConfigureService configureService = new ConfigureService("http", "localhost", 80, "configure");
+        ConfigureService configureService = new ConfigureService("https", "localhost", 8080, "configure");
         FetchConfigureRequest request = new FetchConfigureRequest();
-        request.setUic("456");
+        request.setUic("");
         request.setDeviceType("iOS");
         request.setAppVersion("4.0.0");
         request.setLat("1112");
         request.setLng("1112");
-        request.getChannels().add("demo_channel");
+        request.getChannels().add("test-channel");
         for (int i = 0; i < 10; i++) {
             FetchConfigureResponse resp = configureService.fetchConfigure(request);
             System.out.println(resp);

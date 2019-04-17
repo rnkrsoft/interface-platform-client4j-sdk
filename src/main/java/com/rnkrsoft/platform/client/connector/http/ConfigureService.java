@@ -350,6 +350,7 @@ import com.rnkrsoft.platform.protocol.enums.InterfaceRspCode;
 import com.rnkrsoft.platform.protocol.service.FetchConfigureRequest;
 import com.rnkrsoft.platform.protocol.service.FetchConfigureResponse;
 
+import javax.net.ssl.SSLException;
 import java.net.ConnectException;
 import java.net.SocketException;
 
@@ -383,6 +384,12 @@ public class ConfigureService {
             if (exception instanceof ConnectException) {
                 response = new FetchConfigureResponse();
                 response.setCode(InterfaceRspCode.CONFIGURE_GATEWAY_NOT_FOUND);
+                return response;
+            }
+            if (exception instanceof SSLException) {
+                response = new FetchConfigureResponse();
+                response.setCode(InterfaceRspCode.CONFIGURE_GATEWAY_NOT_FOUND);
+                log.error("interface platform configure gateway is unsupported SSL!");
                 return response;
             }
             if (exception instanceof SocketException && exception.getMessage().toLowerCase().contains("permission denied")) {

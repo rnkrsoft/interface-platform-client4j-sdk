@@ -16,10 +16,11 @@ public class HelloServiceTest {
     @Test
     public void testHello() throws Exception {
         ServiceFactory serviceFactory = ServiceFactory.newInstance();
-//        serviceFactory.settingConfigure(true, "localhost", 8080, "configure");
+        serviceFactory.settingConfigure(true, "localhost", 8080, "configure");
         serviceFactory.getServiceConfigure().setUic("0B43B790-B90F-41BD-B35A-617F87B9334F");
         serviceFactory.setKeyVector("1234567890654321");
         serviceFactory.setPassword("1234567890");
+        serviceFactory.setAppVersion("4.0.0");
         serviceFactory.addServiceClasses(HelloService.class);
         serviceFactory.registerLocationProvider(new LocationProvider() {
             @Override
