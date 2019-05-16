@@ -209,6 +209,12 @@
     <profiles>
         <profile>
             <id>release</id>
+            <repositories>
+                <repository>
+                    <id>rnkrsoft</id>
+                    <url>http://nexus.rnkrsoft.com/content/repositories/public/</url>
+                </repository>
+            </repositories>
             <build>
                 <plugins>
                     <!-- Javadoc -->
