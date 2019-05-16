@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rnkrsoft.platform</groupId>
     <artifactId>interface-platform-client4j-sdk</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <name>接口平台客户端 for Java V1</name>
     <description>接口平台客户端 for Java V1</description>
     <url>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</url>
     <licenses>
         <license>
-            <name>GNU GENERAL PUBLIC LICENSE Version 2</name>
-            <url>http://www.gnu.org/licenses/licenses/gpl-2.0.txt</url>
+            <name>Apache License, Version 2.0</name>
+            <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
         </license>
     </licenses>
     <scm>
@@ -37,7 +37,7 @@
         <dependency>
             <groupId>com.rnkrsoft.platform</groupId>
             <artifactId>interface-platform-protocol</artifactId>
-            <version>${project.version}</version>
+            <version>1.0.2</version>
             <exclusions>
                 <exclusion>
                     <artifactId>lombok</artifactId>
