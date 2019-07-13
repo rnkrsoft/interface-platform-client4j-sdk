@@ -374,6 +374,13 @@ public class SyncInvoker {
         }
         if (service != PublishService.class) {
             InterfaceDefinition interfaceDefinition = serviceFactory.getDefinitionRegister().lookup(channel, txNo, version);
+            if (interfaceDefinition.isUseTokenAsPassword()) {
+                password = serviceConfigure.getToken();
+                log.debug("use token as password, '{}'", password);
+            } else {
+                password = serviceConfigure.getPassword();
+                log.debug("use fixed string as password, '{}'", password);
+            }
             if (interfaceDefinition.isFirstVerifySecondDecrypt()) {
                 log.debug("verify --> decrypt");
                 if (interfaceDefinition.getVerifyAlgorithm() == null || interfaceDefinition.getVerifyAlgorithm().isEmpty()) {

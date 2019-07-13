@@ -301,6 +301,13 @@ public class JavaAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRespo
         InterfaceSetting.InterfaceSettingBuilder settingBuilder = InterfaceSetting.builder();
         if (service != PublishService.class) {
             InterfaceDefinition interfaceDefinition = serviceFactory.getDefinitionRegister().lookup(channel, txNo, version, true);
+            if (interfaceDefinition.isUseTokenAsPassword()) {
+                password = serviceConfigure.getToken();
+                log.debug("use token as password, '{}'", password);
+            } else {
+                password = serviceConfigure.getPassword();
+                log.debug("use fixed string as password, '{}'", password);
+            }
             if (interfaceDefinition == null) {
                 apiResponse.setCode(InterfaceRspCode.INTERFACE_NOT_DEFINED);
                 return apiResponse;
@@ -314,13 +321,6 @@ public class JavaAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRespo
                 log.error("version is blank!");
                 apiResponse.setCode(InterfaceRspCode.VERSION_ILLEGAL);
                 return apiResponse;
-            }
-            if (interfaceDefinition.isUseTokenAsPassword()) {
-                password = serviceConfigure.getToken();
-                log.debug("use token as password, '{}'", password);
-            } else {
-                password = serviceConfigure.getPassword();
-                log.debug("use fixed string as password, '{}'", password);
             }
             if (password == null) {
                 log.debug("password is null!");
@@ -406,6 +406,16 @@ public class JavaAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRespo
         }
         if (service != PublishService.class) {
             InterfaceDefinition interfaceDefinition = serviceFactory.getDefinitionRegister().lookup(channel, txNo, version);
+            if (interfaceDefinition.isUseTokenAsPassword()) {
+                password = serviceConfigure.getToken();
+                log.debug("use token as password, '{}'", password);
+            } else {
+                password = serviceConfigure.getPassword();
+                log.debug("use fixed string as password, '{}'", password);
+            }
+            if (password == null) {
+                log.debug("password is null!");
+            }
             if (interfaceDefinition.isFirstVerifySecondDecrypt()) {
                 log.debug("verify --> decrypt");
                 if (interfaceDefinition.getVerifyAlgorithm() == null || interfaceDefinition.getVerifyAlgorithm().isEmpty()) {

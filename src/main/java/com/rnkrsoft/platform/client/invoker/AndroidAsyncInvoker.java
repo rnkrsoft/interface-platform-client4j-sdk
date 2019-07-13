@@ -305,16 +305,6 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
                 apiResponse.setCode(InterfaceRspCode.INTERFACE_NOT_DEFINED);
                 return apiResponse;
             }
-            if (apiRequest.getTxNo() == null || apiRequest.getTxNo().isEmpty()) {
-                log.error("txNo is blank!");
-                apiResponse.setCode(InterfaceRspCode.TX_NO_IS_NULL);
-                return apiResponse;
-            }
-            if (apiRequest.getVersion() == null || apiRequest.getVersion().isEmpty()) {
-                log.error("version is blank!");
-                apiResponse.setCode(InterfaceRspCode.VERSION_ILLEGAL);
-                return apiResponse;
-            }
             if (interfaceDefinition.isUseTokenAsPassword()) {
                 password = serviceConfigure.getToken();
                 log.debug("use token as password, '{}'", password);
@@ -324,6 +314,16 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
             }
             if (password == null) {
                 log.debug("password is null!");
+            }
+            if (apiRequest.getTxNo() == null || apiRequest.getTxNo().isEmpty()) {
+                log.error("txNo is blank!");
+                apiResponse.setCode(InterfaceRspCode.TX_NO_IS_NULL);
+                return apiResponse;
+            }
+            if (apiRequest.getVersion() == null || apiRequest.getVersion().isEmpty()) {
+                log.error("version is blank!");
+                apiResponse.setCode(InterfaceRspCode.VERSION_ILLEGAL);
+                return apiResponse;
             }
             if (interfaceDefinition.isFirstSignSecondEncrypt()) {
                 log.debug("sign --> encrypt");
@@ -406,6 +406,16 @@ public class AndroidAsyncInvoker<Request> extends AsyncTask<Request, Void, ApiRe
         }
         if (service != PublishService.class) {
             InterfaceDefinition interfaceDefinition = serviceFactory.getDefinitionRegister().lookup(channel, txNo, version);
+            if (interfaceDefinition.isUseTokenAsPassword()) {
+                password = serviceConfigure.getToken();
+                log.debug("use token as password, '{}'", password);
+            } else {
+                password = serviceConfigure.getPassword();
+                log.debug("use fixed string as password, '{}'", password);
+            }
+            if (password == null) {
+                log.debug("password is null!");
+            }
             if (interfaceDefinition.isFirstVerifySecondDecrypt()) {
                 log.debug("verify --> decrypt");
                 if (interfaceDefinition.getVerifyAlgorithm() == null || interfaceDefinition.getVerifyAlgorithm().isEmpty()) {

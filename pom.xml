@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rnkrsoft.platform</groupId>
     <artifactId>interface-platform-client4j-sdk</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <name>接口平台客户端 for Java V1</name>
     <description>接口平台客户端 for Java V1</description>
     <url>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</url>
@@ -23,7 +23,6 @@
     <properties>
         <maven.compiler.target>1.6</maven.compiler.target>
         <maven.compiler.source>1.6</maven.compiler.source>
-        <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
