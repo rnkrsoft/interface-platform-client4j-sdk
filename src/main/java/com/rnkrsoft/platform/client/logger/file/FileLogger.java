@@ -381,7 +381,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void trace(String format, Object... arguments) {
         if (isTraceEnabled()) {
             String log = getFormat() + " TRACE " + MessageFormatter.format(format, arguments);
-            log(LoggerLevel.TRACE, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.TRACE, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -389,7 +389,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void trace(String msg, Throwable t) {
         if (isTraceEnabled()) {
             String log = getFormat() + " TRACE " + msg + "\n" + ExceptionTrackUtils.toString(t);
-            log(LoggerLevel.TRACE, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.TRACE, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -402,7 +402,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void debug(String format, Object... arguments) {
         if (isDebugEnabled()) {
             String log = getFormat() + " DEBUG " + MessageFormatter.format(format, arguments);
-            log(LoggerLevel.DEBUG, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.DEBUG, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -410,7 +410,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void debug(String msg, Throwable t) {
         if (isDebugEnabled()) {
             String log = getFormat() + " DEBUG " + msg + "\n" + ExceptionTrackUtils.toString(t);
-            log(LoggerLevel.DEBUG, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.DEBUG, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -423,7 +423,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void info(String format, Object... arguments) {
         if (isInfoEnabled()) {
             String log = getFormat() + " INFO " + MessageFormatter.format(format, arguments);
-            log(LoggerLevel.INFO, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.INFO, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -431,7 +431,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void info(String msg, Throwable t) {
         if (isInfoEnabled()) {
             String log = getFormat() + " INFO " + msg + "\n" + ExceptionTrackUtils.toString(t);
-            log(LoggerLevel.INFO, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.INFO, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -444,7 +444,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void warn(String format, Object... arguments) {
         if (isWarnEnabled()) {
             String log = getFormat() + " WARN " + MessageFormatter.format(format, arguments);
-            log(LoggerLevel.WARN, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.WARN, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -452,7 +452,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void warn(String msg, Throwable t) {
         if (isWarnEnabled()) {
             String log = getFormat() + " WARN " + msg + "\n" + ExceptionTrackUtils.toString(t);
-            log(LoggerLevel.WARN, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.WARN, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -465,7 +465,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void error(String format, Object... arguments) {
         if (isErrorEnabled()) {
             String log = getFormat() + " ERROR " + MessageFormatter.format(format, arguments);
-            log(LoggerLevel.ERROR, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.ERROR, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 
@@ -473,7 +473,7 @@ class FileLogger extends AbstractLogger implements Logger {
     public void error(String msg, Throwable t) {
         if (isErrorEnabled()) {
             String log = getFormat() + " ERROR " + msg + "\n" + ExceptionTrackUtils.toString(t);
-            log(LoggerLevel.ERROR, ClassUtils.getClassName(true, 1), log);
+            log(LoggerLevel.ERROR, ClassUtils.getCallerClassName(true, 1), log);
         }
     }
 

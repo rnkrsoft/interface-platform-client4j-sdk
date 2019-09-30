@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.rnkrsoft.platform</groupId>
     <artifactId>interface-platform-client4j-sdk</artifactId>
-    <version>1.0.4</version>
+    <version>1.0.3-fix1</version>
     <name>接口平台客户端 for Java V1</name>
     <description>接口平台客户端 for Java V1</description>
     <url>https://github.com/rnkrsoft/interface-platform-client4j-sdk.git</url>
@@ -36,7 +36,7 @@
         <dependency>
             <groupId>com.rnkrsoft.platform</groupId>
             <artifactId>interface-platform-protocol</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
             <exclusions>
                 <exclusion>
                     <artifactId>lombok</artifactId>
@@ -99,7 +99,13 @@
         <dependency>
             <groupId>com.rnkrsoft.groundwork</groupId>
             <artifactId>groundwork</artifactId>
+            <version>1.0.3</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rnkrsoft.skeleton4j</groupId>
+            <artifactId>skeleton4j-api</artifactId>
             <version>1.0.2</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.rnkrsoft.config</groupId>
@@ -205,6 +211,12 @@
             </plugin>
         </plugins>
     </build>
+    <repositories>
+        <repository>
+            <id>rnkrsoft</id>
+            <url>http://nexus.rnkrsoft.com/content/repositories/public/</url>
+        </repository>
+    </repositories>
     <profiles>
         <profile>
             <id>release</id>
